@@ -1,31 +1,23 @@
-import {Container, TextField} from "@mui/material";
+import {Container} from "@mui/material";
 import BasicLayout from "../layout/BasicLayout";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import {useState} from "react";
-import {useDispatch, useSelector} from 'react-redux'
-import {userLogin} from "../features/loginSlice";
+import Login from "../components/authentication/login/Login";
+import Register from "../components/authentication/register/Register";
 
 const AuthenticationPage = () => {
-    const [email, setEmail] = useState('')
-    const dispatch = useDispatch()
-    const {email: emailStore} = useSelector((state) => state.login)
+    // this is js code
+    const [showRegister, setShowRegister] = useState(false)
 
-    const login = () => {
-        dispatch(userLogin({email}))
-    }
-
+    // this is html code
     return (
         <BasicLayout>
             <Container>
-                <TextField
-                    id="outlined-basic"
-                    label="Email"
-                    variant="outlined"
-                    onChange={e=>setEmail(e.target.value)}
-                />
-                <Button variant="contained" onClick={()=>login()}>Login</Button>
-                <Typography variant='h6'>Email: {emailStore}</Typography>
+                {
+                    showRegister ?
+                        <Register setShowRegister={setShowRegister} />
+                        :
+                        <Login setShowRegister={setShowRegister}/>
+                }
             </Container>
         </BasicLayout>
     )
