@@ -19,6 +19,15 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import {wordsLimit} from "../../../utils/consts";
 import {ThemeProvider} from "@emotion/react";
+import {commonStyles, commontStyles} from "../../../styles/commontStyles";
+import Button from "@mui/material/Button";
+import {useMutation} from "@tanstack/react-query";
+import axios from "axios";
+import api from "../../../api/api";
+import useCreateTraining from "../../../hooks/useCreateTraining";
+import useFetchData from "../../../hooks/useFetchData";
+import {useSelector} from "react-redux";
+import useUpdateTraining from "../../../hooks/useUpdateTraining";
 
 const styles = {
     modalStyle: {
@@ -42,15 +51,24 @@ const theme = createTheme({
     }
 })
 
-const TrainingModal = ({open, setOpen, isCreating, isUpdating}) => {
+const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
-    const [wordsRemaining, setWordsRemaining] = useState(wordsLimit)
+    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(wordsLimit)
+    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(wordsLimit)
 
-    const [startDate, setStartDate] = useState('')
-    const [endDate, setEndDate] = useState('')
-    const [trainingType, setTrainingType] = useState('')
-    const [trainingName, setTrainingName] = useState('')
-    const [url, setUrl] = useState('')
+    const [trainingName, setTrainingName] = useState(training?.trainingName || '')
+    const [trainingType, setTrainingType] = useState(training?.trainingType || '')
+    const [startDate, setStartDate] = useState(training?.startDate || '')
+    const [endDate, setEndDate] = useState(training?.endDate || '')
+    const [hoursCount, setHoursCount] = useState(training?.hoursCount || 1)
+    const [trainingURL, setTrainingURL] = useState(training?.trainingURL || '')
+    const { email } = useSelector( state => state.login )
+
+    const {isLoading, data: trainingTypes}
+        = useFetchData(['queryAllTrainingTypes'], '/training/trainingTypes', {})
+
+    const { mutate: addTraining } = useCreateTraining()
+    const { mutate: updateTraining } = useUpdateTraining()
 
 
     const trainingNameHandler = e => {
@@ -59,8 +77,86 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating}) => {
             return
         }
 
-        setWordsRemaining(wordsLimit - input.length)
+        setTrainingNameWordsRemaining(wordsLimit - input.length)
         setTrainingName(input)
+    }
+
+    const trainingUrlHandler = e => {
+        const input = e.target.value
+        if(input.length > wordsLimit){
+            return
+        }
+
+        setTrainingUrlWordsRemaining(wordsLimit - input.length)
+        setTrainingURL(input)
+    }
+
+    // const inputWithWordsLimit = (e, inputName) => {
+    //     const input = e.target.value
+    //     if(input.length > wordsLimit){
+    //         return
+    //     }
+    //
+    //     if(inputName === 'trainingName'){
+    //         setTrainingNameWordsRemaining(wordsLimit - input.length)
+    //         setTrainingName(input)
+    //     }
+    //     if(inputName === 'trainingUrl'){
+    //         setTrainingUrlWordsRemaining(wordsLimit - input.length)
+    //         setUrl(input)
+    //     }
+    //
+    // }
+
+    const trainingHoursHandler = e => {
+        const { value } = e.target
+        if(value <= 0){
+            return
+        }
+        setHoursCount(value)
+    }
+
+    const createTraining = () => {
+        const newTraining = {
+            trainingName,
+            email,
+            trainingType,
+            startDate,
+            endDate,
+            hoursCount: +hoursCount,
+            trainingURL,
+        }
+
+        addTraining(newTraining)
+        setTrainingName('')
+        setTrainingType('')
+        setStartDate('')
+        setEndDate('')
+        setHoursCount(1)
+        setTrainingURL('')
+        setOpen(false)
+    }
+
+    const updateTrainingHandler = () => {
+        const updatedTraining = {
+            trainingId: training.id,
+            trainingName,
+            email,
+            trainingType,
+            startDate,
+            endDate,
+            hoursCount: +hoursCount,
+            trainingURL,
+        }
+        updateTraining(updatedTraining)
+        setOpen(false)
+    }
+
+    const renderCreateOrUpdateButton = () => {
+        return training ?
+            (<Button variant="contained" onClick={() => updateTrainingHandler()}>Update</Button>)
+            :
+            (<Button variant="contained" onClick={() => createTraining()}>Create</Button>)
     }
 
     return (
@@ -76,10 +172,10 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating}) => {
                         container
                         direction="column"
                         justifyContent="center"
-                        alignItems="center"
+                        alignItems="stretch"
                     >
                         <Grid item>
-                            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+                            <FormControl sx={commonStyles.fullWidth} variant="outlined">
                                 <InputLabel htmlFor="outlined-adornment-password">Training Name</InputLabel>
                                 <OutlinedInput
                                     id="outlined-adornment-password"
@@ -88,7 +184,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating}) => {
                                     onChange={e => trainingNameHandler(e)}
                                     endAdornment={
                                         <InputAdornment position="end">
-                                            <Typography variant='span'>{wordsRemaining} remaining</Typography>
+                                            <Typography variant='span'>{trainingNameWordsRemaining} remaining</Typography>
                                         </InputAdornment>
                                     }
                                     label="trainingName"
@@ -96,22 +192,20 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating}) => {
                             </FormControl>
                         </Grid>
                         <Grid item>
-                            <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth>
-                                    <InputLabel id="demo-simple-select-label">Training Type</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        value={trainingType}
-                                        label="trainingType"
-                                        onChange={e => setTrainingType(e.target.value)}
-                                    >
-                                        <MenuItem value='LiveTraining'>LiveTraining</MenuItem>
-                                        <MenuItem value='ECLASS'>ECLASS</MenuItem>
-                                        <MenuItem value='Webinar'>Webinar</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </Box>
+                            <FormControl sx={commonStyles.fullWidth}>
+                                <InputLabel id="demo-simple-select-label">Training Type</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={trainingType}
+                                    label="trainingType"
+                                    onChange={e => setTrainingType(e.target.value)}
+                                >
+                                    {
+                                        !isLoading && trainingTypes.map((trainingType, index) => (<MenuItem key={index} value={trainingType}>{trainingType}</MenuItem>))
+                                    }
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item>
                             <TrainingDatePicker
@@ -128,29 +222,59 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating}) => {
                             />
                         </Grid>
 
-                        <Grid item><TextField id="standard-basic" label="Hours" variant="outlined" /></Grid>
-
-                        {/* TODO: distract url input and training name input to a single component */}
                         <Grid item>
-                            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+                            <FormControl sx={commonStyles.fullWidth}>
+                                <TextField
+                                    value={hoursCount}
+                                    onChange={e => trainingHoursHandler(e)}
+                                    id="standard-basic"
+                                    label="Hours"
+                                    variant="outlined"
+                                    type="number"
+                                />
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item>
+                            <FormControl sx={commonStyles.fullWidth} variant="outlined">
                                 <InputLabel htmlFor="outlined-adornment-password">URL</InputLabel>
                                 <OutlinedInput
                                     id="outlined-adornment-password"
                                     type='text'
-                                    value={trainingName}
-                                    onChange={e => trainingNameHandler(e)}
+                                    value={trainingURL}
+                                    onChange={e => trainingUrlHandler(e)}
                                     endAdornment={
                                         <InputAdornment position="end">
-                                            <Typography variant='span'>{wordsRemaining} remaining</Typography>
+                                            <Typography variant='span'>{trainingUrlWordsRemaining} remaining</Typography>
                                         </InputAdornment>
                                     }
                                     label="url"
                                 />
                             </FormControl>
                         </Grid>
+
+                        <Grid item>
+                            <Grid
+                                container
+                                alignItems='center'
+                                justifyContent='center'
+                                spacing={1}
+                            >
+                                <Grid item>
+                                    {renderCreateOrUpdateButton()}
+                                </Grid>
+
+                                <Grid item>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => setOpen(false)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
                     </Grid>
-
-
                 </Box>
             </Modal>
         </ThemeProvider>

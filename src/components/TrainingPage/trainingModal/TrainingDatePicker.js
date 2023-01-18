@@ -5,13 +5,15 @@ import IconButton from "@mui/material/IconButton";
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import {useState} from "react";
 import moment from "moment";
+import {commonStyles} from "../../../styles/commontStyles";
+
 
 const TrainingDatePicker = ({date, setDate, name}) => {
     const [showDatePicker, setShowDatePicker] = useState(false)
 
     return (
         <>
-            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+            <FormControl sx={commonStyles.fullWidth} variant="outlined">
                 <InputLabel htmlFor="outlined-adornment-dates">{name}</InputLabel>
                 <OutlinedInput
                     value={date && moment(date).format('YYYY-MM-DD')}

@@ -1,14 +1,19 @@
 import {useQuery} from "@tanstack/react-query";
-import axios from "axios";
+import api from "../api/api";
 
 
-const useFetchData = (url) => {
-    const fetchAllTrainings = async () => {
-        const res = await axios.get(url)
+const useFetchData = (queryIdentifier, url, reqBody) => {
+    const fetchData = async () => {
+        const res = await api.post(url, reqBody)
         return res.data
     }
 
-    return useQuery(['queryAllTrainings'], fetchAllTrainings)
+    return useQuery(queryIdentifier, fetchData, {
+        refetchOnWindowFocus: false,
+        staleTime: 1000 * 60 * 60,
+        refetchInterval: 1000 * 60 * 60,
+        refetchIntervalInBackground: true,
+    })
 }
 
 export default useFetchData

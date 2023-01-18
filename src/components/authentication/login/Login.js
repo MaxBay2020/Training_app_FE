@@ -6,6 +6,8 @@ import Button from "@mui/material/Button";
 import {useState} from "react";
 import Box from "@mui/material/Box";
 import {ThemeProvider} from "@emotion/react";
+import {useDispatch} from "react-redux";
+import {userLogin} from "../../../features/loginSlice";
 
 // change default theme by createTheme() method
 // equals to using css
@@ -27,10 +29,13 @@ const Login = ({setShowRegister}) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
+    const dispatch = useDispatch()
 
     const login = () => {
-        // call API
-        console.log({email, password})
+        // TODO: call API
+        dispatch(userLogin({
+            email: 'jane.doe@acme.com'
+        }))
     }
 
     // html code

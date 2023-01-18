@@ -7,6 +7,8 @@ import {Provider as ReduxProvider} from 'react-redux'
 import store from "./redux/store";
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -18,6 +20,18 @@ root.render(
           <ReduxProvider store={store}>
               <App />
           </ReduxProvider>
+          <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+          />
           <ReactQueryDevtools initialOpen={false} position='bottom-right' />
       </QueryClientProvider>
   </React.StrictMode>
