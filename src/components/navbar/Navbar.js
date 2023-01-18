@@ -11,14 +11,36 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import {Link} from "react-router-dom";
+import {useSelector} from "react-redux";
 
-const pages = ['Training'];
-const settings = ['Profile', 'Training', 'Logout'];
+const pages = [
+    {
+        label: 'Training',
+        link: '/training'
+    }
+];
+const settings = [
+    {
+        label: 'Profile',
+        link: '/profile'
+    },
+    {
+        label: 'Training',
+        link: '/training'
+    },
+    {
+        label: 'Logout',
+        link: '/logout'
+    }
+];
 
 const Navbar = () => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+    const { email } = useSelector(state => state.login)
+
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -36,7 +58,7 @@ const Navbar = () => {
     };
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" sx={{marginBottom: '200px'}}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Avatar
@@ -72,21 +94,25 @@ const Navbar = () => {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center">{page}</Typography>
-                                </MenuItem>
-                            ))}
+                            {
+                                pages.map((page) => (
+                                    <Link to={page.link} key={page.label}>
+                                        <MenuItem>
+                                            <Typography textAlign="center">{page.label}</Typography>
+                                        </MenuItem>
+                                    </Link>
+                                ))
+                            }
                         </Menu>
                     </Box>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
                             <Button
-                                key={page}
+                                key={page.label}
                                 onClick={handleCloseNavMenu}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
-                                {page}
+                                <Link to={page.link}>{page.label}</Link>
                             </Button>
                         ))}
                     </Box>
@@ -94,7 +120,9 @@ const Navbar = () => {
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                {
+                                    email && <Avatar>{email[0].toUpperCase()}</Avatar>
+                                }
                             </IconButton>
                         </Tooltip>
                         <Menu
@@ -114,9 +142,11 @@ const Navbar = () => {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
-                                </MenuItem>
+                                <Link to={setting.link} key={setting.label}>
+                                    <MenuItem onClick={handleCloseUserMenu}>
+                                        <Typography textAlign="center">{setting.label}</Typography>
+                                    </MenuItem>
+                                </Link>
                             ))}
                         </Menu>
                     </Box>

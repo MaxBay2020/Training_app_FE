@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit'
 
 const initialState = {
-    email: '',
+    email: localStorage.getItem('userEmail') || '',
 
 }
 
@@ -12,6 +12,7 @@ export const loginSlice = createSlice({
         userLogin: (state, action) => {
             const {email} = action.payload
             state.email = email
+            localStorage.setItem('userEmail', email)
         },
 
     }
