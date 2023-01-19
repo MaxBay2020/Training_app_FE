@@ -25,7 +25,7 @@ import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
 import api from "../../../api/api";
 import useCreateTraining from "../../../hooks/useCreateTraining";
-import useFetchData from "../../../hooks/useFetchData";
+import useFetchTrainingTypes from "../../../hooks/useFetchTrainingTypes";
 import {useSelector} from "react-redux";
 import useUpdateTraining from "../../../hooks/useUpdateTraining";
 
@@ -65,7 +65,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const { email } = useSelector( state => state.login )
 
     const {isLoading, data: trainingTypes}
-        = useFetchData(['queryAllTrainingTypes'], '/training/trainingTypes', {})
+        = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes', {})
 
     const { mutate: addTraining } = useCreateTraining()
     const { mutate: updateTraining } = useUpdateTraining()

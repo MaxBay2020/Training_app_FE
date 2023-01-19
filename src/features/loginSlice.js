@@ -14,6 +14,10 @@ export const loginSlice = createSlice({
             state.email = email
             localStorage.setItem('userEmail', email)
         },
+        userLogout: (state, _action) => {
+            state.email = ''
+            localStorage.removeItem('userEmail')
+        }
 
     }
 
@@ -22,5 +26,6 @@ export const loginSlice = createSlice({
 export default loginSlice.reducer
 
 export const {
-    userLogin
+    userLogin,
+    userLogout
 } = loginSlice.actions

@@ -58,7 +58,7 @@ const Navbar = () => {
     };
 
     return (
-        <AppBar position="static" sx={{marginBottom: '200px'}}>
+        <AppBar position="static" sx={{marginBottom: '100px'}}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Avatar

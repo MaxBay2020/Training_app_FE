@@ -18,8 +18,8 @@ const App = () => {
   return (
       <Router>
           <Routes>
-              <Route path='/authentication' element={<AuthenticationPage />} />
-              <Route path='/training' element={email ? <TrainingPage /> : <Navigate to='/authentication' />} />
+              <Route path='/authentication' element={ email ? <Navigate to='/training' /> : <AuthenticationPage /> } />
+              <Route path='/training' element={ email ? <TrainingPage /> : <Navigate to='/authentication' /> } />
           </Routes>
       </Router>
   );

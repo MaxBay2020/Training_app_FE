@@ -9,12 +9,8 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import {useState} from "react";
-import useFetchData from "../../../hooks/useFetchData";
 import moment from "moment";
 import {Grid} from "@mui/material";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -23,30 +19,6 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import TrainingModal from "../trainingModal/TrainingModal";
 import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModal";
-
-const createData = (trainingName, trainingType, startDate, endDate, trainingStatus, hoursCount, points = 0) => {
-    return {
-        trainingName,
-        trainingType,
-        startDate,
-        endDate,
-        trainingStatus,
-        hoursCount,
-        points,
-        serviceMaster: [
-            {
-                date: '2020-01-05',
-                customerId: '11091700',
-                amount: 3,
-            },
-            {
-                date: '2020-01-02',
-                customerId: 'Anonymous',
-                amount: 1,
-            },
-        ],
-    };
-}
 
 const Row = ({training}) => {
 
@@ -120,7 +92,6 @@ const Row = ({training}) => {
 }
 
 const TrainingTableForServicer = ({trainingList}) => {
-
 
     return (
         <TableContainer component={Paper}>

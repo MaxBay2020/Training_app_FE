@@ -73,10 +73,10 @@ const TrainingWithdrawModal = ({open, setOpen, training}) => {
                         <Grid item>
                             <FormControl sx={{ width: '100%' }} variant="outlined" size="small">
                                 <OutlinedInput
-                                    id="outlined-adornment-weight"
-                                    aria-describedby="outlined-weight-helper-text"
+                                    id="outlined-adornment-withdraw-notice"
+                                    aria-describedby="outlined-withdraw-notice-helper-text"
                                     inputProps={{
-                                        'aria-label': 'weight',
+                                        'aria-label': 'notice',
                                     }}
                                     onChange={ e => setTrainingNameTyped(e.target.value)}
                                 />
