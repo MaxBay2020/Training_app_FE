@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import {useState} from "react";
 import {useSelector} from "react-redux";
-import useWithdrawTraining from "../../../hooks/useWithdrawTraining";
+import useWithdrawTraining from "../../../hooks/trainingHooks/useWithdrawTraining";
 
 
 const styles = {

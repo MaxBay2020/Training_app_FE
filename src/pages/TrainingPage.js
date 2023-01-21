@@ -15,12 +15,12 @@ import TrainingTableForServicer from "../components/TrainingPage/trainingTable/T
 import {useState} from "react";
 import TrainingTableForAdmin from "../components/TrainingPage/trainingTable/TrainingTableForAdmin";
 import TrainingTableForApprover from "../components/TrainingPage/trainingTable/TrainingTableForApprover";
-import useFetchTrainingTypes from "../hooks/useFetchTrainingTypes";
+import useFetchTrainingTypes from "../hooks/trainingHooks/useFetchTrainingTypes";
 import {useSelector} from "react-redux";
 import MenuItem from "@mui/material/MenuItem";
 import { debounce } from "lodash"
-import useDebounce from "../hooks/useDebounce";
-import useFetchTrainings from "../hooks/useFetchTrainings";
+import useDebounce from "../hooks/trainingHooks/useDebounce";
+import useFetchTrainings from "../hooks/trainingHooks/useFetchTrainings";
 import {pageLimit} from "../utils/consts";
 
 const TrainingPage = () => {
@@ -34,11 +34,11 @@ const TrainingPage = () => {
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(pageLimit)
 
-    const { email } = useSelector(state => state.login)
+    const { accessToken } = useSelector(state => state.login)
 
     const {isLoading, data, error, isError}
         = useFetchTrainings(
-            ['queryAllTrainings', email, debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy,{ email })
+            ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy,{ accessToken })
 
     const renderTrainingTable = userRole => {
         if(userRole.toLowerCase() === 'servicer'){

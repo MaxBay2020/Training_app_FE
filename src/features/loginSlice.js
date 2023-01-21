@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit'
 
 const initialState = {
-    email: localStorage.getItem('userEmail') || '',
+    accessToken: localStorage.getItem('accessToken') || '',
 
 }
 
@@ -10,13 +10,13 @@ export const loginSlice = createSlice({
     initialState,
     reducers: {
         userLogin: (state, action) => {
-            const {email} = action.payload
-            state.email = email
-            localStorage.setItem('userEmail', email)
+            const { accessToken } = action.payload
+            state.accessToken = accessToken
+            localStorage.setItem('accessToken', accessToken)
         },
         userLogout: (state, _action) => {
-            state.email = ''
-            localStorage.removeItem('userEmail')
+            state.accessToken = ''
+            localStorage.removeItem('accessToken')
         }
 
     }

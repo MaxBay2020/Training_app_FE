@@ -13,13 +13,13 @@ import React from "react";
 
 const App = () => {
 
-    const { email } = useSelector(state => state.login)
+    const { accessToken } = useSelector(state => state.login)
 
   return (
       <Router>
           <Routes>
-              <Route path='/authentication' element={ email ? <Navigate to='/training' /> : <AuthenticationPage /> } />
-              <Route path='/training' element={ email ? <TrainingPage /> : <Navigate to='/authentication' /> } />
+              <Route path='/authentication' element={ accessToken ? <Navigate to='/training' /> : <AuthenticationPage /> } />
+              <Route path='/training' element={ accessToken ? <TrainingPage /> : <Navigate to='/authentication' /> } />
           </Routes>
       </Router>
   );

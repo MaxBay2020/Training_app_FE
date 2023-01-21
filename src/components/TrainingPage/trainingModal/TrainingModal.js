@@ -24,10 +24,10 @@ import Button from "@mui/material/Button";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
 import api from "../../../api/api";
-import useCreateTraining from "../../../hooks/useCreateTraining";
-import useFetchTrainingTypes from "../../../hooks/useFetchTrainingTypes";
+import useCreateTraining from "../../../hooks/trainingHooks/useCreateTraining";
+import useFetchTrainingTypes from "../../../hooks/trainingHooks/useFetchTrainingTypes";
 import {useSelector} from "react-redux";
-import useUpdateTraining from "../../../hooks/useUpdateTraining";
+import useUpdateTraining from "../../../hooks/trainingHooks/useUpdateTraining";
 
 const styles = {
     modalStyle: {
