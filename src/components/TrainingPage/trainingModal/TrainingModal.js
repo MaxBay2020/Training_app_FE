@@ -53,8 +53,8 @@ const theme = createTheme({
 
 const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
-    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(wordsLimit)
-    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(wordsLimit)
+    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(training ? wordsLimit - training?.trainingName.length : wordsLimit)
+    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(training ? wordsLimit - training?.trainingURL.length : wordsLimit)
 
     const [trainingName, setTrainingName] = useState(training?.trainingName || '')
     const [trainingType, setTrainingType] = useState(training?.trainingType || '')
@@ -62,14 +62,13 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const [endDate, setEndDate] = useState(training?.endDate || '')
     const [hoursCount, setHoursCount] = useState(training?.hoursCount || 1)
     const [trainingURL, setTrainingURL] = useState(training?.trainingURL || '')
-    const { email } = useSelector( state => state.login )
+
 
     const {isLoading, data: trainingTypes}
-        = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes', {})
+        = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes')
 
     const { mutate: addTraining } = useCreateTraining()
     const { mutate: updateTraining } = useUpdateTraining()
-
 
     const trainingNameHandler = e => {
         const input = e.target.value
@@ -119,7 +118,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const createTraining = () => {
         const newTraining = {
             trainingName,
-            email,
             trainingType,
             startDate,
             endDate,
@@ -141,7 +139,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         const updatedTraining = {
             trainingId: training.id,
             trainingName,
-            email,
             trainingType,
             startDate,
             endDate,

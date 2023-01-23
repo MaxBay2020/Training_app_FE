@@ -12,8 +12,8 @@ const useLogin = (queryIdentifier) => {
 
     const loginUser = async (reqBody) => {
         const res = await api.post('/auth/login', reqBody)
-        const { accessToken } = res.data
-        dispatch(userLogin({accessToken}))
+        const { accessToken, firstName } = res.data
+        dispatch(userLogin({accessToken, firstName}))
     }
 
     return useMutation(queryIdentifier, loginUser, {

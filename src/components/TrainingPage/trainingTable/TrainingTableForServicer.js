@@ -18,7 +18,7 @@ import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import TrainingModal from "../trainingModal/TrainingModal";
-import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModal";
+import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModal"
 
 const Row = ({training}) => {
 
@@ -62,7 +62,7 @@ const Row = ({training}) => {
 
     return (
         <>
-            <TableRow sx={{'& > *': {borderBottom: 'unset'}, backgroundColor: `${trainingStatus.toLowerCase() === 'withdrawn' ? 'rgba(100,100,100,.1)' : ''}`}}>
+            <TableRow hover sx={{'& > *': {borderBottom: 'unset'}, backgroundColor: `${trainingStatus.toLowerCase() === 'withdrawn' ? 'rgba(100,100,100,.1)' : ''}`}}>
                 <TableCell component="th" scope="row">
                     {trainingName}
                 </TableCell>

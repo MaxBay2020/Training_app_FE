@@ -7,7 +7,6 @@ import {
 import AuthenticationPage from "./pages/AuthenticationPage";
 import TrainingPage from "./pages/TrainingPage";
 import {useSelector} from "react-redux";
-import {ToastContainer} from "react-toastify";
 import React from "react";
 
 
@@ -18,8 +17,10 @@ const App = () => {
   return (
       <Router>
           <Routes>
-              <Route path='/authentication' element={ accessToken ? <Navigate to='/training' /> : <AuthenticationPage /> } />
-              <Route path='/training' element={ accessToken ? <TrainingPage /> : <Navigate to='/authentication' /> } />
+              <Route path='authentication' element={ accessToken ? <Navigate to='/training' /> : <AuthenticationPage /> } />
+              <Route path='training'>
+                  <Route index element={ accessToken ? <TrainingPage /> : <Navigate to='/authentication' /> } />
+              </Route>
           </Routes>
       </Router>
   );

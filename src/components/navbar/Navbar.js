@@ -39,7 +39,7 @@ const Navbar = () => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-    const { email } = useSelector(state => state.login)
+    const { name } = useSelector(state => state.login)
 
 
     const handleOpenNavMenu = (event) => {
@@ -121,7 +121,7 @@ const Navbar = () => {
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 {
-                                    email && <Avatar>{email[0].toUpperCase()}</Avatar>
+                                    name && <Avatar>{name[0].toUpperCase()}</Avatar>
                                 }
                             </IconButton>
                         </Tooltip>

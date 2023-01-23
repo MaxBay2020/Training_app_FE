@@ -5,13 +5,13 @@ import {useNavigate} from "react-router-dom";
 import {userLogout} from "../../features/loginSlice";
 
 
-const useFetchTrainingTypes = (queryIdentifier, url, reqBody) => {
+const useFetchTrainingTypes = (queryIdentifier, url) => {
     const { accessToken } = useSelector( state => state.login )
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const fetchData = async () => {
-        const res = await api.post(url, reqBody, {
+        const res = await api.get(url, {
             headers: {
                 authorization: `Bearer ${accessToken}`
             }

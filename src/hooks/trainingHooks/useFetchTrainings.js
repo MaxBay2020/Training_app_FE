@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 
 
-const useFetchTrainings = (queryIdentifier, page = 1, limit, searchKeyword, sortBy = 1, reqBody) => {
+const useFetchTrainings = (queryIdentifier, page = 1, limit, searchKeyword, sortBy = 1) => {
 
     const { accessToken } = useSelector( state => state.login )
     const dispatch = useDispatch()
@@ -18,7 +18,7 @@ const useFetchTrainings = (queryIdentifier, page = 1, limit, searchKeyword, sort
         `/training?page=${page}&limit=${limit}&sortBy=${sortBy}`
 
     const fetchData = async () => {
-        const res = await api.post(url, reqBody, {
+        const res = await api.get(url, {
             headers: {
                 authorization: `Bearer ${accessToken}`
             }

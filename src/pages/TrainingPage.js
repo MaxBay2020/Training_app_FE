@@ -34,20 +34,26 @@ const TrainingPage = () => {
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(pageLimit)
 
-    const { accessToken } = useSelector(state => state.login)
 
     const {isLoading, data, error, isError}
         = useFetchTrainings(
-            ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy,{ accessToken })
+            ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
 
     const renderTrainingTable = userRole => {
         if(userRole.toLowerCase() === 'servicer'){
             return <TrainingTableForServicer trainingList={data.trainingList} />
         }else if(userRole.toLowerCase() === 'admin'){
-            return <TrainingTableForAdmin />
+            return <TrainingTableForAdmin trainingList={data.trainingList} />
         }else if(userRole.toLowerCase() === 'approver'){
             return <TrainingTableForApprover />
         }
+    }
+
+    const renderAddTrainingButton = userRole => {
+        if(userRole.toLowerCase() === 'servicer'){
+            return <Grid item xs={4} md={2}><TrainingCreation /></Grid>
+        }
+        return <></>
     }
 
 
@@ -61,8 +67,10 @@ const TrainingPage = () => {
         <BasicLayout>
             <Container>
                 <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
-                    <Grid item xs={4} md={2}><TrainingCreation /></Grid>
-                    <Grid item xs={8} md={8}>
+                    {
+                        data && renderAddTrainingButton(data.userRole)
+                    }
+                    <Grid item xs={true} md={true}>
                         <TextField
                             id="outlined-basic"
                             label="Search"
