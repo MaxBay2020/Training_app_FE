@@ -12,7 +12,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import {Link} from "react-router-dom";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {userLogout} from "../../features/loginSlice";
+import {QueryClient} from "@tanstack/react-query";
 
 const pages = [
     {
@@ -41,6 +43,10 @@ const Navbar = () => {
 
     const { name } = useSelector(state => state.login)
 
+    const dispatch = useDispatch()
+
+    const queryClient = new QueryClient()
+
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -55,7 +61,11 @@ const Navbar = () => {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
-    };
+    }
+
+    const logoutUser = () => {
+        dispatch(userLogout())
+    }
 
     return (
         <AppBar position="static" sx={{marginBottom: '100px'}}>
@@ -150,6 +160,7 @@ const Navbar = () => {
                             ))}
                         </Menu>
                     </Box>
+                    <Box><button onClick={() => logoutUser()}>log out</button></Box>
                 </Toolbar>
             </Container>
         </AppBar>

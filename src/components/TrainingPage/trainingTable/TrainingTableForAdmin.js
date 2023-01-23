@@ -10,16 +10,23 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {useState} from "react";
 import moment from "moment";
-import TrainingModal from "../trainingModal/TrainingModal";
-import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModal"
 
 const Row = ({training}) => {
 
-    const {trainingName, trainingType, startDate, endDate, hoursCount, trainingStatus} = training
-    const [openTrainingFormModal, setOpenTrainingFormModal] = useState(false)
-    const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
+    const {
+        servicerId,
+        servicerName,
+        userEmail,
+        userFirstName,
+        userLastName,
+        trainingName,
+        trainingType,
+        startDate,
+        endDate,
+        hoursCount,
+        trainingStatus
+    } = training
 
     return (
         <>
@@ -30,9 +37,13 @@ const Row = ({training}) => {
                     backgroundColor: `${trainingStatus.toLowerCase() === 'withdrawn' ? 'rgba(100,100,100,.1)' : ''}`
                 }}
             >
-                <TableCell component="th" scope="row">
-                    {trainingName}
+                <TableCell component="th" scope="row" align="right">
+                    {servicerId}
                 </TableCell>
+                <TableCell align="right">{servicerName}</TableCell>
+                <TableCell align="right">{userEmail}</TableCell>
+                <TableCell align="right">{`${userFirstName} ${userLastName}`}</TableCell>
+                <TableCell align="right">{trainingName}</TableCell>
                 <TableCell align="right">{trainingType}</TableCell>
                 <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
                 <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
@@ -50,11 +61,15 @@ const TrainingTableForAdmin = ({trainingList}) => {
             <Table aria-label="collapsible table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Training Name</TableCell>
-                        <TableCell align="right">Training Type</TableCell>
-                        <TableCell align="right">Start Date</TableCell>
-                        <TableCell align="right">End Date</TableCell>
-                        <TableCell align="right">Hours</TableCell>
+                        <TableCell align="right" sx={{pr: '0px'}}>Servicer ID</TableCell>
+                        <TableCell align="right" sx={{pr: '0px'}}>Servicer Name</TableCell>
+                        <TableCell align="right" sx={{pr: '0px'}}>User Email</TableCell>
+                        <TableCell align="right" sx={{pr: '0px'}}>User Name</TableCell>
+                        <TableCell align="right" sx={{pr: '0px'}}>Training Name</TableCell>
+                        <TableCell align="right" sx={{pr: '0px'}}>Training Type</TableCell>
+                        <TableCell align="right" sx={{pr: '0px'}}>Start Date</TableCell>
+                        <TableCell align="right" sx={{pr: '0px'}}>End Date</TableCell>
+                        <TableCell align="right" sx={{pr: '0px'}}>Hours</TableCell>
                         <TableCell align="right">Training Status</TableCell>
                     </TableRow>
                 </TableHead>
