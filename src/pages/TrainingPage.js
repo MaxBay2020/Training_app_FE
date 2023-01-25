@@ -22,6 +22,7 @@ import { debounce } from "lodash"
 import useDebounce from "../hooks/trainingHooks/useDebounce";
 import useFetchTrainings from "../hooks/trainingHooks/useFetchTrainings";
 import {pageLimit} from "../utils/consts";
+import Box from "@mui/material/Box";
 
 const TrainingPage = () => {
 
@@ -45,7 +46,7 @@ const TrainingPage = () => {
         }else if(userRole.toLowerCase() === 'admin'){
             return <TrainingTableForAdmin trainingList={data.trainingList} />
         }else if(userRole.toLowerCase() === 'approver'){
-            return <TrainingTableForApprover />
+            return <TrainingTableForApprover trainingList={data.trainingList} />
         }
     }
 
@@ -98,12 +99,16 @@ const TrainingPage = () => {
                     </Grid>
                 </Grid>
 
-                { data && renderTrainingTable(data.userRole) }
+                <Box sx={{minHeight: '390px'}}>
+                    { data && renderTrainingTable(data.userRole) }
+                </Box>
+
 
                 {
                     data
                     &&
                     <Pagination
+                        sx={{mt: 2}}
                         count={data.totalPage}
                         page={page}
                         onChange={(_e, v) => setPage(v)}

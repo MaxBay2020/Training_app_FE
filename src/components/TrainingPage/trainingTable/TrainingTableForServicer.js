@@ -12,13 +12,14 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {useState} from "react";
 import moment from "moment";
-import {Grid} from "@mui/material";
+import {Grid, Tooltip} from "@mui/material";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import TrainingModal from "../trainingModal/TrainingModal";
 import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModal"
+import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
 
 const Row = ({training}) => {
 
@@ -35,11 +36,13 @@ const Row = ({training}) => {
                         {
                             isPending ?
                                 <IconButton onClick={() => setOpenTrainingFormModal(true)}>
-                                    <EditOutlinedIcon color='success' />
+                                    <Tooltip title="Edit" placement="top">
+                                        <EditOutlinedIcon color='success' />
+                                    </Tooltip>
                                 </IconButton>
                                 :
                                 <IconButton>
-                                    <EditOffOutlinedIcon color='default' />
+                                        <EditOffOutlinedIcon color='default' />
                                 </IconButton>
 
                         }
@@ -48,7 +51,9 @@ const Row = ({training}) => {
                         {
                             isPending ?
                                 <IconButton onClick={() => setOpenWithdrawModal(true)}>
-                                    <DeleteOutlineOutlinedIcon color='error' />
+                                    <Tooltip title="Withdraw" placement="top">
+                                        <DeleteOutlineOutlinedIcon color='error' />
+                                    </Tooltip>
                                 </IconButton>
                                 :
                                 <IconButton>
@@ -70,7 +75,7 @@ const Row = ({training}) => {
                 <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
                 <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
                 <TableCell align="right">{hoursCount}</TableCell>
-                <TableCell align="right">{trainingStatus}</TableCell>
+                { renderTableCellForTrainingStatus(trainingStatus) }
                 { renderActions(trainingStatus) }
             </TableRow>
 

@@ -14,7 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {userLogout} from "../../features/loginSlice";
-import {QueryClient} from "@tanstack/react-query";
+import {useQueryClient} from "@tanstack/react-query";
+import LightOrNightSwitch from "../lightOrNightSwitch/LightOrNightSwitch";
 
 const pages = [
     {
@@ -24,16 +25,8 @@ const pages = [
 ];
 const settings = [
     {
-        label: 'Profile',
-        link: '/profile'
-    },
-    {
         label: 'Training',
         link: '/training'
-    },
-    {
-        label: 'Logout',
-        link: '/logout'
     }
 ];
 
@@ -45,7 +38,7 @@ const Navbar = () => {
 
     const dispatch = useDispatch()
 
-    const queryClient = new QueryClient()
+    const queryClient = useQueryClient()
 
 
     const handleOpenNavMenu = (event) => {
@@ -65,6 +58,7 @@ const Navbar = () => {
 
     const logoutUser = () => {
         dispatch(userLogout())
+        queryClient.clear()
     }
 
     return (
@@ -115,6 +109,7 @@ const Navbar = () => {
                             }
                         </Menu>
                     </Box>
+
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
                             <Button
@@ -127,7 +122,7 @@ const Navbar = () => {
                         ))}
                     </Box>
 
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box sx={{ flexGrow: 0, mr: 2 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 {
@@ -151,16 +146,22 @@ const Navbar = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
+                            {
+                                settings.map((setting) => (
                                 <Link to={setting.link} key={setting.label}>
                                     <MenuItem onClick={handleCloseUserMenu}>
                                         <Typography textAlign="center">{setting.label}</Typography>
                                     </MenuItem>
                                 </Link>
-                            ))}
+                                ))
+                            }
+                            <MenuItem onClick={() => logoutUser()}>Logout</MenuItem>
                         </Menu>
                     </Box>
-                    <Box><button onClick={() => logoutUser()}>log out</button></Box>
+
+                    {/*<Box>*/}
+                    {/*    <LightOrNightSwitch />*/}
+                    {/*</Box>*/}
                 </Toolbar>
             </Container>
         </AppBar>

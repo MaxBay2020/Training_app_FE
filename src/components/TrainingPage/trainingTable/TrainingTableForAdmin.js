@@ -11,6 +11,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import moment from "moment";
+import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
 
 const Row = ({training}) => {
 
@@ -48,7 +49,7 @@ const Row = ({training}) => {
                 <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
                 <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
                 <TableCell align="right">{hoursCount}</TableCell>
-                <TableCell align="right">{trainingStatus}</TableCell>
+                { renderTableCellForTrainingStatus(trainingStatus) }
             </TableRow>
         </>
     );
