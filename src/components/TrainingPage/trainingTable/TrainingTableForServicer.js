@@ -20,22 +20,32 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import TrainingModal from "../trainingModal/TrainingModal";
 import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModal"
 import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
+import {useDispatch, useSelector} from "react-redux";
+import {setCurrentTraining, switchOpenModal} from "../../../features/trainingSlice";
 
 const Row = ({training}) => {
 
     const {trainingName, trainingType, startDate, endDate, hoursCount, trainingStatus} = training
-    const [openTrainingFormModal, setOpenTrainingFormModal] = useState(false)
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
+
+    const dispatch = useDispatch()
 
     const renderActions = (trainingStatus) => {
         const isPending = trainingStatus.toLowerCase() === 'pending'
+
+
+        const showUpdateTraining = () => {
+            dispatch(switchOpenModal())
+            dispatch(setCurrentTraining({ training }))
+        }
+
         return (<TableCell align="right">
             <Grid container alignItems='center' justifyContent='center' spacing={1}>
                 <Grid item>
 
                         {
                             isPending ?
-                                <IconButton onClick={() => setOpenTrainingFormModal(true)}>
+                                <IconButton onClick={() => showUpdateTraining()}>
                                     <Tooltip title="Edit" placement="top">
                                         <EditOutlinedIcon color='success' />
                                     </Tooltip>
@@ -65,6 +75,7 @@ const Row = ({training}) => {
         </TableCell>)
     }
 
+
     return (
         <>
             <TableRow hover sx={{'& > *': {borderBottom: 'unset'}, backgroundColor: `${trainingStatus.toLowerCase() === 'withdrawn' ? 'rgba(100,100,100,.1)' : ''}`}}>
@@ -79,13 +90,12 @@ const Row = ({training}) => {
                 { renderActions(trainingStatus) }
             </TableRow>
 
-            <TrainingModal
-                open={openTrainingFormModal}
-                setOpen={setOpenTrainingFormModal}
-                isCreating={false}
-                isUpdating={true}
-                training={training}
-            />
+            {/*<TrainingModal*/}
+            {/*    open={openModal}*/}
+            {/*    setOpen={() => dispatch(switchOpenModal())}*/}
+            {/*    isCreating={false}*/}
+            {/*    isUpdating={true}*/}
+            {/*/>*/}
 
             <TrainingWithdrawModal
                 open={openWithdrawModal}
@@ -98,27 +108,52 @@ const Row = ({training}) => {
 
 const TrainingTableForServicer = ({trainingList}) => {
 
+    const dispatch = useDispatch()
+    const { openModal, currentTraining } = useSelector(state => state.training)
+
+
     return (
-        <TableContainer component={Paper}>
-            <Table aria-label="collapsible table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Training Name</TableCell>
-                        <TableCell align="right">Training Type</TableCell>
-                        <TableCell align="right">Start Date</TableCell>
-                        <TableCell align="right">End Date</TableCell>
-                        <TableCell align="right">Hours</TableCell>
-                        <TableCell align="right">Training Status</TableCell>
-                        <TableCell align="center">Actions</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {trainingList.map((training, index) => (
-                        <Row key={index} training={training}/>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <>
+            {/*<TrainingModal*/}
+            {/*    open={openTrainingFormModal}*/}
+            {/*    setOpen={setOpenTrainingFormModal}*/}
+            {/*    isCreating={false}*/}
+            {/*    isUpdating={true}*/}
+            {/*    training={training}*/}
+            {/*/>*/}
+            {
+                currentTraining
+                &&
+                <TrainingModal
+                    open={openModal}
+                    setOpen={() => dispatch(switchOpenModal())}
+                    isCreating={false}
+                    isUpdating={true}
+                    training={currentTraining}
+                />
+            }
+
+            <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Training Name</TableCell>
+                            <TableCell align="right">Training Type</TableCell>
+                            <TableCell align="right">Start Date</TableCell>
+                            <TableCell align="right">End Date</TableCell>
+                            <TableCell align="right">Hours</TableCell>
+                            <TableCell align="right">Training Status</TableCell>
+                            <TableCell align="center">Actions</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {trainingList.map((training, index) => (
+                            <Row key={index} training={training}/>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </>
     );
 }
 

@@ -51,17 +51,14 @@ const TrainingTableForApprover = ({trainingList}) => {
     // TODO: bug need to be fixed
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = trainingList.map((training) => {
-                if(training.trainingStatus.toLowerCase() === 'pending'){
-                    return training.id
-                }
-            })
+            const newSelected = trainingList.map((training) => training.id)
 
             setTrainingsSelected(newSelected.filter( item => !!item))
             return;
         }
         setTrainingsSelected([])
     }
+
 
 
     const handleClick = (event, name, trainingStatus) => {
@@ -93,7 +90,11 @@ const TrainingTableForApprover = ({trainingList}) => {
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
-                <EnhancedTableToolbar numSelected={trainingsSelected.length} trainingsSelected={trainingsSelected} />
+                <EnhancedTableToolbar
+                    numSelected={trainingsSelected.length}
+                    trainingsSelected={trainingsSelected}
+                    setTrainingsSelected={setTrainingsSelected}
+                />
                 <TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
@@ -209,9 +210,9 @@ function EnhancedTableHead({ onSelectAllClick, numSelected, rowCount }) {
     )
 }
 
-function EnhancedTableToolbar({ numSelected, trainingsSelected }) {
+function EnhancedTableToolbar({ numSelected, trainingsSelected, setTrainingsSelected }) {
 
-    const { mutate: updateTrainingStatus } = useUpdateTrainingStatus()
+    const { mutate: updateTrainingStatus } = useUpdateTrainingStatus(setTrainingsSelected)
 
     const approveTrainings = () => {
         updateTrainingStatus({

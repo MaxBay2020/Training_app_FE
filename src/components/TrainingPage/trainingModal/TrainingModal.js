@@ -53,15 +53,15 @@ const theme = createTheme({
 
 const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
-    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(training ? wordsLimit - training?.trainingName.length : wordsLimit)
-    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(training ? wordsLimit - training?.trainingURL.length : wordsLimit)
+    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingName.length : wordsLimit)
+    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingURL.length : wordsLimit)
 
-    const [trainingName, setTrainingName] = useState(training?.trainingName || '')
-    const [trainingType, setTrainingType] = useState(training?.trainingType || '')
-    const [startDate, setStartDate] = useState(training?.startDate || '')
-    const [endDate, setEndDate] = useState(training?.endDate || '')
-    const [hoursCount, setHoursCount] = useState(training?.hoursCount || 1)
-    const [trainingURL, setTrainingURL] = useState(training?.trainingURL || '')
+    const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
+    const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
+    const [startDate, setStartDate] = useState(isUpdating ? training.startDate : '')
+    const [endDate, setEndDate] = useState(isUpdating ? training.endDate : '')
+    const [hoursCount, setHoursCount] = useState(isUpdating ? training.hoursCount : 1)
+    const [trainingURL, setTrainingURL] = useState(isUpdating ? training.trainingURL : '')
 
 
     const {isLoading, data: trainingTypes}
@@ -150,7 +150,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     }
 
     const renderCreateOrUpdateButton = () => {
-        return training ?
+        return isUpdating ?
             (<Button variant="contained" onClick={() => updateTrainingHandler()}>Update</Button>)
             :
             (<Button variant="contained" onClick={() => createTraining()}>Create</Button>)
@@ -160,10 +160,11 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         <ThemeProvider theme={theme}>
             <Modal
                 open={open}
-                onClose={() => setOpen(false)}
+                onClose={() => {setOpen(false)}}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
+
                 <Box sx={styles.modalStyle}>
                     <Grid
                         container

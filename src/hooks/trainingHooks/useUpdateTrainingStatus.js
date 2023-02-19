@@ -5,7 +5,7 @@ import api from "../../api/api";
 import {useDispatch, useSelector} from "react-redux"
 import {useNavigate} from "react-router-dom"
 
-const useUpdateTrainingStatus = () => {
+const useUpdateTrainingStatus = (setTrainingsSelected) => {
 
     const queryClient = useQueryClient()
     const { accessToken } = useSelector( state => state.login )
@@ -27,6 +27,7 @@ const useUpdateTrainingStatus = () => {
         onSuccess: () => {
             toast.success('Updated Successfully')
             queryClient.invalidateQueries(['queryAllTrainings'])
+            setTrainingsSelected([])
         },
         onError: (e) => {
             const statusCode = e.response.status
