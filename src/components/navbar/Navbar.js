@@ -13,7 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {userLogout} from "../../features/loginSlice";
+import {userLogout} from "../../features/userSlice";
 import {useQueryClient} from "@tanstack/react-query";
 import LightOrNightSwitch from "../lightOrNightSwitch/LightOrNightSwitch";
 
@@ -34,7 +34,7 @@ const Navbar = () => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-    const { name } = useSelector(state => state.login)
+    const { userName } = useSelector(state => state.user)
 
     const dispatch = useDispatch()
 
@@ -126,7 +126,7 @@ const Navbar = () => {
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 {
-                                    name && <Avatar>{name[0].toUpperCase()}</Avatar>
+                                    userName && <Avatar>{userName[0].toUpperCase()}</Avatar>
                                 }
                             </IconButton>
                         </Tooltip>

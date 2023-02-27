@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import {useState} from "react";
 import {ThemeProvider} from "@emotion/react";
 import {useDispatch} from "react-redux";
-import {userLogin} from "../../../features/loginSlice"
+import {userLogin} from "../../../features/userSlice"
 import { useNavigate } from 'react-router-dom'
 import useLogin from "../../../hooks/authHooks/useLogin";
 

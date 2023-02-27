@@ -12,7 +12,7 @@ import React from "react";
 
 const App = () => {
 
-    const { accessToken } = useSelector(state => state.login)
+    const { accessToken } = useSelector(state => state.user)
 
   return (
       <Router>

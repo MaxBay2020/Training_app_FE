@@ -23,6 +23,7 @@ import useDebounce from "../hooks/trainingHooks/useDebounce";
 import useFetchTrainings from "../hooks/trainingHooks/useFetchTrainings";
 import {pageLimit} from "../utils/consts";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 const TrainingPage = () => {
 
@@ -34,6 +35,12 @@ const TrainingPage = () => {
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(pageLimit)
+
+    const {
+        userName,
+        servicerId,
+        servicerMasterName,
+    } = useSelector(state => state.user)
 
 
     const {isLoading, data, error, isError}
@@ -58,15 +65,19 @@ const TrainingPage = () => {
     }
 
 
-
     const searchHandler = e => {
         setSearchKeyword(e.target.value)
     }
 
-
     return (
         <BasicLayout>
             <Container>
+                <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
+                    <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
+                    <Grid item><Typography variant='subtitle'>{servicerId && `Servicer ID:    ${servicerId}`}</Typography></Grid>
+                    <Grid item><Typography variant='subtitle'>{servicerMasterName && `Servicer Name:    ${servicerMasterName}`}</Typography></Grid>
+                </Grid>
+
                 <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
                     {
                         data && renderAddTrainingButton(data.userRole)
@@ -114,6 +125,12 @@ const TrainingPage = () => {
                         onChange={(_e, v) => setPage(v)}
                     />
                 }
+
+                <Grid container direction='column' alignItems='flex-end' sx={{mt: 2}} spacing={1}>
+                    <Grid item><Typography variant='subtitle'>Total Approved Trainings for User:  1</Typography></Grid>
+                    <Grid item><Typography variant='subtitle'>Total Approved Trainings for Servicer:  3</Typography></Grid>
+                    <Grid item><Typography variant='subtitle'>Total Annual Training Credit for Servicer for fiscal year till date (Max 1%): 0.7%</Typography></Grid>
+                </Grid>
             </Container>
         </BasicLayout>
 

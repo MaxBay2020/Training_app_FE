@@ -2,11 +2,11 @@ import {useQuery} from "@tanstack/react-query";
 import api from "../../api/api";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {userLogout} from "../../features/loginSlice";
+import {userLogout} from "../../features/userSlice";
 
 
 const useFetchTrainingTypes = (queryIdentifier, url) => {
-    const { accessToken } = useSelector( state => state.login )
+    const { accessToken } = useSelector( state => state.user )
     const dispatch = useDispatch()
     const navigate = useNavigate()
 

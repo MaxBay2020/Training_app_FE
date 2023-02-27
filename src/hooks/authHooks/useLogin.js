@@ -3,7 +3,7 @@ import {useMutation} from "@tanstack/react-query"
 import {toast} from "react-toastify"
 import { useNavigate } from 'react-router-dom'
 import {useDispatch} from "react-redux";
-import {userLogin} from "../../features/loginSlice";
+import {userLogin} from "../../features/userSlice";
 
 
 const useLogin = (queryIdentifier) => {
@@ -12,8 +12,18 @@ const useLogin = (queryIdentifier) => {
 
     const loginUser = async (reqBody) => {
         const res = await api.post('/auth/login', reqBody)
-        const { accessToken, firstName } = res.data
-        dispatch(userLogin({accessToken, firstName}))
+        const {
+            accessToken,
+            userName,
+            servicerId,
+            servicerMasterName
+        } = res.data
+        dispatch(userLogin({
+            accessToken,
+            userName,
+            servicerId,
+            servicerMasterName
+        }))
     }
 
     return useMutation(queryIdentifier, loginUser, {

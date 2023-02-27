@@ -28,7 +28,7 @@ const TrainingWithdrawModal = ({open, setOpen, training}) => {
     const { trainingName } = training
 
     const [trainingNameTyped, setTrainingNameTyped] = useState('')
-    const { email } = useSelector( state => state.login )
+    const { email } = useSelector( state => state.user )
 
     const { mutate: withdrawTraining } = useWithdrawTraining()
 

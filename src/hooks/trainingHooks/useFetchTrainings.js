@@ -1,14 +1,14 @@
 import {useQuery} from "@tanstack/react-query";
 import api from "../../api/api";
 import {useDispatch, useSelector} from "react-redux";
-import {userLogout} from "../../features/loginSlice";
+import {userLogout} from "../../features/userSlice";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 
 
 const useFetchTrainings = (queryIdentifier, page = 1, limit, searchKeyword, sortBy = 1) => {
 
-    const { accessToken } = useSelector( state => state.login )
+    const { accessToken } = useSelector( state => state.user )
     const dispatch = useDispatch()
     const navigate = useNavigate()
 

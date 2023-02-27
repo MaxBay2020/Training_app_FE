@@ -3,14 +3,14 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useDispatch, useSelector} from "react-redux";
 import { toast } from 'react-toastify'
 import {useNavigate} from "react-router-dom";
-import {userLogout} from "../../features/loginSlice";
+import {userLogout} from "../../features/userSlice";
 
 
 
 const useWithdrawTraining = () => {
 
     const queryClient = useQueryClient()
-    const { accessToken } = useSelector( state => state.login )
+    const { accessToken } = useSelector( state => state.user )
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
