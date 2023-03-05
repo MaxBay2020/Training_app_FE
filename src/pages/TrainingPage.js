@@ -24,6 +24,7 @@ import useFetchTrainings from "../hooks/trainingHooks/useFetchTrainings";
 import {pageLimit} from "../utils/consts";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import useFetchTrainingCredits from "../hooks/trainingHooks/useFetchTrainingCredits";
 
 const TrainingPage = () => {
 
@@ -43,6 +44,8 @@ const TrainingPage = () => {
     } = useSelector(state => state.user)
 
 
+    const { data: trainingCredits } = useFetchTrainingCredits(['queryTrainingCredits'])
+
     const {isLoading, data, error, isError}
         = useFetchTrainings(
             ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
@@ -54,6 +57,29 @@ const TrainingPage = () => {
             return <TrainingTableForAdmin trainingList={data.trainingList} />
         }else if(userRole.toLowerCase() === 'approver'){
             return <TrainingTableForApprover trainingList={data.trainingList} />
+        }
+    }
+
+    const renderTrainingCredits = userRole => {
+        if(userRole.toLowerCase() === 'servicer'){
+            return (
+                <Grid container direction='column' alignItems='flex-end' sx={{mt: 2}} spacing={1}>
+                    <Grid item><Typography variant='subtitle'>Total Approved Trainings for User:  {trainingCredits?.approvedTrainingCount}</Typography></Grid>
+                    <Grid item><Typography variant='subtitle'>Total Approved Trainings for Servicer:  {trainingCredits?.totalApprovedTrainingCount}</Typography></Grid>
+                    <Grid item><Typography variant='subtitle'>Total Annual Training Credit for Servicer for fiscal year till date (Max 1%): {trainingCredits?.scorePercentage}</Typography></Grid>
+                </Grid>
+            )
+        }
+    }
+
+    const renderUserInfo = userRole => {
+        if(userRole.toLowerCase() === 'servicer'){
+            return (
+               <>
+                   <Grid item><Typography variant='subtitle'>{servicerId && `Servicer ID:    ${servicerId}`}</Typography></Grid>
+                   <Grid item><Typography variant='subtitle'>{servicerMasterName && `Servicer Name:    ${servicerMasterName}`}</Typography></Grid>
+               </>
+            )
         }
     }
 
@@ -74,8 +100,7 @@ const TrainingPage = () => {
             <Container>
                 <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
                     <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
-                    <Grid item><Typography variant='subtitle'>{servicerId && `Servicer ID:    ${servicerId}`}</Typography></Grid>
-                    <Grid item><Typography variant='subtitle'>{servicerMasterName && `Servicer Name:    ${servicerMasterName}`}</Typography></Grid>
+                    { data && renderUserInfo(data.userRole) }
                 </Grid>
 
                 <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
@@ -126,11 +151,7 @@ const TrainingPage = () => {
                     />
                 }
 
-                <Grid container direction='column' alignItems='flex-end' sx={{mt: 2}} spacing={1}>
-                    <Grid item><Typography variant='subtitle'>Total Approved Trainings for User:  1</Typography></Grid>
-                    <Grid item><Typography variant='subtitle'>Total Approved Trainings for Servicer:  3</Typography></Grid>
-                    <Grid item><Typography variant='subtitle'>Total Annual Training Credit for Servicer for fiscal year till date (Max 1%): 0.7%</Typography></Grid>
-                </Grid>
+                { data && renderTrainingCredits(data.userRole)}
             </Container>
         </BasicLayout>
 
