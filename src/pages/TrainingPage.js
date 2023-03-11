@@ -48,7 +48,7 @@ const TrainingPage = () => {
 
     const {isLoading, data, error, isError}
         = useFetchTrainings(
-            ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
+        ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
 
     const renderTrainingTable = userRole => {
         if(userRole.toLowerCase() === 'servicer'){
@@ -75,10 +75,10 @@ const TrainingPage = () => {
     const renderUserInfo = userRole => {
         if(userRole.toLowerCase() === 'servicer'){
             return (
-               <>
-                   <Grid item><Typography variant='subtitle'>{servicerId && `Servicer ID:    ${servicerId}`}</Typography></Grid>
-                   <Grid item><Typography variant='subtitle'>{servicerMasterName && `Servicer Name:    ${servicerMasterName}`}</Typography></Grid>
-               </>
+                <>
+                    <Grid item><Typography variant='subtitle'>{servicerId && `Servicer ID:    ${servicerId}`}</Typography></Grid>
+                    <Grid item><Typography variant='subtitle'>{servicerMasterName && `Servicer Name:    ${servicerMasterName}`}</Typography></Grid>
+                </>
             )
         }
     }
@@ -130,6 +130,10 @@ const TrainingPage = () => {
                             >
                                 <MenuItem value={1}>Latest Created</MenuItem>
                                 <MenuItem value={2}>Training Name</MenuItem>
+                                <MenuItem value={3}>Training Status</MenuItem>
+                                <MenuItem value={4}>Training Type</MenuItem>
+                                <MenuItem value={5}>Latest Started</MenuItem>
+                                <MenuItem value={6}>Latest Ended</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
