@@ -16,25 +16,47 @@ import {useDispatch, useSelector} from "react-redux";
 import {userLogout} from "../../features/userSlice";
 import {useQueryClient} from "@tanstack/react-query";
 import LightOrNightSwitch from "../lightOrNightSwitch/LightOrNightSwitch";
+import {UserRole} from "../../utils/consts";
 
-const pages = [
+const pagesForServicer = [
     {
         label: 'Training',
         link: '/training'
     }
-];
-const settings = [
+]
+
+const pagesForApprover = [
     {
         label: 'Training',
         link: '/training'
+    },
+    {
+        label: 'Credit',
+        link: '/credit'
     }
-];
+]
+
+const pagesForAdmin = [
+    {
+        label: 'Training',
+        link: '/training'
+    },
+    {
+        label: 'Credit',
+        link: '/credit'
+    },
+    {
+        label: 'Admin',
+        link: '/admin'
+    },
+]
+
 
 const Navbar = () => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-    const { userName } = useSelector(state => state.user)
+    const { userName, userRole } = useSelector(state => state.user)
 
     const dispatch = useDispatch()
 
@@ -59,6 +81,19 @@ const Navbar = () => {
     const logoutUser = () => {
         dispatch(userLogout())
         queryClient.clear()
+    }
+
+
+    const renderAppBarMenu = userRole => {
+        if(userRole === UserRole.ADMIN){
+            return pagesForAdmin
+        }else if(userRole === UserRole.APPROVER){
+            return pagesForApprover
+        }else if(userRole === UserRole.SERVICER){
+            return pagesForServicer
+        }else{
+            return []
+        }
     }
 
     return (
@@ -99,7 +134,7 @@ const Navbar = () => {
                             }}
                         >
                             {
-                                pages.map((page) => (
+                                renderAppBarMenu(userRole).map((page) => (
                                     <Link to={page.link} key={page.label}>
                                         <MenuItem>
                                             <Typography textAlign="center">{page.label}</Typography>
@@ -111,15 +146,17 @@ const Navbar = () => {
                     </Box>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page.label}
-                                onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
-                                <Link to={page.link}>{page.label}</Link>
-                            </Button>
-                        ))}
+                        {
+                            renderAppBarMenu(userRole).map((page) => (
+                                <Button
+                                    key={page.label}
+                                    onClick={handleCloseNavMenu}
+                                    sx={{ my: 2, color: 'white', display: 'block' }}
+                                >
+                                    <Link to={page.link}>{page.label}</Link>
+                                </Button>
+                            ))
+                        }
                     </Box>
 
                     <Box sx={{ flexGrow: 0, mr: 2 }}>
@@ -147,10 +184,10 @@ const Navbar = () => {
                             onClose={handleCloseUserMenu}
                         >
                             {
-                                settings.map((setting) => (
-                                <Link to={setting.link} key={setting.label}>
+                                renderAppBarMenu(userRole).map((menu) => (
+                                <Link to={menu.link} key={menu.label}>
                                     <MenuItem onClick={handleCloseUserMenu}>
-                                        <Typography textAlign="center">{setting.label}</Typography>
+                                        <Typography textAlign="center">{menu.label}</Typography>
                                     </MenuItem>
                                 </Link>
                                 ))

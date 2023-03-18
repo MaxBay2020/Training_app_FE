@@ -7,3 +7,11 @@ export const ApproveOrReject = {
     PENDING: 'PENDING',
     WITHDRAWN: 'WITHDRAWN',
 }
+
+
+export const UserRole = {
+    APPROVER: 'APPROVER',
+    ADMIN: 'ADMIN',
+    SERVICER: 'SERVICER'
+}
+

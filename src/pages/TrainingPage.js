@@ -21,7 +21,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { debounce } from "lodash"
 import useDebounce from "../hooks/trainingHooks/useDebounce";
 import useFetchTrainings from "../hooks/trainingHooks/useFetchTrainings";
-import {pageLimit} from "../utils/consts";
+import {pageLimit, UserRole} from "../utils/consts";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import useFetchTrainingCredits from "../hooks/trainingHooks/useFetchTrainingCredits";
@@ -39,6 +39,7 @@ const TrainingPage = () => {
 
     const {
         userName,
+        userRole,
         servicerId,
         servicerMasterName,
     } = useSelector(state => state.user)
@@ -51,11 +52,11 @@ const TrainingPage = () => {
             ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
 
     const renderTrainingTable = userRole => {
-        if(userRole.toLowerCase() === 'servicer'){
+        if(userRole.toUpperCase() === UserRole.SERVICER){
             return <TrainingTableForServicer trainingList={data.trainingList} />
-        }else if(userRole.toLowerCase() === 'admin'){
+        }else if(userRole.toUpperCase() === UserRole.ADMIN){
             return <TrainingTableForAdmin trainingList={data.trainingList} />
-        }else if(userRole.toLowerCase() === 'approver'){
+        }else if(userRole.toUpperCase() === UserRole.APPROVER){
             return <TrainingTableForApprover trainingList={data.trainingList} />
         }
     }
@@ -100,6 +101,7 @@ const TrainingPage = () => {
             <Container>
                 <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
                     <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
+                    <Grid item><Typography variant='subtitle'>{`User Role:   ${userRole}`}</Typography></Grid>
                     { data && renderUserInfo(data.userRole) }
                 </Grid>
 

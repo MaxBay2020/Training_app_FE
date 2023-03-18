@@ -8,6 +8,7 @@ import AuthenticationPage from "./pages/AuthenticationPage";
 import TrainingPage from "./pages/TrainingPage";
 import {useSelector} from "react-redux";
 import React from "react";
+import CreditPage from "./pages/CreditPage";
 
 
 const App = () => {
@@ -20,6 +21,9 @@ const App = () => {
               <Route path='authentication' element={ accessToken ? <Navigate to='/training' /> : <AuthenticationPage /> } />
               <Route path='training'>
                   <Route index element={ accessToken ? <TrainingPage /> : <Navigate to='/authentication' /> } />
+              </Route>
+              <Route path='credit'>
+                  <Route index element={ accessToken ? <CreditPage /> : <Navigate to='/authentication' /> } />
               </Route>
           </Routes>
       </Router>

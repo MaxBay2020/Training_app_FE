@@ -63,8 +63,8 @@ const TrainingTableForApprover = ({trainingList}) => {
 
     const handleClick = (event, name, trainingStatus) => {
 
-        if(trainingStatus.toLowerCase() !== 'pending')
-            return
+        // if(trainingStatus.toLowerCase() !== 'pending')
+        //     return
 
         const selectedIndex = trainingsSelected.indexOf(name);
         let newSelected = [];
@@ -139,7 +139,7 @@ const TrainingTableForApprover = ({trainingList}) => {
                                                 <Checkbox
                                                     color="primary"
                                                     checked={isItemSelected}
-                                                    disabled={trainingStatus.toLowerCase() !== 'pending'}
+                                                    // disabled={trainingStatus.toLowerCase() !== 'pending'}
                                                     inputProps={{
                                                         'aria-labelledby': labelId,
                                                     }}

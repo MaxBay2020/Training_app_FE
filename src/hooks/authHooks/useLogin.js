@@ -14,6 +14,7 @@ const useLogin = (queryIdentifier) => {
         const res = await api.post('/auth/login', reqBody)
         const {
             accessToken,
+            userRole,
             userName,
             servicerId,
             servicerMasterName
@@ -21,6 +22,7 @@ const useLogin = (queryIdentifier) => {
         dispatch(userLogin({
             accessToken,
             userName,
+            userRole,
             servicerId,
             servicerMasterName
         }))
