@@ -24,10 +24,10 @@ import Button from "@mui/material/Button";
 import {useMutation} from "@tanstack/react-query";
 import axios from "axios";
 import api from "../../../api/api";
-import useCreateTraining from "../../../hooks/useCreateTraining";
-import useFetchData from "../../../hooks/useFetchData";
+import useCreateTraining from "../../../hooks/trainingHooks/useCreateTraining";
+import useFetchTrainingTypes from "../../../hooks/trainingHooks/useFetchTrainingTypes";
 import {useSelector} from "react-redux";
-import useUpdateTraining from "../../../hooks/useUpdateTraining";
+import useUpdateTraining from "../../../hooks/trainingHooks/useUpdateTraining";
 
 const styles = {
     modalStyle: {
@@ -53,23 +53,22 @@ const theme = createTheme({
 
 const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
-    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(wordsLimit)
-    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(wordsLimit)
+    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingName.length : wordsLimit)
+    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingURL.length : wordsLimit)
 
-    const [trainingName, setTrainingName] = useState(training?.trainingName || '')
-    const [trainingType, setTrainingType] = useState(training?.trainingType || '')
-    const [startDate, setStartDate] = useState(training?.startDate || '')
-    const [endDate, setEndDate] = useState(training?.endDate || '')
-    const [hoursCount, setHoursCount] = useState(training?.hoursCount || 1)
-    const [trainingURL, setTrainingURL] = useState(training?.trainingURL || '')
-    const { email } = useSelector( state => state.login )
+    const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
+    const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
+    const [startDate, setStartDate] = useState(isUpdating ? training.startDate : '')
+    const [endDate, setEndDate] = useState(isUpdating ? training.endDate : '')
+    const [hoursCount, setHoursCount] = useState(isUpdating ? training.hoursCount : 1)
+    const [trainingURL, setTrainingURL] = useState(isUpdating ? training.trainingURL : '')
+
 
     const {isLoading, data: trainingTypes}
-        = useFetchData(['queryAllTrainingTypes'], '/training/trainingTypes', {})
+        = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes')
 
     const { mutate: addTraining } = useCreateTraining()
     const { mutate: updateTraining } = useUpdateTraining()
-
 
     const trainingNameHandler = e => {
         const input = e.target.value
@@ -119,7 +118,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const createTraining = () => {
         const newTraining = {
             trainingName,
-            email,
             trainingType,
             startDate,
             endDate,
@@ -141,7 +139,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         const updatedTraining = {
             trainingId: training.id,
             trainingName,
-            email,
             trainingType,
             startDate,
             endDate,
@@ -153,7 +150,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     }
 
     const renderCreateOrUpdateButton = () => {
-        return training ?
+        return isUpdating ?
             (<Button variant="contained" onClick={() => updateTrainingHandler()}>Update</Button>)
             :
             (<Button variant="contained" onClick={() => createTraining()}>Create</Button>)
@@ -163,10 +160,11 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         <ThemeProvider theme={theme}>
             <Modal
                 open={open}
-                onClose={() => setOpen(false)}
+                onClose={() => {setOpen(false)}}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
+
                 <Box sx={styles.modalStyle}>
                     <Grid
                         container
