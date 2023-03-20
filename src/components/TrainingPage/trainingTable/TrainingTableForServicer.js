@@ -9,65 +9,50 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import {useState} from "react";
-import useFetchData from "../../../hooks/useFetchData";
 import moment from "moment";
-import {Grid} from "@mui/material";
+import {Grid, Tooltip} from "@mui/material";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import TrainingModal from "../trainingModal/TrainingModal";
-import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModal";
-
-const createData = (trainingName, trainingType, startDate, endDate, trainingStatus, hoursCount, points = 0) => {
-    return {
-        trainingName,
-        trainingType,
-        startDate,
-        endDate,
-        trainingStatus,
-        hoursCount,
-        points,
-        serviceMaster: [
-            {
-                date: '2020-01-05',
-                customerId: '11091700',
-                amount: 3,
-            },
-            {
-                date: '2020-01-02',
-                customerId: 'Anonymous',
-                amount: 1,
-            },
-        ],
-    };
-}
+import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModal"
+import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
+import {useDispatch, useSelector} from "react-redux";
+import {setCurrentTraining, switchOpenModal} from "../../../features/trainingSlice";
 
 const Row = ({training}) => {
 
     const {trainingName, trainingType, startDate, endDate, hoursCount, trainingStatus} = training
-    const [openTrainingFormModal, setOpenTrainingFormModal] = useState(false)
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
+
+    const dispatch = useDispatch()
 
     const renderActions = (trainingStatus) => {
         const isPending = trainingStatus.toLowerCase() === 'pending'
+
+
+        const showUpdateTraining = () => {
+            dispatch(switchOpenModal())
+            dispatch(setCurrentTraining({ training }))
+        }
+
         return (<TableCell align="right">
             <Grid container alignItems='center' justifyContent='center' spacing={1}>
                 <Grid item>
 
                         {
                             isPending ?
-                                <IconButton onClick={() => setOpenTrainingFormModal(true)}>
-                                    <EditOutlinedIcon color='success' />
+                                <IconButton onClick={() => showUpdateTraining()}>
+                                    <Tooltip title="Edit" placement="top">
+                                        <EditOutlinedIcon color='success' />
+                                    </Tooltip>
                                 </IconButton>
                                 :
                                 <IconButton>
-                                    <EditOffOutlinedIcon color='default' />
+                                        <EditOffOutlinedIcon color='default' />
                                 </IconButton>
 
                         }
@@ -76,7 +61,9 @@ const Row = ({training}) => {
                         {
                             isPending ?
                                 <IconButton onClick={() => setOpenWithdrawModal(true)}>
-                                    <DeleteOutlineOutlinedIcon color='error' />
+                                    <Tooltip title="Withdraw" placement="top">
+                                        <DeleteOutlineOutlinedIcon color='error' />
+                                    </Tooltip>
                                 </IconButton>
                                 :
                                 <IconButton>
@@ -88,9 +75,10 @@ const Row = ({training}) => {
         </TableCell>)
     }
 
+
     return (
         <>
-            <TableRow sx={{'& > *': {borderBottom: 'unset'}, backgroundColor: `${trainingStatus.toLowerCase() === 'withdrawn' ? 'rgba(100,100,100,.1)' : ''}`}}>
+            <TableRow hover sx={{'& > *': {borderBottom: 'unset'}, backgroundColor: `${trainingStatus.toLowerCase() === 'withdrawn' ? 'rgba(100,100,100,.1)' : ''}`}}>
                 <TableCell component="th" scope="row">
                     {trainingName}
                 </TableCell>
@@ -98,17 +86,16 @@ const Row = ({training}) => {
                 <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
                 <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
                 <TableCell align="right">{hoursCount}</TableCell>
-                <TableCell align="right">{trainingStatus}</TableCell>
+                { renderTableCellForTrainingStatus(trainingStatus) }
                 { renderActions(trainingStatus) }
             </TableRow>
 
-            <TrainingModal
-                open={openTrainingFormModal}
-                setOpen={setOpenTrainingFormModal}
-                isCreating={false}
-                isUpdating={true}
-                training={training}
-            />
+            {/*<TrainingModal*/}
+            {/*    open={openModal}*/}
+            {/*    setOpen={() => dispatch(switchOpenModal())}*/}
+            {/*    isCreating={false}*/}
+            {/*    isUpdating={true}*/}
+            {/*/>*/}
 
             <TrainingWithdrawModal
                 open={openWithdrawModal}
@@ -121,28 +108,52 @@ const Row = ({training}) => {
 
 const TrainingTableForServicer = ({trainingList}) => {
 
+    const dispatch = useDispatch()
+    const { openModal, currentTraining } = useSelector(state => state.training)
+
 
     return (
-        <TableContainer component={Paper}>
-            <Table aria-label="collapsible table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Training Name</TableCell>
-                        <TableCell align="right">Training Type</TableCell>
-                        <TableCell align="right">Start Date</TableCell>
-                        <TableCell align="right">End Date</TableCell>
-                        <TableCell align="right">Hours</TableCell>
-                        <TableCell align="right">Training Status</TableCell>
-                        <TableCell align="center">Actions</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {trainingList.map((training, index) => (
-                        <Row key={index} training={training}/>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <>
+            {/*<TrainingModal*/}
+            {/*    open={openTrainingFormModal}*/}
+            {/*    setOpen={setOpenTrainingFormModal}*/}
+            {/*    isCreating={false}*/}
+            {/*    isUpdating={true}*/}
+            {/*    training={training}*/}
+            {/*/>*/}
+            {
+                currentTraining
+                &&
+                <TrainingModal
+                    open={openModal}
+                    setOpen={() => dispatch(switchOpenModal())}
+                    isCreating={false}
+                    isUpdating={true}
+                    training={currentTraining}
+                />
+            }
+
+            <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Training Name</TableCell>
+                            <TableCell align="right">Training Type</TableCell>
+                            <TableCell align="right">Start Date</TableCell>
+                            <TableCell align="right">End Date</TableCell>
+                            <TableCell align="right">Hours</TableCell>
+                            <TableCell align="right">Training Status</TableCell>
+                            <TableCell align="center">Actions</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {trainingList.map((training, index) => (
+                            <Row key={index} training={training}/>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </>
     );
 }
 

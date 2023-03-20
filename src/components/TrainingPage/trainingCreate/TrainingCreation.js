@@ -10,8 +10,8 @@ const TrainingCreation = () => {
             <Button
                 variant="contained"
                 disableElevation
-                sx={{marginBottom: 3}}
                 onClick={() => setOpen(true)}
+                sx={{width: '100%'}}
             >
                 Add Training
             </Button>

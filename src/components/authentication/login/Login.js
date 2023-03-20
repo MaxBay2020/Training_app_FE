@@ -4,10 +4,11 @@ import IconButton from "@mui/material/IconButton";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import {useState} from "react";
-import Box from "@mui/material/Box";
 import {ThemeProvider} from "@emotion/react";
 import {useDispatch} from "react-redux";
-import {userLogin} from "../../../features/loginSlice";
+import {userLogin} from "../../../features/userSlice"
+import { useNavigate } from 'react-router-dom'
+import useLogin from "../../../hooks/authHooks/useLogin";
 
 // change default theme by createTheme() method
 // equals to using css
@@ -30,12 +31,13 @@ const Login = ({setShowRegister}) => {
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const { mutate: loginUser } = useLogin(['login'])
 
     const login = () => {
-        // TODO: call API
-        dispatch(userLogin({
-            email: 'jane.doe@acme.com'
-        }))
+        loginUser({ email, password })
+        // navigate('/training')
     }
 
     // html code
@@ -57,6 +59,7 @@ const Login = ({setShowRegister}) => {
                         id="outlined-basic"
                         label="Email"
                         variant="outlined"
+                        value={email}
                         onChange={e=>setEmail(e.target.value)}
                         fullWidth
                     />

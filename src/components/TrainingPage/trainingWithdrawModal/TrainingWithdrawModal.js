@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import {useState} from "react";
 import {useSelector} from "react-redux";
-import useWithdrawTraining from "../../../hooks/useWithdrawTraining";
+import useWithdrawTraining from "../../../hooks/trainingHooks/useWithdrawTraining";
 
 
 const styles = {
@@ -28,7 +28,7 @@ const TrainingWithdrawModal = ({open, setOpen, training}) => {
     const { trainingName } = training
 
     const [trainingNameTyped, setTrainingNameTyped] = useState('')
-    const { email } = useSelector( state => state.login )
+    const { email } = useSelector( state => state.user )
 
     const { mutate: withdrawTraining } = useWithdrawTraining()
 
@@ -73,10 +73,10 @@ const TrainingWithdrawModal = ({open, setOpen, training}) => {
                         <Grid item>
                             <FormControl sx={{ width: '100%' }} variant="outlined" size="small">
                                 <OutlinedInput
-                                    id="outlined-adornment-weight"
-                                    aria-describedby="outlined-weight-helper-text"
+                                    id="outlined-adornment-withdraw-notice"
+                                    aria-describedby="outlined-withdraw-notice-helper-text"
                                     inputProps={{
-                                        'aria-label': 'weight',
+                                        'aria-label': 'notice',
                                     }}
                                     onChange={ e => setTrainingNameTyped(e.target.value)}
                                 />

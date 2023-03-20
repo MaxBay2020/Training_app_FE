@@ -9,6 +9,9 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
+import {
+    Experimental_CssVarsProvider as CssVarsProvider,
+} from '@mui/material/styles'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -16,24 +19,27 @@ const reactQueryClient = new QueryClient()
 
 root.render(
   <React.StrictMode>
-      <QueryClientProvider client={reactQueryClient}>
-          <ReduxProvider store={store}>
-              <App />
-          </ReduxProvider>
-          <ToastContainer
-              position="bottom-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-          />
-          <ReactQueryDevtools initialOpen={false} position='bottom-right' />
-      </QueryClientProvider>
+      <CssVarsProvider>
+          <QueryClientProvider client={reactQueryClient}>
+              <ReduxProvider store={store}>
+                  <App />
+              </ReduxProvider>
+              <ToastContainer
+                  position="bottom-right"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="light"
+              />
+              {/*<ReactQueryDevtools initialOpen={false} position='bottom-right' />*/}
+          </QueryClientProvider>
+      </CssVarsProvider>
+
   </React.StrictMode>
 );
 
