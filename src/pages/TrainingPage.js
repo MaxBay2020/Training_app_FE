@@ -21,7 +21,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { debounce } from "lodash"
 import useDebounce from "../hooks/trainingHooks/useDebounce";
 import useFetchTrainings from "../hooks/trainingHooks/useFetchTrainings";
-import {pageLimit, UserRole} from "../utils/consts";
+import {pageLimit, sortingSystem, UserRole} from "../utils/consts";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import useFetchTrainingCredits from "../hooks/trainingHooks/useFetchTrainingCredits";
@@ -30,7 +30,7 @@ const TrainingPage = () => {
 
     // 1 - sort by training created time
     // 2 - sort by training name
-    const [sortBy, setSortBy] = useState(1)
+    const [sortBy, setSortBy] = useState(sortingSystem.trainingPage.defaultSortValue)
     const [searchKeyword, setSearchKeyword] = useState('')
     const debouncedSearchKeyword = useDebounce(searchKeyword, 500)
 
@@ -130,8 +130,9 @@ const TrainingPage = () => {
                                 label="sortBy"
                                 onChange={e => setSortBy(e.target.value)}
                             >
-                                <MenuItem value={1}>Latest Created</MenuItem>
-                                <MenuItem value={2}>Training Name</MenuItem>
+                                {
+                                    sortingSystem.trainingPage.trainingPageSortBy.map(sort => <MenuItem value={sort.value}>{sort.label}</MenuItem>)
+                                }
                             </Select>
                         </FormControl>
                     </Grid>

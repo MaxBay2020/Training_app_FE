@@ -15,3 +15,29 @@ export const UserRole = {
     SERVICER: 'SERVICER'
 }
 
+export const sortingSystem = {
+    trainingPage: {
+        defaultSortValue: 1,
+        trainingPageSortBy: [
+            {
+                label: 'Latest Created',
+                value: 1
+            },
+            {
+                label: 'Training Name',
+                value: 2
+            }
+        ]
+    },
+
+    creditPage: {
+        defaultSortValue: 3,
+        creditPageSortBy: [
+            {
+                label: 'Servicer Master Name',
+                value: 3
+            }
+        ]
+    }
+}
+

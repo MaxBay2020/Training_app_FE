@@ -1,4 +1,5 @@
 import {
+    CircularProgress,
     Container,
     FormControl,
     Grid,
@@ -8,23 +9,25 @@ import {
     TextField, Tooltip
 } from "@mui/material";
 import BasicLayout from "../layout/BasicLayout";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import MenuItem from "@mui/material/MenuItem";
 import useDebounce from "../hooks/trainingHooks/useDebounce";
-import {pageLimit, UserRole} from "../utils/consts";
+import {pageLimit, sortingSystem, UserRole} from "../utils/consts";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CreditTable from "../components/CreditPage/CreditTable";
 import useFetchCredits from "../hooks/creditHooks/useFetchCredits";
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 import IconButton from "@mui/material/IconButton";
+import useDownloadCreditPDF from "../hooks/creditHooks/useDownloadCreditPDF";
+import {blue} from "@mui/material/colors";
 
 const CreditPage = () => {
 
     // 1 - sort by training created time
     // 2 - sort by training name
-    const [sortBy, setSortBy] = useState(1)
+    const [sortBy, setSortBy] = useState(sortingSystem.creditPage.defaultSortValue)
     const [searchKeyword, setSearchKeyword] = useState('')
     const debouncedSearchKeyword = useDebounce(searchKeyword, 500)
 
@@ -37,14 +40,18 @@ const CreditPage = () => {
     } = useSelector(state => state.user)
 
 
-
-    const {isLoading, data, error, isError}
+    const { data }
         = useFetchCredits(
             ['queryAllCredits', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
+
+    const { isFetching, data: pdfBlobData, refetch: downloadCreditPDF } = useDownloadCreditPDF(['download-pdf'])
 
     const searchHandler = e => {
         setSearchKeyword(e.target.value)
     }
+
+
+
 
     return (
         <BasicLayout>
@@ -58,7 +65,25 @@ const CreditPage = () => {
                     </Grid>
                     <Grid item>
                         <Tooltip title="download">
-                            <IconButton><CloudDownloadOutlinedIcon /></IconButton>
+                            <IconButton
+                                disabled={isFetching}
+                                onClick={() => downloadCreditPDF()}
+                            >
+                                <CloudDownloadOutlinedIcon />
+                                {
+                                    isFetching && (
+                                    <CircularProgress
+                                        size={40}
+                                        sx={{
+                                            color: blue[500],
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            zIndex: 1,
+                                        }}
+                                    />
+                                )}
+                            </IconButton>
                         </Tooltip>
                     </Grid>
                 </Grid>
@@ -86,8 +111,9 @@ const CreditPage = () => {
                                 label="sortBy"
                                 onChange={e => setSortBy(e.target.value)}
                             >
-                                <MenuItem value={1}>Latest Created</MenuItem>
-                                <MenuItem value={2}>Training Name</MenuItem>
+                                {
+                                    sortingSystem.creditPage.creditPageSortBy.map(sort => <MenuItem key={sort.value} value={sort.value}>{sort.label}</MenuItem>)
+                                }
                             </Select>
                         </FormControl>
                     </Grid>

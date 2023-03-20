@@ -36,7 +36,7 @@ root.render(
                   pauseOnHover
                   theme="light"
               />
-              <ReactQueryDevtools initialOpen={false} position='bottom-right' />
+              {/*<ReactQueryDevtools initialOpen={false} position='bottom-right' />*/}
           </QueryClientProvider>
       </CssVarsProvider>
 
