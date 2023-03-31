@@ -43,7 +43,6 @@ const Row = ({training}) => {
         return (<TableCell align="right">
             <Grid container alignItems='center' justifyContent='center' spacing={1}>
                 <Grid item>
-
                         {
                             isSubmitted ?
                                 <IconButton onClick={() => showUpdateTraining()}>
