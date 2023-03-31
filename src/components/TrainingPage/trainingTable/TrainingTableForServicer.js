@@ -22,6 +22,7 @@ import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModa
 import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
 import {useDispatch, useSelector} from "react-redux";
 import {setCurrentTraining, switchOpenModal} from "../../../features/trainingSlice";
+import {ApproveOrReject} from "../../../utils/consts";
 
 const Row = ({training}) => {
 
@@ -31,7 +32,7 @@ const Row = ({training}) => {
     const dispatch = useDispatch()
 
     const renderActions = (trainingStatus) => {
-        const isPending = trainingStatus.toLowerCase() === 'pending'
+        const isSubmitted = trainingStatus.toLowerCase() === ApproveOrReject.SUBMITTED.toLowerCase()
 
 
         const showUpdateTraining = () => {
@@ -44,7 +45,7 @@ const Row = ({training}) => {
                 <Grid item>
 
                         {
-                            isPending ?
+                            isSubmitted ?
                                 <IconButton onClick={() => showUpdateTraining()}>
                                     <Tooltip title="Edit" placement="top">
                                         <EditOutlinedIcon color='success' />
@@ -59,7 +60,7 @@ const Row = ({training}) => {
                 </Grid>
                 <Grid item>
                         {
-                            isPending ?
+                            isSubmitted ?
                                 <IconButton onClick={() => setOpenWithdrawModal(true)}>
                                     <Tooltip title="Withdraw" placement="top">
                                         <DeleteOutlineOutlinedIcon color='error' />
@@ -75,10 +76,9 @@ const Row = ({training}) => {
         </TableCell>)
     }
 
-
     return (
         <>
-            <TableRow hover sx={{'& > *': {borderBottom: 'unset'}, backgroundColor: `${trainingStatus.toLowerCase() === 'withdrawn' ? 'rgba(100,100,100,.1)' : ''}`}}>
+            <TableRow hover sx={{'& > *': {borderBottom: 'unset'}, backgroundColor: `${trainingStatus.toLowerCase() === ApproveOrReject.CANCELED.toLowerCase() ? 'rgba(100,100,100,.1)' : ''}`}}>
                 <TableCell component="th" scope="row">
                     {trainingName}
                 </TableCell>
@@ -108,19 +108,13 @@ const Row = ({training}) => {
 
 const TrainingTableForServicer = ({trainingList}) => {
 
+
     const dispatch = useDispatch()
     const { openModal, currentTraining } = useSelector(state => state.training)
 
 
     return (
         <>
-            {/*<TrainingModal*/}
-            {/*    open={openTrainingFormModal}*/}
-            {/*    setOpen={setOpenTrainingFormModal}*/}
-            {/*    isCreating={false}*/}
-            {/*    isUpdating={true}*/}
-            {/*    training={training}*/}
-            {/*/>*/}
             {
                 currentTraining
                 &&

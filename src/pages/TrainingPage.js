@@ -131,7 +131,7 @@ const TrainingPage = () => {
                                 onChange={e => setSortBy(e.target.value)}
                             >
                                 {
-                                    sortingSystem.trainingPage.trainingPageSortBy.map(sort => <MenuItem value={sort.value}>{sort.label}</MenuItem>)
+                                    sortingSystem.trainingPage.trainingPageSortBy.map(sort => <MenuItem key={sort.value} value={sort.value}>{sort.label}</MenuItem>)
                                 }
                             </Select>
                         </FormControl>

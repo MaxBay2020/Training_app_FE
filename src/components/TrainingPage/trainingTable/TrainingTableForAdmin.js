@@ -12,6 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import moment from "moment";
 import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
+import {ApproveOrReject} from "../../../utils/consts";
 
 const Row = ({training}) => {
 
@@ -35,7 +36,7 @@ const Row = ({training}) => {
                 hover
                 sx={{
                     '& > *': {borderBottom: 'unset'},
-                    backgroundColor: `${trainingStatus.toLowerCase() === 'withdrawn' ? 'rgba(100,100,100,.1)' : ''}`
+                    backgroundColor: `${trainingStatus.toLowerCase() === ApproveOrReject.SUBMITTED.toLowerCase() ? 'rgba(100,100,100,.1)' : ''}`
                 }}
             >
                 <TableCell component="th" scope="row" align="right">

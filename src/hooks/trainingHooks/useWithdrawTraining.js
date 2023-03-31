@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import { toast } from 'react-toastify'
 import {useNavigate} from "react-router-dom";
 import {userLogout} from "../../features/userSlice";
+import {ApproveOrReject} from "../../utils/consts";
 
 
 
@@ -23,7 +24,7 @@ const useWithdrawTraining = () => {
     }
     return useMutation(withdrawTraining, {
         onSuccess: () => {
-            toast.success('Withdrawn Successfully')
+            toast.success(`${ApproveOrReject.SUBMITTED} Successfully`)
             queryClient.invalidateQueries(['queryAllTrainings'])
         },
         onError: (e) => {
