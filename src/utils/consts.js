@@ -4,8 +4,8 @@ export const pageLimit = 5
 export const ApproveOrReject = {
     APPROVE: 'APPROVED',
     REJECT: 'REJECTED',
-    PENDING: 'PENDING',
-    WITHDRAWN: 'WITHDRAWN',
+    SUBMITTED: 'SUBMITTED',
+    CANCELED: 'CANCELED',
 }
 
 

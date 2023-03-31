@@ -21,7 +21,6 @@ import {ApproveOrReject} from "../../../utils/consts";
 
 
 export const renderTableCellForTrainingStatus = trainingStatus => {
-
     const chipStyle = {
         variant: 'outlined',
         color: 'default'
@@ -31,10 +30,10 @@ export const renderTableCellForTrainingStatus = trainingStatus => {
         chipStyle.color = 'success'
     }else if(trainingStatus === ApproveOrReject.REJECT){
         chipStyle.color = 'error'
-    }else if(trainingStatus === ApproveOrReject.PENDING){
+    }else if(trainingStatus === ApproveOrReject.SUBMITTED){
         chipStyle.variant = 'filled'
         chipStyle.color = 'primary'
-    }else if(trainingStatus === ApproveOrReject.WITHDRAWN){
+    }else if(trainingStatus === ApproveOrReject.CANCELED){
         chipStyle.variant = 'filled'
     }
     return (
@@ -46,6 +45,7 @@ export const renderTableCellForTrainingStatus = trainingStatus => {
 
 // TODO: check box
 const TrainingTableForApprover = ({trainingList}) => {
+
     const [trainingsSelected, setTrainingsSelected] = useState([])
 
     // TODO: bug need to be fixed
