@@ -62,36 +62,36 @@ const TrainingWithdrawModal = ({open, setOpen, training}) => {
                         <Grid item>
                             <Typography id="modal-modal-description" sx={{ mt: 2 }} variant='body2'>
                                 This action <b>cannot</b> be undone.
-                                This will permanently withdraw the <b>{trainingName}</b> training.
+                                This will permanently cancel the <b>{trainingName}</b> training.
                             </Typography>
                         </Grid>
-                        <Grid item>
-                            <Typography id="modal-modal-description" sx={{ mt: 2 }}  variant='body2'>
-                                Please type <b>{trainingName}</b> to confirm.
-                            </Typography>
-                        </Grid>
-                        <Grid item>
-                            <FormControl sx={{ width: '100%' }} variant="outlined" size="small">
-                                <OutlinedInput
-                                    id="outlined-adornment-withdraw-notice"
-                                    aria-describedby="outlined-withdraw-notice-helper-text"
-                                    inputProps={{
-                                        'aria-label': 'notice',
-                                    }}
-                                    onChange={ e => setTrainingNameTyped(e.target.value)}
-                                />
-                            </FormControl>
-                        </Grid>
+                        {/*<Grid item>*/}
+                        {/*    <Typography id="modal-modal-description" sx={{ mt: 2 }}  variant='body2'>*/}
+                        {/*        Please type <b>{trainingName}</b> to confirm.*/}
+                        {/*    </Typography>*/}
+                        {/*</Grid>*/}
+                        {/*<Grid item>*/}
+                        {/*    <FormControl sx={{ width: '100%' }} variant="outlined" size="small">*/}
+                        {/*        <OutlinedInput*/}
+                        {/*            id="outlined-adornment-withdraw-notice"*/}
+                        {/*            aria-describedby="outlined-withdraw-notice-helper-text"*/}
+                        {/*            inputProps={{*/}
+                        {/*                'aria-label': 'notice',*/}
+                        {/*            }}*/}
+                        {/*            onChange={ e => setTrainingNameTyped(e.target.value)}*/}
+                        {/*        />*/}
+                        {/*    </FormControl>*/}
+                        {/*</Grid>*/}
                         <Grid item>
                             <Button
-                                disabled={trainingNameTyped !== trainingName}
+                                // disabled={trainingNameTyped !== trainingName}
                                 variant="contained"
                                 disableElevation
                                 color='error'
                                 sx={styles.fullWidth}
                                 onClick={() => withdrawTrainingByTrainingId(training)}
                             >
-                                I understand the consequences, withdraw this training
+                                I understand the consequences, cancel this training
                             </Button>
                         </Grid>
                     </Grid>

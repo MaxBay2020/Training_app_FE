@@ -20,8 +20,9 @@ import CreditTable from "../components/CreditPage/CreditTable";
 import useFetchCredits from "../hooks/creditHooks/useFetchCredits";
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 import IconButton from "@mui/material/IconButton";
-import useDownloadCreditPDF from "../hooks/creditHooks/useDownloadCreditPDF";
+import useDownloadCredit from "../hooks/creditHooks/useDownloadCredit";
 import {blue} from "@mui/material/colors";
+import Menu from '@mui/material/Menu';
 
 const CreditPage = () => {
 
@@ -33,6 +34,16 @@ const CreditPage = () => {
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(pageLimit)
+    const [fileType, setFileType] = useState(1)
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const {
         userName,
@@ -44,12 +55,17 @@ const CreditPage = () => {
         = useFetchCredits(
             ['queryAllCredits', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
 
-    const { isFetching, data: pdfBlobData, refetch: downloadCreditPDF } = useDownloadCreditPDF(['download-pdf'])
+    const { isFetching, refetch: downloadCredit } = useDownloadCredit(['download'], fileType)
 
     const searchHandler = e => {
         setSearchKeyword(e.target.value)
     }
 
+    const handleDownload = fileType => {
+        setFileType(fileType)
+        downloadCredit()
+        handleClose()
+    }
 
 
 
@@ -64,26 +80,45 @@ const CreditPage = () => {
                         </Grid>
                     </Grid>
                     <Grid item>
-                        <Tooltip title="download">
-                            <IconButton
-                                disabled={isFetching}
-                                onClick={() => downloadCreditPDF()}
-                            >
-                                <CloudDownloadOutlinedIcon />
-                                {
-                                    isFetching && (
-                                    <CircularProgress
-                                        size={40}
-                                        sx={{
-                                            color: blue[500],
-                                            position: 'absolute',
-                                            top: 0,
-                                            left: 0,
-                                            zIndex: 1,
-                                        }}
-                                    />
-                                )}
-                            </IconButton>
+                        <Tooltip title="download" placement="top">
+                            <Box>
+                                <IconButton
+                                    id="basic-button"
+                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}
+                                    disabled={isFetching}
+                                >
+                                    <CloudDownloadOutlinedIcon />
+                                    {
+                                        isFetching && (
+                                            <CircularProgress
+                                                size={40}
+                                                sx={{
+                                                    color: blue[500],
+                                                    position: 'absolute',
+                                                    top: 0,
+                                                    left: 0,
+                                                    zIndex: 1,
+                                                }}
+                                            />
+                                        )}
+                                </IconButton>
+
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={() => handleDownload(1)}>Download Excel</MenuItem>
+                                    <MenuItem onClick={() => handleDownload(2)}>Download PDF</MenuItem>
+                                </Menu>
+                            </Box>
                         </Tooltip>
                     </Grid>
                 </Grid>

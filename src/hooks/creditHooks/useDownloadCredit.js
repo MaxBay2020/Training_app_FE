@@ -7,18 +7,19 @@ import {toast} from "react-toastify";
 import { saveAs } from 'file-saver'
 
 
-const useDownloadCreditPDF = (queryIdentifier) => {
+const useDownloadCredit = (queryIdentifier, fileType) => {
 
     const { accessToken } = useSelector( state => state.user )
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const url = '/credit/download-pdf'
+    const url = '/credit/download'
 
     const fetchData = async () => {
         const res = await api.get(url, {
             headers: {
-                authorization: `Bearer ${accessToken}`
+                authorization: `Bearer ${accessToken}`,
+                fileType
             },
             responseType: 'blob'
         })
@@ -39,11 +40,21 @@ const useDownloadCreditPDF = (queryIdentifier) => {
             toast.error(message)
         },
          onSuccess: (data) => {
-             const pdfBlob = new Blob([data], { type: 'application/pdf' })
-             saveAs(pdfBlob, `${Date.now()}.pdf`);
+            let fileExtension = ''
+            if(fileType === 1){
+                // download excel
+                fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+                fileExtension = '.xlsx'
+
+            }else if(fileType === 2){
+                fileType = 'application/pdf'
+                fileExtension = '.pdf'
+            }
+             const blob = new Blob([data], { type: fileType })
+             saveAs(blob, `${Date.now()}.${fileExtension}`)
          }
     })
 
 }
 
-export default useDownloadCreditPDF
+export default useDownloadCredit
