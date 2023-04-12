@@ -67,7 +67,7 @@ const TrainingPage = () => {
                 <Grid container direction='column' alignItems='flex-end' sx={{mt: 2}} spacing={1}>
                     <Grid item><Typography variant='subtitle'>Total Approved Trainings for User:  {trainingCredits?.approvedTrainingCount}</Typography></Grid>
                     <Grid item><Typography variant='subtitle'>Total Approved Trainings for Servicer:  {trainingCredits?.totalApprovedTrainingCount}</Typography></Grid>
-                    <Grid item><Typography variant='subtitle'>Total Annual Training Credit for Servicer for fiscal year till date (Max 1%): {trainingCredits?.scorePercentage}</Typography></Grid>
+                    {/*<Grid item><Typography variant='subtitle'>Total Annual Training Credit for Servicer for fiscal year till date (Max 1%): {trainingCredits?.scorePercentage}</Typography></Grid>*/}
                 </Grid>
             )
         }
