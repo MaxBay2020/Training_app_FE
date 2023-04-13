@@ -26,10 +26,7 @@ const pagesForServicer = [
 ]
 
 const pagesForApprover = [
-    {
-        label: 'Training',
-        link: '/training'
-    },
+    ...pagesForServicer,
     {
         label: 'Credit',
         link: '/credit'
@@ -37,14 +34,7 @@ const pagesForApprover = [
 ]
 
 const pagesForAdmin = [
-    {
-        label: 'Training',
-        link: '/training'
-    },
-    {
-        label: 'Credit',
-        link: '/credit'
-    },
+    ...pagesForApprover,
     {
         label: 'Admin',
         link: '/admin'
@@ -56,7 +46,7 @@ const Navbar = () => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-    const { userName, userRole } = useSelector(state => state.user)
+    const { userName, userRoles } = useSelector(state => state.user)
 
     const dispatch = useDispatch()
 
@@ -84,12 +74,13 @@ const Navbar = () => {
     }
 
 
-    const renderAppBarMenu = userRole => {
-        if(userRole === UserRole.ADMIN){
+    const renderAppBarMenu = userRolesStr => {
+        const userRoles = userRolesStr.split(', ')
+        if(userRoles.includes(UserRole.ADMIN)){
             return pagesForAdmin
-        }else if(userRole === UserRole.APPROVER){
+        }else if(userRoles.includes(UserRole.APPROVER)){
             return pagesForApprover
-        }else if(userRole === UserRole.SERVICER){
+        }else if(userRoles.includes(UserRole.SERVICER)){
             return pagesForServicer
         }else{
             return []
@@ -134,7 +125,7 @@ const Navbar = () => {
                             }}
                         >
                             {
-                                renderAppBarMenu(userRole).map((page) => (
+                                renderAppBarMenu(userRoles).map((page) => (
                                     <Link to={page.link} key={page.label}>
                                         <MenuItem>
                                             <Typography textAlign="center">{page.label}</Typography>
@@ -147,7 +138,7 @@ const Navbar = () => {
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {
-                            renderAppBarMenu(userRole).map((page) => (
+                            renderAppBarMenu(userRoles).map((page) => (
                                 <Link to={page.link} key={page.label}>
                                     <Button
                                         onClick={handleCloseNavMenu}
@@ -185,7 +176,7 @@ const Navbar = () => {
                             onClose={handleCloseUserMenu}
                         >
                             {
-                                renderAppBarMenu(userRole).map((menu) => (
+                                renderAppBarMenu(userRoles).map((menu) => (
                                 <Link to={menu.link} key={menu.label}>
                                     <MenuItem onClick={handleCloseUserMenu}>
                                         <Typography textAlign="center">{menu.label}</Typography>

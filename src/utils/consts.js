@@ -12,7 +12,8 @@ export const ApproveOrReject = {
 export const UserRole = {
     APPROVER: 'APPROVER',
     ADMIN: 'ADMIN',
-    SERVICER: 'SERVICER'
+    SERVICER: 'SERVICER',
+    SERVICER_COORDINATOR: 'SERVICER COORDINATOR'
 }
 
 export const sortingSystem = {
@@ -39,5 +40,10 @@ export const sortingSystem = {
             }
         ]
     }
+}
+
+export const fileType = {
+    excel: 1,
+    pdf: 2,
 }
 
