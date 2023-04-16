@@ -62,7 +62,7 @@ const TrainingPage = () => {
     }
 
     const renderTrainingCredits = userRole => {
-        if(userRole.toLowerCase() === 'servicer'){
+        if(userRole === UserRole.SERVICER){
             return (
                 <Grid container direction='column' alignItems='flex-end' sx={{mt: 2}} spacing={1}>
                     <Grid item><Typography variant='subtitle'>Total Approved Trainings for User:  {trainingCredits?.approvedTrainingCount}</Typography></Grid>
@@ -74,7 +74,7 @@ const TrainingPage = () => {
     }
 
     const renderUserInfo = userRole => {
-        if(userRole.toLowerCase() === 'servicer'){
+        if(userRole === UserRole.SERVICER){
             return (
                <>
                    <Grid item><Typography variant='subtitle'>{servicerId && `Servicer ID:    ${servicerId}`}</Typography></Grid>
@@ -85,7 +85,7 @@ const TrainingPage = () => {
     }
 
     const renderAddTrainingButton = userRole => {
-        if(userRole.toLowerCase() === 'servicer'){
+        if(userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR ){
             return <Grid item xs={4} md={2}><TrainingCreation /></Grid>
         }
         return <></>

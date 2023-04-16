@@ -12,7 +12,8 @@ export const ApproveOrReject = {
 export const UserRole = {
     APPROVER: 'APPROVER',
     ADMIN: 'ADMIN',
-    SERVICER: 'SERVICER'
+    SERVICER: 'SERVICER',
+    SERVICER_COORDINATOR: 'SERVICER COORDINATOR',
 }
 
 export const sortingSystem = {
