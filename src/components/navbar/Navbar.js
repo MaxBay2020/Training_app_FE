@@ -89,7 +89,7 @@ const Navbar = () => {
             return pagesForAdmin
         }else if(userRole === UserRole.APPROVER){
             return pagesForApprover
-        }else if(userRole === UserRole.SERVICER){
+        }else if(userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR ){
             return pagesForServicer
         }else{
             return []

@@ -25,6 +25,7 @@ import {pageLimit, sortingSystem, UserRole} from "../utils/consts";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import useFetchTrainingCredits from "../hooks/trainingHooks/useFetchTrainingCredits";
+import TrainingTableForSupServicer from "../components/TrainingPage/trainingTable/TrainingTableForSupServicer";
 
 const TrainingPage = () => {
 
@@ -54,6 +55,8 @@ const TrainingPage = () => {
     const renderTrainingTable = userRole => {
         if(userRole.toUpperCase() === UserRole.SERVICER){
             return <TrainingTableForServicer trainingList={data.trainingList} />
+        }else if(userRole.toUpperCase() === UserRole.SERVICER_COORDINATOR){
+            return <TrainingTableForSupServicer trainingList={data.trainingList} />
         }else if(userRole.toUpperCase() === UserRole.ADMIN){
             return <TrainingTableForAdmin trainingList={data.trainingList} />
         }else if(userRole.toUpperCase() === UserRole.APPROVER){
@@ -62,7 +65,7 @@ const TrainingPage = () => {
     }
 
     const renderTrainingCredits = userRole => {
-        if(userRole === UserRole.SERVICER){
+        if(userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR){
             return (
                 <Grid container direction='column' alignItems='flex-end' sx={{mt: 2}} spacing={1}>
                     <Grid item><Typography variant='subtitle'>Total Approved Trainings for User:  {trainingCredits?.approvedTrainingCount}</Typography></Grid>
@@ -74,7 +77,7 @@ const TrainingPage = () => {
     }
 
     const renderUserInfo = userRole => {
-        if(userRole === UserRole.SERVICER){
+        if(userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR){
             return (
                <>
                    <Grid item><Typography variant='subtitle'>{servicerId && `Servicer ID:    ${servicerId}`}</Typography></Grid>
