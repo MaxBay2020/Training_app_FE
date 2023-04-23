@@ -1,6 +1,5 @@
 import Box from "@mui/material/Box";
 import {
-    Checkbox,
     createTheme,
     FormControl,
     FormHelperText,
@@ -29,7 +28,6 @@ import useCreateTraining from "../../../hooks/trainingHooks/useCreateTraining";
 import useFetchTrainingTypes from "../../../hooks/trainingHooks/useFetchTrainingTypes";
 import {useSelector} from "react-redux";
 import useUpdateTraining from "../../../hooks/trainingHooks/useUpdateTraining";
-import FormControlLabel from "@mui/material/FormControlLabel";
 
 const styles = {
     modalStyle: {
@@ -57,8 +55,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingName.length : wordsLimit)
     const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingURL.length : wordsLimit)
-    const [traineeListChip, setTraineeListChip] = useState(isUpdating ? training.traineeList.length : [])
-
 
     const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
     const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
@@ -66,8 +62,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const [endDate, setEndDate] = useState(isUpdating ? training.endDate : '')
     const [hoursCount, setHoursCount] = useState(isUpdating ? training.hoursCount : 1)
     const [trainingURL, setTrainingURL] = useState(isUpdating ? training.trainingURL : '')
-    const [traineeList, setTraineeList] = useState(isUpdating ? training.traineeList : [])
-    const [addMyself, setAddMyself] = useState(isUpdating? training.addMyself : true)
+
 
     const {isLoading, data: trainingTypes}
         = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes')
@@ -120,21 +115,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         setHoursCount(value)
     }
 
-    const traineeListHandler = e => {
-        const input = e.target.value
-        if(input.length < 0){
-            return
-        }
-        setTraineeList(input)
-    }
-
-    const addMyselfHandler = e => {
-        const input = e.target.checked
-        if(input.length < 0){
-            return
-        }
-        setAddMyself(input)
-    }
     const createTraining = () => {
         const newTraining = {
             trainingName,
@@ -143,7 +123,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             endDate,
             hoursCount: +hoursCount,
             trainingURL,
-            traineeList:[]
         }
 
         addTraining(newTraining)
@@ -153,7 +132,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         setEndDate('')
         setHoursCount(1)
         setTrainingURL('')
-        setTraineeList([])
         setOpen(false)
     }
 
@@ -166,7 +144,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             endDate,
             hoursCount: +hoursCount,
             trainingURL,
-            traineeList:[]
         }
         updateTraining(updatedTraining)
         setOpen(false)
@@ -272,35 +249,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                     label="url"
                                 />
                             </FormControl>
-                        </Grid>
-
-                        <Grid item>
-                            <FormControl sx={commonStyles.fullWidth} variant="outlined">
-                                <InputLabel htmlFor="outlined-adornment-password">Trainee List</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password"
-                                    type='text'
-                                    value={traineeList}
-                                    onChange={e => traineeListHandler(e)}
-                                    endAdornment={
-                                    <>
-                                        <InputAdornment position="end">
-                                            <Typography variant='span'>{traineeListChip} Trainee First Name</Typography>
-                                        </InputAdornment>
-                                        <InputAdornment position="end">
-                                        <Typography variant='span'>{traineeListChip} Trainee Last Name</Typography>
-                                        </InputAdornment>
-                                        <InputAdornment position="end">
-                                        <Typography variant='span'>{traineeListChip} Trainee Email</Typography>
-                                        </InputAdornment>
-                                    </>
-                                    }
-                                    label="traineeList"
-                                />
-                            </FormControl>
-                            <FormControlLabel control={<Checkbox defaultChecked />}
-                                              onChange={addMyselfHandler}
-                                              label="Add Myself" />
                         </Grid>
 
                         <Grid item>

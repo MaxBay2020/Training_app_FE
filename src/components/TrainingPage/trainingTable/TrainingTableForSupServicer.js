@@ -26,7 +26,8 @@ import {ApproveOrReject} from "../../../utils/consts";
 
 const Row = ({training}) => {
 
-    const {trainingType, trainingName, userEmail, userFirstName, userLastName, startDate, endDate, hoursCount, trainingStatus} = training
+    const [{traineeFirstName, traineeLastName, traineeEmail}]= traineeList
+    const {trainingType, trainingName, userEmail, userFirstName, userLastName, startDate, endDate, hoursCount, trainingStatus, traineeList} = training
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
 
     const dispatch = useDispatch()
