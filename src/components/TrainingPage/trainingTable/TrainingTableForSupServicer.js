@@ -26,7 +26,6 @@ import {ApproveOrReject} from "../../../utils/consts";
 
 const Row = ({training}) => {
 
-    const [{traineeFirstName, traineeLastName, traineeEmail}]= traineeList
     const {trainingType, trainingName, userEmail, userFirstName, userLastName, startDate, endDate, hoursCount, trainingStatus, traineeList} = training
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
 
@@ -85,8 +84,8 @@ const Row = ({training}) => {
                 <TableCell align="right">{trainingType}</TableCell>
                 <TableCell align="right">{userEmail}</TableCell>
                 <TableCell align="right">{userFirstName} {userLastName}</TableCell>
-                <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
-                <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
+                <TableCell align="right">{moment(startDate).format('MM-DD-YYYY')}</TableCell>
+                <TableCell align="right">{moment(endDate).format('MM-DD-YYYY')}</TableCell>
                 <TableCell align="right">{hoursCount}</TableCell>
                 { renderTableCellForTrainingStatus(trainingStatus) }
                 { renderActions(trainingStatus) }
@@ -108,7 +107,7 @@ const Row = ({training}) => {
     );
 }
 
-const TrainingTableForServicer = ({trainingList}) => {
+const TrainingTableForSuperServicer = ({trainingList}) => {
 
 
     const dispatch = useDispatch()
@@ -123,8 +122,8 @@ const TrainingTableForServicer = ({trainingList}) => {
                 <TrainingModal
                     open={openModal}
                     setOpen={() => dispatch(switchOpenModal())}
-                    isCreating={false}
-                    isUpdating={true}
+                    isCreating={!currentTraining}
+                    isUpdating={!!currentTraining}
                     training={currentTraining}
                 />
             }
@@ -173,4 +172,4 @@ const TrainingTableForServicer = ({trainingList}) => {
 //     }).isRequired,
 // }
 
-export default TrainingTableForServicer
+export default TrainingTableForSuperServicer
