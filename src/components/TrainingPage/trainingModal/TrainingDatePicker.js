@@ -9,7 +9,7 @@ import moment from "moment";
 import {commonStyles, datePickerStyles} from "../../../styles/commontStyles";
 import Box from "@mui/material/Box";
 
-const TrainingDatePicker = ({date, setDate, name}) => {
+const TrainingDatePicker = ({date, setDate, isStartDate, name}) => {
     const [showDatePicker, setShowDatePicker] = useState(false)
 
     return (
@@ -35,33 +35,33 @@ const TrainingDatePicker = ({date, setDate, name}) => {
                 />
             </FormControl>
 
-            {
-                showDatePicker &&
-                <Box sx={datePickerStyles}>
-                    <DayPicker
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        onDayClick={()=>setShowDatePicker(false)}
-                    />
-                </Box>
-            }
-
-            {/*<Modal*/}
-            {/*    open={showDatePicker}*/}
-            {/*    onClose={setShowDatePicker(false)}*/}
-            {/*    aria-labelledby="modal-modal-title"*/}
-            {/*    aria-describedby="modal-modal-description"*/}
-            {/*>*/}
-            {/*    <Box  sx={datePickerStyles.datePickerBox}>*/}
+            {/*{*/}
+            {/*    showDatePicker &&*/}
+            {/*    <Box sx={datePickerStyles}>*/}
             {/*        <DayPicker*/}
-            {/*            style={{justify:'center'}*/}
             {/*            mode="single"*/}
             {/*            selected={date}*/}
             {/*            onSelect={setDate}*/}
+            {/*            onDayClick={()=>setShowDatePicker(false)}*/}
             {/*        />*/}
             {/*    </Box>*/}
-            {/*</Modal>*/}
+            {/*}*/}
+
+            <Modal
+                open={showDatePicker}
+                onClose={()=> setShowDatePicker(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box  sx={datePickerStyles.datePickerBox}>
+                    <DayPicker
+                        style={{justify:'center'}}
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                    />
+                </Box>
+            </Modal>
         </>
     )
 }

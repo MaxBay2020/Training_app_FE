@@ -2,8 +2,8 @@ import Box from "@mui/material/Box";
 import {
     Checkbox, Chip,
     createTheme,
-    FormControl,
-    Grid,
+    FormControl, FormHelperText,
+    Grid, Input,
     InputAdornment,
     InputLabel,
     Modal,
@@ -16,7 +16,7 @@ import 'react-day-picker/dist/style.css';
 import TrainingDatePicker from "./TrainingDatePicker";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
-import {AddCircleOutlineOutlined} from "@mui/icons-material";
+import {AddCircleOutlineOutlined, RemoveCircleOutlineOutlined} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import {UserRole, wordsLimit} from "../../../utils/consts";
 import {ThemeProvider} from "@emotion/react";
@@ -186,18 +186,46 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const renderTraineeListUI = ()=> {
         return <>
             <Grid item>
-                {
-                    traineeList.map((trainee, index) =>(
-                        <Chip
-                            label={trainee.traineeEmail}
-                            key={index}
-                            variant="outlined"
-                            sx={{m:1}}
-                            // onClick={()=>{}}
-                            onDelete={()=>deleteTrainee(trainee.traineeEmail)}
-                        />
-                    ))
-                }
+                    {
+                        traineeList.map((trainee, index) =>(
+                            // <Chip
+                            //     label={trainee.traineeEmail}
+                            //     key={index}
+                            //     variant="outlined"
+                            //     sx={{m:1}}
+                            //     // onClick={()=>{}}
+                            //     onDelete={()=>deleteTrainee(trainee.traineeEmail)}
+                            // />
+
+                            <Grid container direction='row' justifyContent='space-between'spacing={1}>
+                                <Grid item xs={5} md={5}>
+                                    <FormControl sx={commonStyles.fullWidth} disabled variant="standard">
+                                        {/*<InputLabel htmlFor="component-disabled">Name</InputLabel>*/}
+                                        <Input id="component-disabled" defaultValue={trainee.traineeEmail} />
+                                        <FormHelperText>Trainee Email</FormHelperText>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={3} md={3}>
+                                    <FormControl sx={commonStyles.fullWidth} disabled variant="standard">
+                                        <Input id="component-disabled" defaultValue={trainee.traineeFirstName} />
+                                        <FormHelperText>Trainee First Name</FormHelperText>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={3} md={3}>
+                                    <FormControl sx={commonStyles.fullWidth} disabled variant="standard">
+                                        <Input id="component-disabled" defaultValue={trainee.traineeLastName} />
+                                        <FormHelperText>Trainee Last Name</FormHelperText>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={1} md={1}>
+                                    <Chip
+                                        onDelete={()=>deleteTrainee(trainee.traineeEmail)}>
+                                    </Chip>
+                                </Grid>
+                            </Grid>
+                        ))
+                    }
+
             </Grid>
 
             <Grid item>
@@ -328,6 +356,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                     <TrainingDatePicker
                                         date={startDate}
                                         setDate={setStartDate}
+                                        isStartDate={true}
                                         name='Start Date'
                                     />
                                 </Grid>
@@ -335,6 +364,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                     <TrainingDatePicker
                                         date={endDate}
                                         setDate={setEndDate}
+                                        isStartDate={false}
                                         name='End Date'
                                     />
                                 </Grid>
