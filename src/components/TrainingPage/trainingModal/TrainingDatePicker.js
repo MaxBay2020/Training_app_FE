@@ -1,15 +1,33 @@
-import * as React from 'react';
-import {FormControl, InputAdornment, InputLabel, Modal, OutlinedInput} from "@mui/material";
+import {FormControl, FormHelperText, InputAdornment, InputLabel, Modal, OutlinedInput, TextField} from "@mui/material";
 import {DayPicker} from "react-day-picker";
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import IconButton from "@mui/material/IconButton";
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import {useState} from "react";
 import moment from "moment";
-import {commonStyles, datePickerStyles} from "../../../styles/commontStyles";
+import {commonStyles} from "../../../styles/commontStyles";
 import Box from "@mui/material/Box";
+import {useSelector} from "react-redux";
 
-const TrainingDatePicker = ({date, setDate, isStartDate, name}) => {
+
+const styles = {
+    modalBox: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+    },
+    dataPickerBox: {
+        display: 'flex',
+        justifyContent: 'center'
+    }
+};
+
+const TrainingDatePicker = ({date, setDate, name}) => {
     const [showDatePicker, setShowDatePicker] = useState(false)
 
     return (
@@ -24,7 +42,7 @@ const TrainingDatePicker = ({date, setDate, isStartDate, name}) => {
                         <InputAdornment position="end">
                             <IconButton
                                 aria-label="toggle password visibility"
-                                onClick={() => setShowDatePicker(!showDatePicker)}
+                                onClick={() => setShowDatePicker(true)}
                                 edge="end"
                             >
                                 {showDatePicker ?  <EventBusyIcon />: <CalendarMonthOutlinedIcon />}
@@ -35,17 +53,22 @@ const TrainingDatePicker = ({date, setDate, isStartDate, name}) => {
                 />
             </FormControl>
 
-            {/*{*/}
-            {/*    showDatePicker &&*/}
-            {/*    <Box sx={datePickerStyles}>*/}
-            {/*        <DayPicker*/}
-            {/*            mode="single"*/}
-            {/*            selected={date}*/}
-            {/*            onSelect={setDate}*/}
-            {/*            onDayClick={()=>setShowDatePicker(false)}*/}
-            {/*        />*/}
-            {/*    </Box>*/}
-            {/*}*/}
+            <Modal
+                open={showDatePicker}
+                onClose={() => setShowDatePicker(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={styles.modalBox}>
+                    <DayPicker
+                        style={styles.dataPickerBox}
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        onDayClick={()=>setShowDatePicker(false)}
+                    />
+                </Box>
+            </Modal>
 
             <Modal
                 open={showDatePicker}

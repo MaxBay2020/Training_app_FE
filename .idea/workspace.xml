@@ -5,9 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9271a870-72e1-4728-9ed0-3667c786ce17" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/TrainingPage/trainingModal/TrainingDatePicker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TrainingPage/trainingModal/TrainingDatePicker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/TrainingPage/trainingModal/TrainingModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TrainingPage/trainingModal/TrainingModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/TrainingPage/trainingTable/TrainingTableForSupServicer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/training_app.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/authentication/login/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/authentication/login/Login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/navbar/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navbar/Navbar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/TrainingPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/TrainingPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +45,6 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\WebStorm 2022.2.2\\plugins\\JavaScriptLanguage\\jsLanguageServicesImpl\\external&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -62,7 +68,6 @@
       <workItem from="1681831948460" duration="454000" />
       <workItem from="1681840166039" duration="2720000" />
       <workItem from="1681866879644" duration="619000" />
-      <workItem from="1682677853171" duration="54418000" />
     </task>
     <servers />
   </component>
