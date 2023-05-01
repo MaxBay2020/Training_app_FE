@@ -80,7 +80,7 @@ const Navbar = () => {
             return pagesForAdmin
         }else if(userRoles.includes(UserRole.APPROVER)){
             return pagesForApprover
-        }else if(userRoles.includes(UserRole.SERVICER)){
+        }else if(userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR ){
             return pagesForServicer
         }else{
             return []

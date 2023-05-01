@@ -16,13 +16,15 @@ const useLogin = (queryIdentifier) => {
             accessToken,
             userRoles,
             userName,
+            userEmail,
             servicerId,
             servicerMasterName
         } = res.data
         dispatch(userLogin({
             accessToken,
             userName,
-            userRoles: userRoles.join(', '),
+            userEmail,
+            userRole,
             servicerId,
             servicerMasterName
         }))

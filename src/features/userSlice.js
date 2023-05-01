@@ -3,7 +3,8 @@ import {createSlice} from '@reduxjs/toolkit'
 const initialState = {
     accessToken: localStorage.getItem('accessToken') || '',
     userName: localStorage.getItem('userName') || '',
-    userRoles: localStorage.getItem('userRoles') || '',
+    userRole: localStorage.getItem('userRole') || '',
+    userEmail:localStorage.getItem('userEmail') || '',
     servicerId: localStorage.getItem('servicerId') || '',
     servicerMasterName: localStorage.getItem('servicerMasterName') || '',
 }
@@ -16,18 +17,21 @@ export const userSlice = createSlice({
             const {
                 accessToken,
                 userName,
-                userRoles,
+                userRole,
+                userEmail,
                 servicerId,
                 servicerMasterName
             } = action.payload
             state.accessToken = accessToken
             state.userName = userName
-            state.userRoles = userRoles
+            state.userRole = userRole
+            state.userEmail = userEmail
             state.servicerId = servicerId
             state.servicerMasterName = servicerMasterName
             localStorage.setItem('accessToken', accessToken)
             localStorage.setItem('userName', userName)
-            localStorage.setItem('userRoles', userRoles)
+            localStorage.setItem('userRole', userRole)
+            localStorage.setItem('userEmail', userEmail)
             localStorage.setItem('servicerId', servicerId)
             localStorage.setItem('servicerMasterName', servicerMasterName)
 
@@ -35,12 +39,14 @@ export const userSlice = createSlice({
         userLogout: (state, _action) => {
             state.accessToken = ''
             state.userName = ''
-            state.userRoles = ''
+            state.userRole = ''
+            state.userEmail = ''
             state.servicerId = ''
             state.servicerMasterName = ''
             localStorage.removeItem('accessToken')
             localStorage.removeItem('userName')
-            localStorage.removeItem('userRoles')
+            localStorage.removeItem('userRole')
+            localStorage.removeItem('userEmail')
             localStorage.removeItem('servicerId')
             localStorage.removeItem('servicerMasterName')
         }

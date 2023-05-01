@@ -82,8 +82,8 @@ const Row = ({training}) => {
                     {trainingName}
                 </TableCell>
                 <TableCell align="right">{trainingType}</TableCell>
-                <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
-                <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
+                <TableCell align="right">{moment(startDate).format('MM-DD-YYYY')}</TableCell>
+                <TableCell align="right">{moment(endDate).format('MM-DD-YYYY')}</TableCell>
                 <TableCell align="right">{hoursCount}</TableCell>
                 { renderTableCellForTrainingStatus(trainingStatus) }
                 { renderActions(trainingStatus) }
@@ -120,8 +120,8 @@ const TrainingTableForServicer = ({trainingList}) => {
                 <TrainingModal
                     open={openModal}
                     setOpen={() => dispatch(switchOpenModal())}
-                    isCreating={false}
-                    isUpdating={true}
+                    isCreating={!currentTraining}
+                    isUpdating={!!currentTraining}
                     training={currentTraining}
                 />
             }
