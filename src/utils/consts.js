@@ -13,7 +13,7 @@ export const UserRole = {
     APPROVER: 'APPROVER',
     ADMIN: 'ADMIN',
     SERVICER: 'SERVICER',
-    SERVICER_COORDINATOR: 'SERVICER COORDINATOR'
+    SERVICER_COORDINATOR: 'SERVICER COORDINATOR',
 }
 
 export const sortingSystem = {

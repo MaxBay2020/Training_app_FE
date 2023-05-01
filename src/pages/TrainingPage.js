@@ -25,6 +25,7 @@ import {pageLimit, sortingSystem, UserRole} from "../utils/consts";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import useFetchTrainingCredits from "../hooks/trainingHooks/useFetchTrainingCredits";
+import TrainingTableForSupServicer from "../components/TrainingPage/trainingTable/TrainingTableForSupServicer";
 
 const TrainingPage = () => {
 
@@ -54,15 +55,17 @@ const TrainingPage = () => {
     const renderTrainingTable = userRoles => {
         if(userRoles.includes(UserRole.SERVICER)){
             return <TrainingTableForServicer trainingList={data.trainingList} />
-        }else if(userRoles.includes(UserRole.ADMIN)){
+        }else if(userRole.toUpperCase() === UserRole.SERVICER_COORDINATOR){
+            return <TrainingTableForSupServicer trainingList={data.trainingList} />
+        }else if(userRole.toUpperCase() === UserRole.ADMIN){
             return <TrainingTableForAdmin trainingList={data.trainingList} />
         }else if(userRoles.includes(UserRole.APPROVER)){
             return <TrainingTableForApprover trainingList={data.trainingList} />
         }
     }
 
-    const renderTrainingCredits = userRoles => {
-        if(userRoles.includes(UserRole.SERVICER)){
+    const renderTrainingCredits = userRole => {
+        if(userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR){
             return (
                 <Grid container direction='column' alignItems='flex-end' sx={{mt: 2}} spacing={1}>
                     <Grid item><Typography variant='subtitle'>Total Approved Trainings for User:  {trainingCredits?.approvedTrainingCount}</Typography></Grid>
@@ -73,8 +76,8 @@ const TrainingPage = () => {
         }
     }
 
-    const renderUserInfo = userRoles => {
-        if(userRoles.includes(UserRole.SERVICER)){
+    const renderUserInfo = userRole => {
+        if(userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR){
             return (
                <>
                    <Grid item><Typography variant='subtitle'>{servicerId && `Servicer ID:    ${servicerId}`}</Typography></Grid>
@@ -84,8 +87,8 @@ const TrainingPage = () => {
         }
     }
 
-    const renderAddTrainingButton = userRoles => {
-        if(userRoles.includes(UserRole.SERVICER)){
+    const renderAddTrainingButton = userRole => {
+        if(userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR ){
             return <Grid item xs={4} md={2}><TrainingCreation /></Grid>
         }
         return <></>
@@ -157,6 +160,7 @@ const TrainingPage = () => {
                 { data && renderTrainingCredits(data.userRoles)}
             </Container>
         </BasicLayout>
+
 
     )
 }
