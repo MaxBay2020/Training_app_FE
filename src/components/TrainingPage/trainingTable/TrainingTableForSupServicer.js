@@ -25,8 +25,7 @@ import {setCurrentTraining, switchOpenModal} from "../../../features/trainingSli
 import {ApproveOrReject} from "../../../utils/consts";
 
 const Row = ({training}) => {
-
-    const {trainingType, trainingName, userEmail, userFirstName, userLastName, startDate, endDate, hoursCount, trainingStatus, traineeList} = training
+    const { trainingType, trainingName, userEmail, userFirstName, userLastName, startDate, endDate, hoursCount, trainingStatus } = training
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
 
     const dispatch = useDispatch()
@@ -84,19 +83,12 @@ const Row = ({training}) => {
                 <TableCell align="right">{trainingType}</TableCell>
                 <TableCell align="right">{userEmail}</TableCell>
                 <TableCell align="right">{userFirstName} {userLastName}</TableCell>
-                <TableCell align="right">{moment(startDate).format('MM-DD-YYYY')}</TableCell>
-                <TableCell align="right">{moment(endDate).format('MM-DD-YYYY')}</TableCell>
+                <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
+                <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
                 <TableCell align="right">{hoursCount}</TableCell>
                 { renderTableCellForTrainingStatus(trainingStatus) }
                 { renderActions(trainingStatus) }
             </TableRow>
-
-            {/*<TrainingModal*/}
-            {/*    open={openModal}*/}
-            {/*    setOpen={() => dispatch(switchOpenModal())}*/}
-            {/*    isCreating={false}*/}
-            {/*    isUpdating={true}*/}
-            {/*/>*/}
 
             <TrainingWithdrawModal
                 open={openWithdrawModal}
@@ -107,7 +99,7 @@ const Row = ({training}) => {
     );
 }
 
-const TrainingTableForSuperServicer = ({trainingList}) => {
+const TrainingTableForServicerCoordinator = ({trainingList}) => {
 
 
     const dispatch = useDispatch()
@@ -172,4 +164,4 @@ const TrainingTableForSuperServicer = ({trainingList}) => {
 //     }).isRequired,
 // }
 
-export default TrainingTableForSuperServicer
+export default TrainingTableForServicerCoordinator

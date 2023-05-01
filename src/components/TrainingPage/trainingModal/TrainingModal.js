@@ -2,14 +2,15 @@ import Box from "@mui/material/Box";
 import {
     Checkbox, Chip,
     createTheme,
-    FormControl, FormHelperText,
+    FormControl,
+    FormHelperText,
     Grid, Input,
     InputAdornment,
     InputLabel,
     Modal,
     OutlinedInput,
     Select,
-    TextField
+    TextField, Tooltip
 } from "@mui/material";
 import {useState} from "react";
 import 'react-day-picker/dist/style.css';
@@ -26,13 +27,32 @@ import useCreateTraining from "../../../hooks/trainingHooks/useCreateTraining";
 import useFetchTrainingTypes from "../../../hooks/trainingHooks/useFetchTrainingTypes";
 import useUpdateTraining from "../../../hooks/trainingHooks/useUpdateTraining";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import {toast} from "react-toastify";
-import {useSelector} from "react-redux";
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import {AddCircleOutlineOutlined} from "@mui/icons-material";
+
+const styles = {
+    modalStyle: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 500,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    }
+}
 
 const theme = createTheme({
     typography: {
         span: {
             fontSize: '14px'
+        },
+        caption: {
+            fontSize: '12px'
         }
     }
 })
@@ -41,6 +61,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingName.length : wordsLimit)
     const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingURL.length : wordsLimit)
+
 
     const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
     const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
@@ -93,32 +114,31 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     }
 
     const fillTraineeInfo = e => {
-        const {name, value} = e.target
-
+        const { name, value } = e.target
         setTrainee({
             ...trainee,
-            [name]:value.trim(),
+            [name]: value.trim()
         })
     }
 
-    const addTraineeHandler = e => {
+    const addTrainee = () =>{
         if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length){
-            toast.error('Please fill out all 3 required fields for the trainnee(s)')
+            toast.error('Please fill trainee info')
             return false
         }
         setTraineeList([...traineeList, trainee])
-        setTrainee(traineeInitialData)
+        setTrainee(traineeInitialised)
+        return true
     }
 
-    const deleteTrainee = traineeEmailInput=> {
-
-        setTraineeList(traineeList.filter(trainee => trainee.traineeEmail !== traineeEmailInput))
+    const deleteTraineeFromTraineeList = traineeEmail => {
+        setTraineeList(traineeList.filter(trainee => trainee.traineeEmail !== traineeEmail))
     }
 
     // const addMyselfHandler = e => {
-    //     const isMyselfAdded = e.target.checked
-    //     console.log(isMyselfAdded)
-    //     if(isMyselfAdded){
+    //     const isChecked = e.target.checked
+    //     setAddMyself(isChecked)
+    //     if(isChecked){
     //         const myInfo = {
     //             traineeEmail: userEmail,
     //             traineeFirstName: userName,
@@ -130,7 +150,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     //     }
     // }
 
-    const closeTrainingDataForm =() =>{
+    const closeForm = () => {
         setTrainingName('')
         setTrainingType('')
         setStartDate('')
@@ -138,11 +158,11 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         setHoursCount(1)
         setTrainingURL('')
         setTraineeList([])
-        setTrainee(traineeInitialData)
-        setTrainingUrlWordsRemaining(wordsLimit)
+        setTrainee(traineeInitialised)
         setTrainingNameWordsRemaining(wordsLimit)
+        setTrainingUrlWordsRemaining(wordsLimit)
+        setAddMyself(false)
         setOpen(false)
-
     }
 
     const createTraining = () => {
@@ -153,12 +173,11 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             endDate,
             hoursCount: +hoursCount,
             trainingURL,
-            traineeList
+            traineeList: traineeList.length === 0 ? [trainee] : traineeList
         }
 
         addTraining(newTraining)
-        closeTrainingDataForm()
-
+        closeForm()
     }
 
     const updateTrainingHandler = () => {
@@ -170,10 +189,10 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             endDate,
             hoursCount: +hoursCount,
             trainingURL,
-            traineeList
+            traineeList:[]
         }
         updateTraining(updatedTraining)
-        setOpen(false)
+        closeForm()
     }
 
     const renderCreateOrUpdateButton = () => {
@@ -181,6 +200,132 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             (<Button variant="contained" onClick={() => updateTrainingHandler()}>Update</Button>)
             :
             (<Button variant="contained" onClick={() => createTraining()}>Create</Button>)
+    }
+    const renderTraineeListUI = () => {
+        return <>
+            <Grid item>
+                {
+                    traineeList.map((trainee, index) => (
+                        // <Chip
+                        //     key={index}
+                        //     label={trainee.traineeEmail}
+                        //     sx={{mr: 1, mb: 1}}
+                        //     // onClick={()=>{}}
+                        //     onDelete={()=>deleteTraineeFromTraineeList(trainee.traineeEmail)}
+                        // />
+                        <Grid container
+                              direction='row'
+                              alignItems='center'
+                              justifyContent='space-between'
+                              spacing={1}
+                              pt={2}
+                              pb={2}
+                              pl={2}
+                        >
+                            <Grid item xs={12} md={5}>
+                                <Typography variant='caption'>{trainee.traineeEmail}</Typography>
+                            </Grid>
+
+                            <Grid item xs={12} md={3}>
+                                <Typography variant='caption'>{trainee.traineeFirstName}</Typography>
+                            </Grid>
+
+                            <Grid item xs={12} md={3}>
+                                <Typography variant='caption'>{trainee.traineeLastName}</Typography>
+                            </Grid>
+
+                            <Grid item xs={1}>
+                                <Tooltip title="Remove" placement="top">
+                                    <IconButton onClick={()=>deleteTraineeFromTraineeList(trainee.traineeEmail)}>
+                                        <RemoveCircleOutlineIcon color='error' />
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        </Grid>
+                    ))
+                }
+            </Grid>
+
+
+
+            <Grid item>
+                <Grid container
+                      direction='row'
+                      alignItems='center'
+                      justifyContent='space-between'
+                      spacing={1}
+                >
+                    <Grid item xs={12} md={6}>
+                        <FormControl sx={commonStyles.fullWidth} variant="outlined">
+                            <InputLabel htmlFor="outlined-adornment-password">Trainee Email</InputLabel>
+                            <OutlinedInput
+                                id="outlined-adornment-password"
+                                type='text'
+                                name='traineeEmail'
+                                value={trainee.traineeEmail}
+                                onChange={e => fillTraineeInfo(e)}
+                                label="traineeList"
+                            />
+                        </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                        <FormControl sx={commonStyles.fullWidth} variant="outlined">
+                            <InputLabel htmlFor="outlined-adornment-password">Trainee First Name</InputLabel>
+                            <OutlinedInput
+                                id="outlined-adornment-password"
+                                type='text'
+                                name='traineeFirstName'
+                                value={trainee.traineeFirstName}
+                                onChange={e => fillTraineeInfo(e)}
+                                label="traineeList"
+                            />
+                        </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                        <FormControl sx={commonStyles.fullWidth} variant="outlined">
+                            <InputLabel htmlFor="outlined-adornment-password">Trainee Last Name</InputLabel>
+                            <OutlinedInput
+                                id="outlined-adornment-password"
+                                type='text'
+                                name='traineeLastName'
+                                value={trainee.traineeLastName}
+                                onChange={e => fillTraineeInfo(e)}
+                                label="traineeList"
+                            />
+                        </FormControl>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+            <Grid item>
+                <IconButton
+                    variant="outlined" size="small"
+                    onClick={() => addTrainee()}
+                    sx={{ fontSize: "14px", border: "4px", borderRadius: 1, mb: 0.5 }}
+                >
+                    <AddCircleOutlineOutlined color='primary' mr={0.5}/>
+                    Add More Trainee(s)
+                </IconButton>
+
+            </Grid>
+
+            {/*<Grid item>*/}
+            {/*    <Grid container*/}
+            {/*          alignItems='center'*/}
+            {/*          justifyContent='space-between'>*/}
+            {/*        <Grid item>*/}
+            {/*            <FormControlLabel*/}
+            {/*                sx={commonStyles.fullWidth}*/}
+            {/*                control={<Checkbox checked={addMyself} />}*/}
+            {/*                onChange={e => addMyselfHandler(e)}*/}
+            {/*                label="Add Myself"*/}
+            {/*            />*/}
+            {/*        </Grid>*/}
+            {/*    </Grid>*/}
+            {/*</Grid>*/}
+        </>
     }
 
     const renderTraineeListUI = ()=> {
@@ -302,7 +447,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         <ThemeProvider theme={theme}>
             <Modal
                 open={open}
-                onClose={() => {closeTrainingDataForm()}}
+                onClose={() => {closeForm()}}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -420,7 +565,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                 <Grid item>
                                     <Button
                                         variant="outlined"
-                                        onClick={() => closeTrainingDataForm()}
+                                        onClick={() => closeForm()}
                                     >
                                         Cancel
                                     </Button>
