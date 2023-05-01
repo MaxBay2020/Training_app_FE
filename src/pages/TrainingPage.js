@@ -161,6 +161,7 @@ const TrainingPage = () => {
             </Container>
         </BasicLayout>
 
+
     )
 }
 
