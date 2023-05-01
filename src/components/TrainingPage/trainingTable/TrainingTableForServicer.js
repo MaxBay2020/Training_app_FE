@@ -120,8 +120,8 @@ const TrainingTableForServicer = ({trainingList}) => {
                 <TrainingModal
                     open={openModal}
                     setOpen={() => dispatch(switchOpenModal())}
-                    isCreating={false}
-                    isUpdating={true}
+                    isCreating={!currentTraining}
+                    isUpdating={!!currentTraining}
                     training={currentTraining}
                 />
             }

@@ -1,6 +1,7 @@
 export const commonStyles = {
     fullWidth: {
-        m: 1,
+        mt: 1,
+        mb: 1,
         width: '100%'
     }
 }

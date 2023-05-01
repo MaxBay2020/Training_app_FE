@@ -25,9 +25,7 @@ import {setCurrentTraining, switchOpenModal} from "../../../features/trainingSli
 import {ApproveOrReject} from "../../../utils/consts";
 
 const Row = ({training}) => {
-
-    const [{traineeFirstName, traineeLastName, traineeEmail}]= traineeList
-    const {trainingType, trainingName, userEmail, userFirstName, userLastName, startDate, endDate, hoursCount, trainingStatus, traineeList} = training
+    const { trainingType, trainingName, userEmail, userFirstName, userLastName, startDate, endDate, hoursCount, trainingStatus } = training
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
 
     const dispatch = useDispatch()
@@ -92,13 +90,6 @@ const Row = ({training}) => {
                 { renderActions(trainingStatus) }
             </TableRow>
 
-            {/*<TrainingModal*/}
-            {/*    open={openModal}*/}
-            {/*    setOpen={() => dispatch(switchOpenModal())}*/}
-            {/*    isCreating={false}*/}
-            {/*    isUpdating={true}*/}
-            {/*/>*/}
-
             <TrainingWithdrawModal
                 open={openWithdrawModal}
                 setOpen={setOpenWithdrawModal}
@@ -108,7 +99,7 @@ const Row = ({training}) => {
     );
 }
 
-const TrainingTableForServicer = ({trainingList}) => {
+const TrainingTableForServicerCoordinator = ({trainingList}) => {
 
 
     const dispatch = useDispatch()
@@ -123,8 +114,8 @@ const TrainingTableForServicer = ({trainingList}) => {
                 <TrainingModal
                     open={openModal}
                     setOpen={() => dispatch(switchOpenModal())}
-                    isCreating={false}
-                    isUpdating={true}
+                    isCreating={!currentTraining}
+                    isUpdating={!!currentTraining}
                     training={currentTraining}
                 />
             }
@@ -173,4 +164,4 @@ const TrainingTableForServicer = ({trainingList}) => {
 //     }).isRequired,
 // }
 
-export default TrainingTableForServicer
+export default TrainingTableForServicerCoordinator
