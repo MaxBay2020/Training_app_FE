@@ -14,7 +14,7 @@ const useLogin = (queryIdentifier) => {
         const res = await api.post('/auth/login', reqBody)
         const {
             accessToken,
-            userRole,
+            userRoles,
             userName,
             userEmail,
             servicerId,

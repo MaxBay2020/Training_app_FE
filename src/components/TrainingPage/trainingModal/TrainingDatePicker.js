@@ -35,7 +35,7 @@ const TrainingDatePicker = ({date, setDate, name}) => {
             <FormControl sx={commonStyles.fullWidth} variant="outlined">
                 <InputLabel htmlFor="outlined-adornment-dates">{name}</InputLabel>
                 <OutlinedInput
-                    value={date && moment(date).format('YYYY-MM-DD')}
+                    value={date && moment(date).format('MM-DD-YYYY')}
                     id="outlined-adornment-dates"
                     type='text'
                     endAdornment={
@@ -70,6 +70,21 @@ const TrainingDatePicker = ({date, setDate, name}) => {
                 </Box>
             </Modal>
 
+            <Modal
+                open={showDatePicker}
+                onClose={()=> setShowDatePicker(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box  sx={datePickerStyles.datePickerBox}>
+                    <DayPicker
+                        style={{justify:'center'}}
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                    />
+                </Box>
+            </Modal>
         </>
     )
 }
