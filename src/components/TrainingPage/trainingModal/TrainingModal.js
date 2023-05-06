@@ -18,7 +18,7 @@ import TrainingDatePicker from "./TrainingDatePicker";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import {wordsLimit} from "../../../utils/consts";
+import {UserRole, wordsLimit} from "../../../utils/consts";
 import {ThemeProvider} from "@emotion/react";
 import {commonStyles, commontStyles} from "../../../styles/commontStyles";
 import Button from "@mui/material/Button";
@@ -34,6 +34,17 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import {toast} from "react-toastify";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import {AddCircleOutlineOutlined} from "@mui/icons-material";
+import { Controller, useForm } from "react-hook-form"
+import {yupResolver} from "@hookform/resolvers/yup";
+import {trainingSchema} from "../../../utils/schema";
+import dayjs from 'dayjs';
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
 
 const styles = {
     modalStyle: {
@@ -60,6 +71,9 @@ const theme = createTheme({
     }
 })
 
+
+
+
 const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingName.length : wordsLimit)
@@ -68,8 +82,8 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
     const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
-    const [startDate, setStartDate] = useState(isUpdating ? training.startDate : '')
-    const [endDate, setEndDate] = useState(isUpdating ? training.endDate : '')
+    const [startDate, setStartDate] = useState(isUpdating ? dayjs(training.startDate) : dayjs(new Date()))
+    const [endDate, setEndDate] = useState(isUpdating ? dayjs(training.endDate) : dayjs(new Date()))
     const [hoursCount, setHoursCount] = useState(isUpdating ? training.hoursCount : 1)
     const [trainingURL, setTrainingURL] = useState(isUpdating ? training.trainingURL : '')
     const traineeInitialised = {
@@ -80,12 +94,19 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const [trainee, setTrainee] = useState(traineeInitialised)
     const [traineeList, setTraineeList] = useState([])
     const [addMyself, setAddMyself] = useState(isUpdating)
-    const { userName, userEmail } = useSelector(state => state.user)
+    const [error, setError] = useState(null)
+
+
+    const { userName, userEmail, userRole } = useSelector(state => state.user)
     const {isLoading, data: trainingTypes}
         = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes')
 
     const { mutate: addTraining } = useCreateTraining()
     const { mutate: updateTraining } = useUpdateTraining()
+
+    const { handleSubmit, control, formState: { errors } }  = useForm({
+        resolver: yupResolver(trainingSchema)
+    })
 
     const trainingNameHandler = e => {
         const input = e.target.value
@@ -167,12 +188,14 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         setOpen(false)
     }
 
-    const createTraining = () => {
+    const createTraining = (data) => {
+        const { trainingType, trainingName, trainingUrl } = data
+
         const newTraining = {
             trainingName,
             trainingType,
-            startDate,
-            endDate,
+            startDate: startDate.format('YYYY-MM-DD'),
+            endDate: endDate.format('YYYY-MM-DD'),
             hoursCount: +hoursCount,
             trainingURL,
             traineeList: traineeList.length === 0 ? [trainee] : traineeList
@@ -201,7 +224,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         return isUpdating ?
             (<Button variant="contained" onClick={() => updateTrainingHandler()}>Update</Button>)
             :
-            (<Button variant="contained" onClick={() => createTraining()}>Create</Button>)
+            (<Button variant="contained" onClick={handleSubmit(createTraining)}>Create</Button>)
     }
     const renderTraineeListUI = () => {
         return <>
@@ -345,39 +368,109 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                         direction="column"
                         justifyContent="center"
                         alignItems="stretch"
+                        spacing={1}
                     >
+
+                        {/*<Controller*/}
+                        {/*    control={control}*/}
+                        {/*    name={'test'}*/}
+                        {/*    render={({ field }) => (*/}
+                        {/*        <TextField*/}
+                        {/*            {...field}*/}
+                        {/*            variant='outlined'*/}
+                        {/*            error={!!errors['test']}*/}
+                        {/*            helperText={*/}
+                        {/*                errors['test'] ? 'error!' : ''*/}
+                        {/*            }*/}
+                        {/*        />*/}
+                        {/*    )}*/}
+                        {/*/>*/}
+
+                        {/*<div onClick={handleSubmit(submitForm)}>click</div>*/}
+
                         <Grid item>
-                            <FormControl sx={commonStyles.fullWidth}>
-                                <InputLabel id="demo-simple-select-label">Training Type</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={trainingType}
-                                    label="trainingType"
-                                    onChange={e => setTrainingType(e.target.value)}
-                                >
-                                    {
-                                        !isLoading && trainingTypes.map((trainingType, index) => (<MenuItem key={index} value={trainingType}>{trainingType}</MenuItem>))
-                                    }
-                                </Select>
-                            </FormControl>
+                            {/*<FormControl>*/}
+                            {/*    <InputLabel htmlFor="trinity-select">*/}
+                            {/*        Choose one Person of trinity*/}
+                            {/*    </InputLabel>*/}
+                            {/*    <Controller*/}
+                            {/*        control={control}*/}
+                            {/*        name="trainingType"*/}
+                            {/*        render={({field}) =>(*/}
+                            {/*            <Select*/}
+                            {/*                id="trinity-select"*/}
+                            {/*                {...field}*/}
+                            {/*                value={trainingType}*/}
+                            {/*                onChange={e => setTrainingType(e.target.value)}*/}
+                            {/*            >*/}
+                            {/*                <MenuItem>1</MenuItem>*/}
+                            {/*                <MenuItem>2</MenuItem>*/}
+                            {/*            </Select>*/}
+                            {/*        )}*/}
+                            {/*    />*/}
+                            {/*</FormControl>*/}
+                            <Controller
+                                control={control}
+                                name={'trainingType'}
+                                render={({ field }) => (
+                                    <FormControl
+                                        sx={commonStyles.fullWidth}
+                                        error={!!errors.trainingType}
+                                    >
+                                        <InputLabel id="demo-simple-select-label">Training Type</InputLabel>
+                                        <Select
+                                            {...field}
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            label="trainingType"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            // vale={trainingType}
+                                            // onChange={e => setTrainingType(e.target.value)}
+                                        >
+                                            {
+                                                !isLoading && trainingTypes.map((trainingType, index) => (<MenuItem key={index} value={trainingType}>{trainingType}</MenuItem>))
+                                            }
+                                        </Select>
+
+                                        {
+                                            errors.trainingType && <FormHelperText id="my-helper-text">{errors.trainingType.message}</FormHelperText>
+                                        }
+                                    </FormControl>
+                                )}
+                            />
                         </Grid>
+
                         <Grid item>
-                            <FormControl sx={commonStyles.fullWidth} variant="outlined">
-                                <InputLabel htmlFor="outlined-adornment-password">Training Name</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password"
-                                    type='text'
-                                    value={trainingName}
-                                    onChange={e => trainingNameHandler(e)}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            <Typography variant='span'>{trainingNameWordsRemaining} remaining</Typography>
-                                        </InputAdornment>
-                                    }
-                                    label="trainingName"
-                                />
-                            </FormControl>
+                            <Controller
+                                control={control}
+                                name={'trainingName'}
+                                render={({ field }) => (
+                                    <FormControl
+                                        sx={commonStyles.fullWidth}
+                                        variant="outlined"
+                                        {...field}
+                                        error={!!errors.trainingName}
+                                    >
+                                        <InputLabel htmlFor="outlined-adornment-password">Training Name</InputLabel>
+                                        <OutlinedInput
+                                            id="outlined-adornment-password"
+                                            type='text'
+                                            value={trainingName}
+                                            onChange={e => trainingNameHandler(e)}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <Typography variant='span'>{trainingNameWordsRemaining} remaining</Typography>
+                                                </InputAdornment>
+                                            }
+                                            label="trainingName"
+                                        />
+                                        {
+                                            errors.trainingName && <FormHelperText id="my-helper-text">{errors.trainingName.message}</FormHelperText>
+                                        }
+                                    </FormControl>
+                                )}
+                            />
                         </Grid>
 
                         <Grid item>
@@ -386,18 +479,59 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                 justifyContent='space-between'
                             >
                                 <Grid item xs={12} md={5.5}>
-                                    <TrainingDatePicker
-                                        date={startDate}
-                                        setDate={setStartDate}
-                                        name='Start Date'
-                                    />
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DemoContainer
+                                            components={[
+                                                'DatePicker',
+                                                'MobileDatePicker',
+                                                'DesktopDatePicker',
+                                                'StaticDatePicker',
+                                            ]}
+                                        >
+                                            <DatePicker
+                                                value={startDate}
+                                                onChange={value => setStartDate(value)}
+                                                disableFuture
+                                                // defaultValue={}
+                                                label='Start Date'
+                                            />
+                                        </DemoContainer>
+                                    </LocalizationProvider>
+                                    {/*<TrainingDatePicker*/}
+                                    {/*    date={startDate}*/}
+                                    {/*    setDate={setStartDate}*/}
+                                    {/*    name='Start Date'*/}
+                                    {/*    control={control}*/}
+                                    {/*    errors={errors}*/}
+                                    {/*/>*/}
                                 </Grid>
                                 <Grid item xs={12} md={5.5}>
-                                    <TrainingDatePicker
-                                        date={endDate}
-                                        setDate={setEndDate}
-                                        name='End Date'
-                                    />
+                                    {/*<TrainingDatePicker*/}
+                                    {/*    date={endDate}*/}
+                                    {/*    setDate={setEndDate}*/}
+                                    {/*    name='End Date'*/}
+                                    {/*    control={control}*/}
+                                    {/*    errors={errors}*/}
+                                    {/*/>*/}
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DemoContainer
+                                            components={[
+                                                'DatePicker',
+                                                'MobileDatePicker',
+                                                'DesktopDatePicker',
+                                                'StaticDatePicker',
+                                            ]}
+                                        >
+                                            <DatePicker
+                                                value={endDate}
+                                                onChange={value => setEndDate(value)}
+                                                disableFuture
+                                                minDate={startDate}
+                                                // defaultValue={}
+                                                label='End Date'
+                                            />
+                                        </DemoContainer>
+                                    </LocalizationProvider>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -416,25 +550,41 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                         </Grid>
 
                         <Grid item>
-                            <FormControl sx={commonStyles.fullWidth} variant="outlined">
-                                <InputLabel htmlFor="outlined-adornment-password">URL</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password"
-                                    type='text'
-                                    value={trainingURL}
-                                    onChange={e => trainingUrlHandler(e)}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            <Typography variant='span'>{trainingUrlWordsRemaining} remaining</Typography>
-                                        </InputAdornment>
-                                    }
-                                    label="url"
-                                />
-                            </FormControl>
+                            <Controller
+                                control={control}
+                                name='trainingUrl'
+                                render={({field}) => (
+                                    <FormControl
+                                        {...field}
+                                        sx={commonStyles.fullWidth}
+                                        variant="outlined"
+                                        error={!!errors.trainingUrl}
+                                    >
+                                        <InputLabel htmlFor="outlined-adornment-password">URL</InputLabel>
+                                        <OutlinedInput
+                                            id="outlined-adornment-password"
+                                            type='text'
+                                            value={trainingURL}
+                                            onChange={e => trainingUrlHandler(e)}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <Typography variant='span'>{trainingUrlWordsRemaining} remaining</Typography>
+                                                </InputAdornment>
+                                            }
+                                            label="Training URL"
+                                        />
+                                        {
+                                            errors.trainingUrl && <FormHelperText id="my-helper-text">{errors.trainingUrl.message}</FormHelperText>
+                                        }
+                                    </FormControl>
+                                )}
+                            >
+
+                            </Controller>
                         </Grid>
 
                         {
-                            !isUpdating && renderTraineeListUI()
+                            !isUpdating &&  userRole === UserRole.SERVICER_COORDINATOR && renderTraineeListUI()
                         }
 
                         <Grid item>
