@@ -42,3 +42,8 @@ export const sortingSystem = {
     }
 }
 
+export const fileType = {
+    excel: 1,
+    pdf: 2,
+}
+

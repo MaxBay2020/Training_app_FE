@@ -71,14 +71,10 @@ const theme = createTheme({
     }
 })
 
-
-
-
 const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingName.length : wordsLimit)
     const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingURL.length : wordsLimit)
-
 
     const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
     const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
