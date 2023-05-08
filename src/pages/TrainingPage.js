@@ -40,7 +40,7 @@ const TrainingPage = () => {
 
     const {
         userName,
-        userRoles,
+        userRole,
         servicerId,
         servicerMasterName,
     } = useSelector(state => state.user)
@@ -52,14 +52,14 @@ const TrainingPage = () => {
         = useFetchTrainings(
             ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
 
-    const renderTrainingTable = userRoles => {
-        if(userRoles.includes(UserRole.SERVICER)){
+    const renderTrainingTable = userRole => {
+        if(userRole.toUpperCase() === UserRole.SERVICER){
             return <TrainingTableForServicer trainingList={data.trainingList} />
         }else if(userRole.toUpperCase() === UserRole.SERVICER_COORDINATOR){
             return <TrainingTableForSupServicer trainingList={data.trainingList} />
         }else if(userRole.toUpperCase() === UserRole.ADMIN){
             return <TrainingTableForAdmin trainingList={data.trainingList} />
-        }else if(userRoles.includes(UserRole.APPROVER)){
+        }else if(userRole.toUpperCase() === UserRole.APPROVER){
             return <TrainingTableForApprover trainingList={data.trainingList} />
         }
     }
@@ -104,13 +104,13 @@ const TrainingPage = () => {
             <Container>
                 <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
                     <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
-                    <Grid item><Typography variant='subtitle'>{`User Role:   ${userRoles}`}</Typography></Grid>
-                    { data && renderUserInfo(data.userRoles) }
+                    <Grid item><Typography variant='subtitle'>{`User Role:   ${userRole}`}</Typography></Grid>
+                    { data && renderUserInfo(data.userRole) }
                 </Grid>
 
                 <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
                     {
-                        data && renderAddTrainingButton(data.userRoles)
+                        data && renderAddTrainingButton(data.userRole)
                     }
                     <Grid item xs={true} md={true}>
                         <TextField
@@ -142,7 +142,7 @@ const TrainingPage = () => {
                 </Grid>
 
                 <Box sx={{minHeight: '390px'}}>
-                    { data && renderTrainingTable(data.userRoles) }
+                    { data && renderTrainingTable(data.userRole) }
                 </Box>
 
 
@@ -157,10 +157,9 @@ const TrainingPage = () => {
                     />
                 }
 
-                { data && renderTrainingCredits(data.userRoles)}
+                { data && renderTrainingCredits(data.userRole)}
             </Container>
         </BasicLayout>
-
 
     )
 }

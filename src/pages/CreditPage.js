@@ -13,7 +13,7 @@ import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import MenuItem from "@mui/material/MenuItem";
 import useDebounce from "../hooks/trainingHooks/useDebounce";
-import {fileType, pageLimit, sortingSystem, UserRole} from "../utils/consts";
+import {pageLimit, sortingSystem, UserRole} from "../utils/consts";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CreditTable from "../components/CreditPage/CreditTable";
@@ -34,7 +34,7 @@ const CreditPage = () => {
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(pageLimit)
-    const [downloadFileType, setDownloadFileType] = useState(fileType.excel);
+    const [fileType, setFileType] = useState(1)
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -47,7 +47,7 @@ const CreditPage = () => {
 
     const {
         userName,
-        userRoles,
+        userRole,
     } = useSelector(state => state.user)
 
 
@@ -55,14 +55,14 @@ const CreditPage = () => {
         = useFetchCredits(
             ['queryAllCredits', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
 
-    const { isFetching, refetch: downloadCredit } = useDownloadCredit(['download'], downloadFileType)
+    const { isFetching, refetch: downloadCredit } = useDownloadCredit(['download'], fileType)
 
     const searchHandler = e => {
         setSearchKeyword(e.target.value)
     }
 
     const handleDownload = fileType => {
-        setDownloadFileType(fileType)
+        setFileType(fileType)
         downloadCredit()
         handleClose()
     }
@@ -76,7 +76,7 @@ const CreditPage = () => {
                     <Grid item>
                         <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
                             <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
-                            <Grid item><Typography variant='subtitle'>{`User Role:   ${userRoles}`}</Typography></Grid>
+                            <Grid item><Typography variant='subtitle'>{`User Role:   ${userRole}`}</Typography></Grid>
                         </Grid>
                     </Grid>
                     <Grid item>
@@ -115,8 +115,8 @@ const CreditPage = () => {
                                         'aria-labelledby': 'basic-button',
                                     }}
                                 >
-                                    <MenuItem onClick={() => handleDownload(fileType.excel)}>Download Excel</MenuItem>
-                                    <MenuItem onClick={() => handleDownload(fileType.pdf)}>Download PDF</MenuItem>
+                                    <MenuItem onClick={() => handleDownload(1)}>Download Excel</MenuItem>
+                                    <MenuItem onClick={() => handleDownload(2)}>Download PDF</MenuItem>
                                 </Menu>
                             </Box>
                         </Tooltip>

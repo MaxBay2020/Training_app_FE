@@ -35,9 +35,9 @@ const Login = ({setShowRegister}) => {
 
     const { mutate: loginUser } = useLogin(['login'])
 
-
     const login = () => {
         loginUser({ email, password })
+        // navigate('/training')
     }
 
     // html code
