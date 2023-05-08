@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
 import {
+    Alert,
     Checkbox, Chip,
     createTheme,
     FormControl,
@@ -12,25 +13,39 @@ import {
     Select,
     TextField, Tooltip
 } from "@mui/material";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import 'react-day-picker/dist/style.css';
 import TrainingDatePicker from "./TrainingDatePicker";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
-import {AddCircleOutlineOutlined, RemoveCircleOutlineOutlined} from "@mui/icons-material";
 import Typography from "@mui/material/Typography";
 import {UserRole, wordsLimit} from "../../../utils/consts";
 import {ThemeProvider} from "@emotion/react";
-import {commonStyles, modalStyles} from "../../../styles/commontStyles";
+import {commonStyles, commontStyles} from "../../../styles/commontStyles";
 import Button from "@mui/material/Button";
+import {useMutation} from "@tanstack/react-query";
+import axios from "axios";
+import api from "../../../api/api";
 import useCreateTraining from "../../../hooks/trainingHooks/useCreateTraining";
 import useFetchTrainingTypes from "../../../hooks/trainingHooks/useFetchTrainingTypes";
+import {useSelector} from "react-redux";
 import useUpdateTraining from "../../../hooks/trainingHooks/useUpdateTraining";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import {toast} from "react-toastify";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import {AddCircleOutlineOutlined} from "@mui/icons-material";
+import { Controller, useForm } from "react-hook-form"
+import {yupResolver} from "@hookform/resolvers/yup";
+import {getTrainingSchema, trainingSchemaForServicer} from "../../../utils/schema";
+import dayjs from 'dayjs';
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
 
 const styles = {
     modalStyle: {
@@ -57,6 +72,9 @@ const theme = createTheme({
     }
 })
 
+
+
+
 const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingName.length : wordsLimit)
@@ -65,25 +83,42 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
     const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
-    const [startDate, setStartDate] = useState(isUpdating ? training.startDate : '')
-    const [endDate, setEndDate] = useState(isUpdating ? training.endDate : '')
+    const [startDate, setStartDate] = useState(isUpdating ? dayjs(training.startDate) : dayjs(new Date()))
+    const [endDate, setEndDate] = useState(isUpdating ? dayjs(training.endDate) : dayjs(new Date()))
     const [hoursCount, setHoursCount] = useState(isUpdating ? training.hoursCount : 1)
     const [trainingURL, setTrainingURL] = useState(isUpdating ? training.trainingURL : '')
-
-    const traineeInitialData = {
-        traineeEmail:'',
-        traineeFirstName:'',
-        traineeLastName:'',
+    const traineeInitialised = {
+        traineeEmail: '',
+        traineeFirstName: '',
+        traineeLastName: '',
     }
-    const [trainee, setTrainee] = useState(traineeInitialData)
+    const [trainee, setTrainee] = useState(traineeInitialised)
     const [traineeList, setTraineeList] = useState([])
-    const {userName, userEmail, userRole} = useSelector(state => state.user)
+    const [displayErrorMessage, setDisplayErrorMessage] = useState(false);
 
+    const [addMyself, setAddMyself] = useState(isUpdating)
+    const [error, setError] = useState(null)
+
+    const { userName, userEmail, userRole } = useSelector(state => state.user)
     const {isLoading, data: trainingTypes}
         = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes')
 
     const { mutate: addTraining } = useCreateTraining()
     const { mutate: updateTraining } = useUpdateTraining()
+
+    const { handleSubmit, control, reset, setValue, formState: { errors } }  = useForm({
+        resolver: yupResolver(getTrainingSchema(userRole)),
+    })
+
+    useEffect(() => {
+        if(isUpdating){
+            setValue('trainingType', training.trainingType)
+            setValue('trainingName', training.trainingName)
+            setValue('trainingHours', training.hoursCount)
+            setValue('trainingUrl', training.trainingURL)
+        }
+    }, [isUpdating])
+
 
     const trainingNameHandler = e => {
         const input = e.target.value
@@ -123,12 +158,14 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const addTrainee = () =>{
         if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length){
-            toast.error('Please fill trainee info')
-            return false
+            // toast.error('Please fill trainee info')
+            setDisplayErrorMessage(true)
+            return
         }
+
+        setDisplayErrorMessage(false)
         setTraineeList([...traineeList, trainee])
         setTrainee(traineeInitialised)
-        return true
     }
 
     const deleteTraineeFromTraineeList = traineeEmail => {
@@ -151,27 +188,57 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     // }
 
     const closeForm = () => {
-        setTrainingName('')
-        setTrainingType('')
-        setStartDate('')
-        setEndDate('')
-        setHoursCount(1)
-        setTrainingURL('')
+        reset()
+        // setTrainingName('')
+        // setTrainingType('')
+        setStartDate(dayjs(new Date()))
+        setEndDate(dayjs(new Date()))
+        // setHoursCount(1)
+        // setTrainingURL('')
         setTraineeList([])
         setTrainee(traineeInitialised)
-        setTrainingNameWordsRemaining(wordsLimit)
-        setTrainingUrlWordsRemaining(wordsLimit)
-        setAddMyself(false)
+        setDisplayErrorMessage(false)
+        // setTrainingNameWordsRemaining(wordsLimit)
+        // setTrainingUrlWordsRemaining(wordsLimit)
+        // setAddMyself(false)
         setOpen(false)
     }
 
-    const createTraining = () => {
+    // const validateForm = async () => {
+    //     await trigger()
+    //     if(traineeList.length === 0){
+    //         const isValid = await trigger(['traineeEmail', 'traineeFirstName', 'traineeLastName'])
+    //         if(!isValid)
+    //             return
+    //     }else{
+    //         console.log('asdf')
+    //         unregister(['traineeEmail', 'traineeFirstName', 'traineeLastName'])
+    //     }
+    //
+    //     await handleSubmit(createTraining)()
+    // }
+
+    const createTraining = (data) => {
+        const {
+            trainingType,
+            trainingName,
+            trainingUrl: trainingURL,
+            trainingHours : hoursCount
+        } = data
+
+        if(userRole === UserRole.SERVICER_COORDINATOR){
+            if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length && traineeList.length === 0){
+                setDisplayErrorMessage(true)
+                return
+            }
+        }
+
         const newTraining = {
             trainingName,
             trainingType,
-            startDate,
-            endDate,
-            hoursCount: +hoursCount,
+            startDate: startDate.format('YYYY-MM-DD'),
+            endDate: endDate.format('YYYY-MM-DD'),
+            hoursCount,
             trainingURL,
             traineeList: traineeList.length === 0 ? [trainee] : traineeList
         }
@@ -180,14 +247,21 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         closeForm()
     }
 
-    const updateTrainingHandler = () => {
+    const updateTrainingHandler = (data) => {
+        const {
+            trainingType,
+            trainingName,
+            trainingUrl,
+            trainingHours : hoursCount
+        } = data
+
         const updatedTraining = {
             trainingId: training.id,
             trainingName,
             trainingType,
-            startDate,
-            endDate,
-            hoursCount: +hoursCount,
+            startDate: startDate.format('YYYY-MM-DD'),
+            endDate: endDate.format('YYYY-MM-DD'),
+            hoursCount,
             trainingURL,
             traineeList:[]
         }
@@ -197,9 +271,9 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const renderCreateOrUpdateButton = () => {
         return isUpdating ?
-            (<Button variant="contained" onClick={() => updateTrainingHandler()}>Update</Button>)
+            (<Button variant="contained" onClick={handleSubmit(updateTrainingHandler)}>Update</Button>)
             :
-            (<Button variant="contained" onClick={() => createTraining()}>Create</Button>)
+            (<Button variant="contained" onClick={handleSubmit(createTraining)}>Create</Button>)
     }
     const renderTraineeListUI = () => {
         return <>
@@ -256,45 +330,65 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                       spacing={1}
                 >
                     <Grid item xs={12} md={6}>
-                        <FormControl sx={commonStyles.fullWidth} variant="outlined">
+                        <FormControl
+                            sx={commonStyles.fullWidth}
+                            variant="outlined"
+                        >
                             <InputLabel htmlFor="outlined-adornment-password">Trainee Email</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-password"
                                 type='text'
+                                label="trainee email"
                                 name='traineeEmail'
                                 value={trainee.traineeEmail}
-                                onChange={e => fillTraineeInfo(e)}
-                                label="traineeList"
+                                onChange={e=>fillTraineeInfo(e)}
                             />
                         </FormControl>
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                        <FormControl sx={commonStyles.fullWidth} variant="outlined">
+                        <FormControl
+                            sx={commonStyles.fullWidth}
+                            variant="outlined"
+                        >
                             <InputLabel htmlFor="outlined-adornment-password">Trainee First Name</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-password"
                                 type='text'
+                                label="traineeList"
                                 name='traineeFirstName'
                                 value={trainee.traineeFirstName}
-                                onChange={e => fillTraineeInfo(e)}
-                                label="traineeList"
+                                onChange={e=>fillTraineeInfo(e)}
                             />
                         </FormControl>
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                        <FormControl sx={commonStyles.fullWidth} variant="outlined">
+                        <FormControl
+                            sx={commonStyles.fullWidth}
+                            variant="outlined"
+                        >
                             <InputLabel htmlFor="outlined-adornment-password">Trainee Last Name</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-password"
                                 type='text'
+                                label="traineeList"
                                 name='traineeLastName'
                                 value={trainee.traineeLastName}
-                                onChange={e => fillTraineeInfo(e)}
-                                label="traineeList"
+                                onChange={e=>fillTraineeInfo(e)}
                             />
                         </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        {
+                            displayErrorMessage
+                            &&
+                            <Alert severity="error">
+                                All trainee fields are required
+                            </Alert>
+                        }
+
                     </Grid>
                 </Grid>
             </Grid>
@@ -328,121 +422,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         </>
     }
 
-    const renderTraineeListUI = ()=> {
-        return <>
-            <Grid item>
-                    {
-                        traineeList.map((trainee, index) =>(
-                            // <Chip
-                            //     label={trainee.traineeEmail}
-                            //     key={index}
-                            //     variant="outlined"
-                            //     sx={{m:1}}
-                            //     // onClick={()=>{}}
-                            //     onDelete={()=>deleteTrainee(trainee.traineeEmail)}
-                            // />
-
-                            <Grid container direction='row' justifyContent='space-between'spacing={1}>
-                                <Grid item xs={5} md={5}>
-                                    <FormControl sx={commonStyles.fullWidth} disabled variant="standard">
-                                        {/*<InputLabel htmlFor="component-disabled">Name</InputLabel>*/}
-                                        <Input id="component-disabled" defaultValue={trainee.traineeEmail} />
-                                        <FormHelperText>Trainee Email</FormHelperText>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={3} md={3}>
-                                    <FormControl sx={commonStyles.fullWidth} disabled variant="standard">
-                                        <Input id="component-disabled" defaultValue={trainee.traineeFirstName} />
-                                        <FormHelperText>Trainee First Name</FormHelperText>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={3} md={3}>
-                                    <FormControl sx={commonStyles.fullWidth} disabled variant="standard">
-                                        <Input id="component-disabled" defaultValue={trainee.traineeLastName} />
-                                        <FormHelperText>Trainee Last Name</FormHelperText>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={1} md={1}>
-                                    <Chip
-                                        onDelete={()=>deleteTrainee(trainee.traineeEmail)}>
-                                    </Chip>
-                                </Grid>
-                            </Grid>
-                        ))
-                    }
-
-            </Grid>
-
-            <Grid item>
-                <Grid container alignItems='center' justifyContent='space-between' spacing={1}>
-                    <Grid item xs={12}>
-                        <FormControl sx={commonStyles.fullWidth} variant="outlined">
-                            <InputLabel htmlFor="outlined-adornment-password">Trainee Email</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type='text'
-                                name='traineeEmail'
-                                value={trainee.traineeEmail}
-                                onChange={e => fillTraineeInfo(e)}
-                                label="traineeEmail"
-                            />
-                        </FormControl>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                        <FormControl sx={commonStyles.fullWidth} variant="outlined">
-                            <InputLabel htmlFor="outlined-adornment-password">Trainee First Name</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type='text'
-                                name='traineeFirstName'
-                                value={trainee.traineeFirstName}
-                                onChange={e => fillTraineeInfo(e)}
-                                label="traineeList"
-                            />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <FormControl sx={commonStyles.fullWidth} variant="outlined">
-                            <InputLabel htmlFor="outlined-adornment-password">Trainee Last Name</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type='text'
-                                name='traineeLastName'
-                                value={trainee.traineeLastName}
-                                onChange={e => fillTraineeInfo(e)}
-                                label="traineeList"
-                            />
-                        </FormControl>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item>
-                <Grid container alignItems='center' justifyContent='space-between' spacing={1}>
-                    <Grid item sx={commonStyles.fullWidth}>
-                        <IconButton
-                            variant="outlined" size="small"
-                            onClick={() => addTraineeHandler()}
-                            sx={{ fontSize: "14px", border: "4px", borderRadius: 1, mb: 0.5 }}
-                        >
-                            <AddCircleOutlineOutlined color='primary' mr={0.5}/>
-                             Add More Trainee(s)
-                        </IconButton>
-                    </Grid>
-
-                    {/*<Grid item alignItems= 'left' >*/}
-                    {/*    <FormControlLabel*/}
-                    {/*        sx={commonStyles.fullWidth}*/}
-                    {/*        control={<Checkbox  />}*/}
-                    {/*        onChange={addMyselfHandler}*/}
-                    {/*        label="Add Myself" />*/}
-                    {/*</Grid>*/}
-                </Grid>
-
-            </Grid>
-        </>
-    }
-
     return (
         <ThemeProvider theme={theme}>
             <Modal
@@ -452,103 +431,222 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                 aria-describedby="modal-modal-description"
             >
 
-                <Box sx={modalStyles.modalStyle}>
+                <Box sx={styles.modalStyle}>
                     <Grid
                         container
                         direction="column"
                         justifyContent="center"
                         alignItems="stretch"
+                        spacing={1}
                     >
+
+                        {/*<Controller*/}
+                        {/*    control={control}*/}
+                        {/*    name={'test'}*/}
+                        {/*    render={({ field }) => (*/}
+                        {/*        <TextField*/}
+                        {/*            {...field}*/}
+                        {/*            variant='outlined'*/}
+                        {/*            error={!!errors['test']}*/}
+                        {/*            helperText={*/}
+                        {/*                errors['test'] ? 'error!' : ''*/}
+                        {/*            }*/}
+                        {/*        />*/}
+                        {/*    )}*/}
+                        {/*/>*/}
+
+                        {/*<div onClick={handleSubmit(submitForm)}>click</div>*/}
+
                         <Grid item>
-                            <FormControl sx={commonStyles.fullWidth}>
-                                <InputLabel id="demo-simple-select-label">Training Type</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={trainingType}
-                                    label="trainingType"
-                                    onChange={e => setTrainingType(e.target.value)}
-                                >
-                                    {
-                                        !isLoading && trainingTypes.map((trainingType, index) =>
-                                            (<MenuItem key={index} value={trainingType}>{trainingType}</MenuItem>))
-                                    }
-                                </Select>
-                            </FormControl>
+                            <Controller
+                                control={control}
+                                name='trainingType'
+                                render={({ field }) => (
+                                    <FormControl
+                                        sx={commonStyles.fullWidth}
+                                        error={!!errors.trainingType}
+                                    >
+                                        <InputLabel id="demo-simple-select-label">Training Type</InputLabel>
+                                        <Select
+                                            {...field}
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            label="trainingType"
+                                            disabled={isUpdating}
+                                        >
+                                            {
+                                                !isLoading && trainingTypes.map((trainingType, index) => (<MenuItem key={index} value={trainingType}>{trainingType}</MenuItem>))
+                                            }
+                                        </Select>
+
+                                        {
+                                            errors.trainingType && <FormHelperText id="my-helper-text">{errors.trainingType.message}</FormHelperText>
+                                        }
+                                    </FormControl>
+                                )}
+                            />
                         </Grid>
 
                         <Grid item>
-                            <FormControl sx={commonStyles.fullWidth} variant="outlined">
-                                <InputLabel htmlFor="outlined-adornment-password">Training Name</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password"
-                                    type='text'
-                                    value={trainingName}
-                                    onChange={e => trainingNameHandler(e)}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            <Typography variant='span'>{trainingNameWordsRemaining} remaining</Typography>
-                                        </InputAdornment>
-                                    }
-                                    label="trainingName"
-                                />
-                            </FormControl>
+                            <Controller
+                                control={control}
+                                name='trainingName'
+                                render={({ field }) => (
+                                    <FormControl
+                                        sx={commonStyles.fullWidth}
+                                        variant="outlined"
+                                        error={!!errors.trainingName}
+                                    >
+                                        <InputLabel htmlFor="outlined-adornment-password">Training Name</InputLabel>
+                                        <OutlinedInput
+                                            {...field}
+                                            id="outlined-adornment-password"
+                                            type='text'
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <Typography variant='span'>{trainingNameWordsRemaining} remaining</Typography>
+                                                </InputAdornment>
+                                            }
+                                            label="trainingName"
+                                        />
+                                        {
+                                            errors.trainingName && <FormHelperText id="my-helper-text">{errors.trainingName.message}</FormHelperText>
+                                        }
+                                    </FormControl>
+                                )}
+                            />
                         </Grid>
 
                         <Grid item>
-                            <Grid container alignItems='center' justifyContent='center' spacing={1}>
-                                <Grid item xs = {6}>
-                                    <TrainingDatePicker
-                                        date={startDate}
-                                        setDate={setStartDate}
-                                        isStartDate={true}
-                                        name='Start Date'
-                                    />
+                            <Grid container
+                                alignItems='center'
+                                justifyContent='space-between'
+                            >
+                                <Grid item xs={12} md={5.5}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DemoContainer
+                                            components={[
+                                                'DatePicker',
+                                                'MobileDatePicker',
+                                                'DesktopDatePicker',
+                                                'StaticDatePicker',
+                                            ]}
+                                        >
+                                            <DatePicker
+                                                value={startDate}
+                                                onChange={value => setStartDate(value)}
+                                                disableFuture
+                                                // defaultValue={}
+                                                label='Start Date'
+                                            />
+                                        </DemoContainer>
+                                    </LocalizationProvider>
+                                    {/*<TrainingDatePicker*/}
+                                    {/*    date={startDate}*/}
+                                    {/*    setDate={setStartDate}*/}
+                                    {/*    name='Start Date'*/}
+                                    {/*    control={control}*/}
+                                    {/*    errors={errors}*/}
+                                    {/*/>*/}
                                 </Grid>
-                                <Grid item xs = {6}>
-                                    <TrainingDatePicker
-                                        date={endDate}
-                                        setDate={setEndDate}
-                                        isStartDate={false}
-                                        name='End Date'
-                                    />
+                                <Grid item xs={12} md={5.5}>
+                                    {/*<TrainingDatePicker*/}
+                                    {/*    date={endDate}*/}
+                                    {/*    setDate={setEndDate}*/}
+                                    {/*    name='End Date'*/}
+                                    {/*    control={control}*/}
+                                    {/*    errors={errors}*/}
+                                    {/*/>*/}
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DemoContainer
+                                            components={[
+                                                'DatePicker',
+                                                'MobileDatePicker',
+                                                'DesktopDatePicker',
+                                                'StaticDatePicker',
+                                            ]}
+                                        >
+                                            <DatePicker
+                                                value={endDate}
+                                                onChange={value => setEndDate(value)}
+                                                disableFuture
+                                                minDate={startDate}
+                                                // defaultValue={}
+                                                label='End Date'
+                                            />
+                                        </DemoContainer>
+                                    </LocalizationProvider>
                                 </Grid>
                             </Grid>
                         </Grid>
 
                         <Grid item>
-                            <FormControl sx={commonStyles.fullWidth}>
-                                <TextField
-                                    value={+hoursCount}
-                                    onChange={e => trainingHoursHandler(e)}
-                                    id="standard-basic"
-                                    label="Hours"
-                                    variant="outlined"
-                                    type="number"
-                                />
-                            </FormControl>
+                            <Controller
+                                control={control}
+                                name='trainingHours'
+                                render={({field}) => (
+                                    <FormControl
+                                        sx={commonStyles.fullWidth}
+                                        error={!!errors.trainingHours}
+                                    >
+                                        {/*<TextField*/}
+                                        {/*    {...field}*/}
+                                        {/*    id="standard-basic"*/}
+                                        {/*    label="Hours"*/}
+                                        {/*    variant="outlined"*/}
+                                        {/*    type="number"*/}
+                                        {/*/>*/}
+
+                                        <InputLabel htmlFor="outlined-adornment-password">Training Hours</InputLabel>
+                                        <OutlinedInput
+                                            {...field}
+                                            id="outlined-adornment-password"
+                                            type='number'
+                                            label="trainingName"
+                                        />
+
+                                        {
+                                            errors.trainingHours && <FormHelperText id="my-helper-text">{errors.trainingHours.message}</FormHelperText>
+                                        }
+                                    </FormControl>
+                                )}
+                            />
                         </Grid>
 
                         <Grid item>
-                            <FormControl sx={commonStyles.fullWidth} variant="outlined">
-                                <InputLabel htmlFor="outlined-adornment-password">URL</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password"
-                                    type='text'
-                                    value={trainingURL}
-                                    onChange={e => trainingUrlHandler(e)}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            <Typography variant='span'>{trainingUrlWordsRemaining} remaining</Typography>
-                                        </InputAdornment>
-                                    }
-                                    label="url"
-                                />
-                            </FormControl>
+                            <Controller
+                                control={control}
+                                name='trainingUrl'
+                                render={({field}) => (
+                                    <FormControl
+                                        sx={commonStyles.fullWidth}
+                                        variant="outlined"
+                                        error={!!errors.trainingUrl}
+                                    >
+                                        <InputLabel htmlFor="outlined-adornment-password">URL</InputLabel>
+                                        <OutlinedInput
+                                            {...field}
+                                            id="outlined-adornment-password"
+                                            type='text'
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <Typography variant='span'>{trainingUrlWordsRemaining} remaining</Typography>
+                                                </InputAdornment>
+                                            }
+                                            label="Training URL"
+                                        />
+                                        {
+                                            errors.trainingUrl && <FormHelperText id="my-helper-text">{errors.trainingUrl.message}</FormHelperText>
+                                        }
+                                    </FormControl>
+                                )}
+                            >
+
+                            </Controller>
                         </Grid>
 
                         {
-                            !isUpdating && userRole === UserRole.SERVICER_COORDINATOR && renderTraineeListUI()
+                            !isUpdating &&  userRole === UserRole.SERVICER_COORDINATOR && renderTraineeListUI()
                         }
 
                         <Grid item>
@@ -575,7 +673,8 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                     </Grid>
                 </Box>
             </Modal>
-        </ThemeProvider> )
+        </ThemeProvider>
+    )
 }
 
 export default TrainingModal

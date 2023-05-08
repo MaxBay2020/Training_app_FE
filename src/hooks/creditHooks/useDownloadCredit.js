@@ -41,16 +41,25 @@ const useDownloadCredit = (queryIdentifier, fileType) => {
         },
          onSuccess: (data) => {
             let fileExtension = ''
+            let type = ''
             if(fileType === 1){
                 // download excel
-                fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-                fileExtension = '.xlsx'
+                type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+                fileExtension = 'xlsx'
 
             }else if(fileType === 2){
-                fileType = 'application/pdf'
-                fileExtension = '.pdf'
+                type = 'application/pdf'
+                fileExtension = 'pdf'
+
+                // FOR TEMP USE
+                const blob = new Blob([data], { type })
+                if(data.type === 'application/octet-stream'){
+                    return
+                }
+                saveAs(blob, `${Date.now()}.${fileExtension}`)
+                return
             }
-             const blob = new Blob([data], { type: fileType })
+             const blob = new Blob([data], { type })
              saveAs(blob, `${Date.now()}.${fileExtension}`)
          }
     })

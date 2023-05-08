@@ -8,6 +8,9 @@ import moment from "moment";
 import {commonStyles} from "../../../styles/commontStyles";
 import Box from "@mui/material/Box";
 import {useSelector} from "react-redux";
+import {useForm, Controller} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {trainingSchema} from "../../../utils/schema";
 
 
 const styles = {
@@ -27,31 +30,49 @@ const styles = {
     }
 };
 
-const TrainingDatePicker = ({date, setDate, name}) => {
+const TrainingDatePicker = ({date, setDate, name, control, errors}) => {
     const [showDatePicker, setShowDatePicker] = useState(false)
+    const nameLowerCase = name.replace(' ', '').toLowerCase()
 
     return (
         <>
-            <FormControl sx={commonStyles.fullWidth} variant="outlined">
-                <InputLabel htmlFor="outlined-adornment-dates">{name}</InputLabel>
-                <OutlinedInput
-                    value={date && moment(date).format('MM-DD-YYYY')}
-                    id="outlined-adornment-dates"
-                    type='text'
-                    endAdornment={
-                        <InputAdornment position="end">
-                            <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={() => setShowDatePicker(true)}
-                                edge="end"
-                            >
-                                {showDatePicker ?  <EventBusyIcon />: <CalendarMonthOutlinedIcon />}
-                            </IconButton>
-                        </InputAdornment>
-                    }
-                    label="dates"
-                />
-            </FormControl>
+            <Controller
+                control={control}
+                name={nameLowerCase}
+                render={({field})=>(
+                    <FormControl
+                        sx={commonStyles.fullWidth}
+                        // variant="outlined"
+                        {...field}
+                        error={!!errors[nameLowerCase]}
+                    >
+                        <InputLabel htmlFor="outlined-adornment-dates">{name}</InputLabel>
+                        <OutlinedInput
+                            value={date && moment(date).format('YYYY-MM-DD')}
+                            id="outlined-adornment-dates"
+                            type='text'
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={() => setShowDatePicker(true)}
+                                        edge="end"
+                                    >
+                                        {showDatePicker ?  <EventBusyIcon />: <CalendarMonthOutlinedIcon />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            label="dates"
+                        />
+
+                        {
+                            errors[nameLowerCase] && <FormHelperText id="my-helper-text">{errors[nameLowerCase].message}</FormHelperText>
+                        }
+                    </FormControl>
+                )}
+            >
+
+            </Controller>
 
             <Modal
                 open={showDatePicker}
@@ -70,21 +91,6 @@ const TrainingDatePicker = ({date, setDate, name}) => {
                 </Box>
             </Modal>
 
-            <Modal
-                open={showDatePicker}
-                onClose={()=> setShowDatePicker(false)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box  sx={datePickerStyles.datePickerBox}>
-                    <DayPicker
-                        style={{justify:'center'}}
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                    />
-                </Box>
-            </Modal>
         </>
     )
 }
