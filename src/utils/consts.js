@@ -1,5 +1,6 @@
 export const wordsLimit = 100
-export const pageLimit = 5
+export const urlLimit = 500
+export const pageLimit = 100
 
 export const ApproveOrReject = {
     APPROVE: 'APPROVED',

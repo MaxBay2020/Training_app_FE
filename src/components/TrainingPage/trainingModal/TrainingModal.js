@@ -19,7 +19,7 @@ import TrainingDatePicker from "./TrainingDatePicker";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import {UserRole, wordsLimit} from "../../../utils/consts";
+import {urlLimit, UserRole, wordsLimit} from "../../../utils/consts";
 import {ThemeProvider} from "@emotion/react";
 import {commonStyles, commontStyles} from "../../../styles/commontStyles";
 import Button from "@mui/material/Button";
@@ -131,12 +131,13 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     }
 
     const trainingUrlHandler = e => {
+        console.log(e.target.value)
         const input = e.target.value
         if(input.length > wordsLimit){
             return
         }
 
-        setTrainingUrlWordsRemaining(wordsLimit - input.length)
+        setTrainingUrlWordsRemaining(urlLimit - input.length)
         setTrainingURL(input)
     }
 
@@ -251,7 +252,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         const {
             trainingType,
             trainingName,
-            trainingUrl,
+            trainingUrl: trainingURL,
             trainingHours : hoursCount
         } = data
 
@@ -263,7 +264,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             endDate: endDate.format('YYYY-MM-DD'),
             hoursCount,
             trainingURL,
-            traineeList:[]
+            traineeList
         }
         updateTraining(updatedTraining)
         closeForm()

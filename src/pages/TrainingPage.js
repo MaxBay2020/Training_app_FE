@@ -50,7 +50,8 @@ const TrainingPage = () => {
 
     const {isLoading, data, error, isError}
         = useFetchTrainings(
-            ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
+            ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit,
+        debouncedSearchKeyword, sortBy)
 
     const renderTrainingTable = userRole => {
         if(userRole.toUpperCase() === UserRole.SERVICER){
