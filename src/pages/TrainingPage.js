@@ -12,7 +12,7 @@ import {
 import BasicLayout from "../layout/BasicLayout";
 import TrainingCreation from "../components/TrainingPage/trainingCreate/TrainingCreation";
 import TrainingTableForServicer from "../components/TrainingPage/trainingTable/TrainingTableForServicer";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import TrainingTableForAdmin from "../components/TrainingPage/trainingTable/TrainingTableForAdmin";
 import TrainingTableForApprover from "../components/TrainingPage/trainingTable/TrainingTableForApprover";
 import useFetchTrainingTypes from "../hooks/trainingHooks/useFetchTrainingTypes";
@@ -48,9 +48,14 @@ const TrainingPage = () => {
 
     const { data: trainingCredits } = useFetchTrainingCredits(['queryTrainingCredits'])
 
-    const {isLoading, data, error, isError}
+    const {isLoading, data, error, isError, isFetching}
         = useFetchTrainings(
             ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
+
+    useEffect(() => {
+        setPage(1)
+    }, [debouncedSearchKeyword])
+
 
     const renderTrainingTable = userRole => {
         if(userRole.toUpperCase() === UserRole.SERVICER){

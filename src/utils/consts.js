@@ -27,7 +27,11 @@ export const sortingSystem = {
             {
                 label: 'Training Name',
                 value: 2
-            }
+            },
+            {
+                label: 'Training Type',
+                value: 10
+            },
         ]
     },
 
