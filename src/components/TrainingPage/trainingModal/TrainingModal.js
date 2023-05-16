@@ -222,7 +222,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         const {
             trainingType,
             trainingName,
-            trainingUrl: trainingURL,
+            trainingUrl,
             trainingHours : hoursCount
         } = data
 
@@ -239,7 +239,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             startDate: startDate.format('YYYY-MM-DD'),
             endDate: endDate.format('YYYY-MM-DD'),
             hoursCount,
-            trainingURL,
+            trainingURL: trainingUrl || '',
             traineeList: traineeList.length === 0 ? [trainee] : traineeList
         }
 
@@ -251,7 +251,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         const {
             trainingType,
             trainingName,
-            trainingUrl,
+            trainingUrl: trainingURL,
             trainingHours : hoursCount
         } = data
 
