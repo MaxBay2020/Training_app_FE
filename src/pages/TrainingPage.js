@@ -26,6 +26,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import useFetchTrainingCredits from "../hooks/trainingHooks/useFetchTrainingCredits";
 import TrainingTableForSupServicer from "../components/TrainingPage/trainingTable/TrainingTableForSupServicer";
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
+import IconButton from "@mui/material/IconButton";
+import Dropzone from 'react-dropzone'
+import UploadZone from "../components/uploadZone/UploadZone";
 
 const TrainingPage = () => {
 
@@ -107,10 +111,19 @@ const TrainingPage = () => {
     return (
         <BasicLayout>
             <Container>
-                <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
-                    <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
-                    <Grid item><Typography variant='subtitle'>{`User Role:   ${userRole}`}</Typography></Grid>
-                    { data && renderUserInfo(data.userRole) }
+                <Grid container alignItems='center' justifyContent='space-between'>
+                    <Grid item>
+                        <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
+                            <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
+                            <Grid item><Typography variant='subtitle'>{`User Role:   ${userRole}`}</Typography></Grid>
+                            { data && renderUserInfo(data.userRole) }
+                        </Grid>
+                    </Grid>
+
+                    <Grid item>
+                        <UploadZone />
+                    </Grid>
+
                 </Grid>
 
                 <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
