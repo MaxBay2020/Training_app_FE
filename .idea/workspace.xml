@@ -5,16 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9271a870-72e1-4728-9ed0-3667c786ce17" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/components/TrainingPage/trainingTable/TrainingTableForSupServicer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/training_app.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/authentication/login/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/authentication/login/Login.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/navbar/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/navbar/Navbar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/TrainingPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/TrainingPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/AdminPage/adminCreate/ServicerCreation.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/AdminPage/adminCreate/UserCreation.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/AdminPage/adminModal/UserModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/AdminPage/adminUpdate/UserUpdate.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/AdminPage/trainingTable/TrainingTableForAdmin.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/AdminPage/trainingTable/TrainingTableForServicer.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/AdminPage/trainingWithdrawModal/UserDeleteModal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/AdminPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TrainingPage/trainingTable/TrainingTableForServicer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TrainingPage/trainingTable/TrainingTableForServicer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/schema.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/schema.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +24,31 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="tracy_admin_user_page" />
+                    <option name="lastUsedInstant" value="1685040084" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1685040083" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -39,7 +65,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Xiaoying Zhou/Desktop/bonus_app/Training_app_server&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Xiaoying Zhou/Desktop/bonus_app/training_app_client/src/pages&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -50,6 +76,9 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Xiaoying Zhou\Desktop\bonus_app\training_app_client\src\pages" />
+      <recent name="C:\Users\Xiaoying Zhou\Desktop\bonus_app\training_app_client\src\components\AdminPage\adminCreate" />
+      <recent name="C:\Users\Xiaoying Zhou\Desktop\bonus_app\training_app_client\src\components" />
       <recent name="C:\Users\Xiaoying Zhou\Desktop\bonus_app\training_app_client\src\components\TrainingPage\trainingTable" />
     </key>
   </component>
@@ -68,6 +97,9 @@
       <workItem from="1681831948460" duration="454000" />
       <workItem from="1681840166039" duration="2720000" />
       <workItem from="1681866879644" duration="619000" />
+      <workItem from="1686935266413" duration="9486000" />
+      <workItem from="1687800365419" duration="2520000" />
+      <workItem from="1687826634804" duration="1215000" />
     </task>
     <servers />
   </component>

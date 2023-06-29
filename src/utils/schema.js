@@ -34,3 +34,16 @@ export const getTrainingSchema = userRole => {
         // traineeLastName: isServicerCoordinator ? yup.string().trim().required() : yup.string().trim().notRequired(),
     })
 }
+
+export const userSchema = yup.object().shape({
+    email: yup.string().trim().email().required(),
+    firstName: yup.string().min(1).required(),
+    lastName: yup.string().min(1).required(),
+    userRole: yup.mixed().oneOf(Object.values(UserRole)).required(),
+    servicerID: yup.string().required(),
+});
+
+export const servicerSchema = yup.object().shape({
+    servicerID: yup.string().max(5).required(),
+    servicerName: yup.string().min(1).required(),
+});

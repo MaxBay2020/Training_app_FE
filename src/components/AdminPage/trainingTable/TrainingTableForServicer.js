@@ -17,8 +17,8 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
-import TrainingModal from "../trainingModal/TrainingModal";
-import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModal"
+import UserModal from "../adminModal/UserModal.js";
+import UserDeleteModal from "../trainingWithdrawModal/UserDeleteModal"
 import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
 import {useDispatch, useSelector} from "react-redux";
 import {setCurrentTraining, switchOpenModal} from "../../../features/trainingSlice";
@@ -96,7 +96,7 @@ const Row = ({training}) => {
             {/*    isUpdating={true}*/}
             {/*/>*/}
 
-            <TrainingWithdrawModal
+            <UserDeleteModal
                 open={openWithdrawModal}
                 setOpen={setOpenWithdrawModal}
                 training={training}
@@ -117,7 +117,7 @@ const TrainingTableForServicer = ({trainingList}) => {
             {
                 currentTraining
                 &&
-                <TrainingModal
+                <UserModal
                     open={openModal}
                     setOpen={() => dispatch(switchOpenModal())}
                     isCreating={!currentTraining}
