@@ -50,3 +50,15 @@ export const sortingSystem = {
     }
 }
 
+
+export const tableHeadLabels = [
+    'Training Name',
+    'Training Type',
+    'Trainee Email',
+    'Trainee Name',
+    'Start Date',
+    'End Date',
+    'Hours',
+    'Training Status'
+]
+

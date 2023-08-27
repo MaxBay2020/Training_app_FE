@@ -33,9 +33,9 @@ import UploadZone from "../components/uploadZone/UploadZone";
 
 const TrainingPage = () => {
 
-    // 1 - sort by training created time
-    // 2 - sort by training name
-    const [sortBy, setSortBy] = useState(sortingSystem.trainingPage.defaultSortValue)
+    const [order, setOrder] = useState('DESC')
+    const [orderBy, setOrderBy] = useState('Training created at')
+
     const [searchKeyword, setSearchKeyword] = useState('')
     const debouncedSearchKeyword = useDebounce(searchKeyword, 500)
 
@@ -49,12 +49,14 @@ const TrainingPage = () => {
         servicerMasterName,
     } = useSelector(state => state.user)
 
+    console.log(orderBy, order)
 
     const { data: trainingCredits } = useFetchTrainingCredits(['queryTrainingCredits'])
 
+    // TODO: fetch training API
     const {isLoading, data, error, isError, isFetching}
         = useFetchTrainings(
-            ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
+            ['queryAllTrainings', debouncedSearchKeyword, order, orderBy, page, limit], page, limit, debouncedSearchKeyword, order, orderBy)
 
     useEffect(() => {
         setPage(1)
@@ -65,7 +67,13 @@ const TrainingPage = () => {
         if(userRole.toUpperCase() === UserRole.SERVICER){
             return <TrainingTableForServicer trainingList={data.trainingList} />
         }else if(userRole.toUpperCase() === UserRole.SERVICER_COORDINATOR){
-            return <TrainingTableForSupServicer trainingList={data.trainingList} />
+            return <TrainingTableForSupServicer
+                trainingList={data.trainingList}
+                order={order}
+                setOrder={setOrder}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+            />
         }else if(userRole.toUpperCase() === UserRole.ADMIN){
             return <TrainingTableForAdmin trainingList={data.trainingList} />
         }else if(userRole.toUpperCase() === UserRole.APPROVER){
@@ -139,22 +147,6 @@ const TrainingPage = () => {
                             value={searchKeyword}
                             onChange={e => searchHandler(e)}
                         />
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                        <FormControl fullWidth size="small">
-                            <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={sortBy}
-                                label="sortBy"
-                                onChange={e => setSortBy(e.target.value)}
-                            >
-                                {
-                                    sortingSystem.trainingPage.trainingPageSortBy.map(sort => <MenuItem key={sort.value} value={sort.value}>{sort.label}</MenuItem>)
-                                }
-                            </Select>
-                        </FormControl>
                     </Grid>
                 </Grid>
 
