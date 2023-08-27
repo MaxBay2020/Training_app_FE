@@ -37,7 +37,7 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import {AddCircleOutlineOutlined} from "@mui/icons-material";
 import { Controller, useForm } from "react-hook-form"
 import {yupResolver} from "@hookform/resolvers/yup";
-import {getTrainingSchema, trainingSchemaForServicer} from "../../../utils/schema";
+import {getTrainingSchema, traineeSchema, trainingSchemaForServicer} from "../../../utils/schema";
 import dayjs from 'dayjs';
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -110,6 +110,17 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         resolver: yupResolver(getTrainingSchema(userRole)),
     })
 
+    const {
+        handleSubmit: traineeHandleSubmit,
+        control: traineeControl,
+        reset: traineeReset,
+        formState: { errors: traineeErrors },
+        trigger,
+        getValues: getTraineeValues
+    } = useForm({
+        resolver: yupResolver(traineeSchema),
+    })
+
     useEffect(() => {
         if(isUpdating){
             setValue('trainingType', training.trainingType)
@@ -156,16 +167,25 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         })
     }
 
-    const addTrainee = () =>{
-        if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length){
-            // toast.error('Please fill trainee info')
+    const addTrainee = (trainee) =>{
+        const hasReplicate = traineeList.find(item => item.traineeEmail === trainee.traineeEmail)
+        if(hasReplicate){
             setDisplayErrorMessage(true)
             return
         }
-
+        // if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length){
+        //     // toast.error('Please fill trainee info')
+        //     setDisplayErrorMessage(true)
+        //     return
+        // }
         setDisplayErrorMessage(false)
         setTraineeList([...traineeList, trainee])
         setTrainee(traineeInitialised)
+        traineeReset({
+            traineeEmail: '',
+            traineeFirstName: '',
+            traineeLastName: ''
+        })
     }
 
     const deleteTraineeFromTraineeList = traineeEmail => {
@@ -188,19 +208,29 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     // }
 
     const closeForm = () => {
-        reset()
-        // setTrainingName('')
+        reset({
+            trainingName: '',
+            trainingType: '',
+            trainingHours: 1,
+            trainingUrl: '',
+        })
+
+        traineeReset({
+            traineeEmail: '',
+            traineeFirstName: '',
+            traineeLastName: ''
+        })
         // setTrainingType('')
         setStartDate(dayjs(new Date()))
         setEndDate(dayjs(new Date()))
-        // setHoursCount(1)
-        // setTrainingURL('')
+        // // setHoursCount(1)
+        // // setTrainingURL('')
+
         setTraineeList([])
-        setTrainee(traineeInitialised)
+        // setTrainee(traineeInitialised)
+        setTrainingNameWordsRemaining(wordsLimit)
+        setTrainingUrlWordsRemaining(wordsLimit)
         setDisplayErrorMessage(false)
-        // setTrainingNameWordsRemaining(wordsLimit)
-        // setTrainingUrlWordsRemaining(wordsLimit)
-        // setAddMyself(false)
         setOpen(false)
     }
 
@@ -218,18 +248,28 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     //     await handleSubmit(createTraining)()
     // }
 
-    const createTraining = (data) => {
+    const createTraining = async (data) => {
         const {
             trainingType,
             trainingName,
             trainingUrl,
             trainingHours : hoursCount
         } = data
-
         if(userRole === UserRole.SERVICER_COORDINATOR){
-            if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length && traineeList.length === 0){
-                setDisplayErrorMessage(true)
-                return
+            // if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length && traineeList.length === 0){
+            //     setDisplayErrorMessage(true)
+            //     return
+            // }
+            if(traineeList.length === 0){
+                const hasValidTrainee = await trigger()
+                if(!hasValidTrainee)
+                    return
+                const trainee = {
+                    traineeEmail: getTraineeValues('traineeEmail'),
+                    traineeFirstName: getTraineeValues('traineeFirstName'),
+                    traineeLastName: getTraineeValues('traineeLastName'),
+                }
+                traineeList.push(trainee)
             }
         }
 
@@ -240,7 +280,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             endDate: endDate.format('YYYY-MM-DD'),
             hoursCount,
             trainingURL: trainingUrl || '',
-            traineeList: traineeList.length === 0 ? [trainee] : traineeList
+            traineeList
         }
 
         addTraining(newTraining)
@@ -296,15 +336,15 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                               pb={2}
                               pl={2}
                         >
-                            <Grid item xs={12} md={5}>
+                            <Grid item xs={5}>
                                 <Typography variant='caption'>{trainee.traineeEmail}</Typography>
                             </Grid>
 
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={3}>
                                 <Typography variant='caption'>{trainee.traineeFirstName}</Typography>
                             </Grid>
 
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={3}>
                                 <Typography variant='caption'>{trainee.traineeLastName}</Typography>
                             </Grid>
 
@@ -330,54 +370,122 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                       spacing={1}
                 >
                     <Grid item xs={12} md={6}>
-                        <FormControl
-                            sx={commonStyles.fullWidth}
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-adornment-password">Trainee Email</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type='text'
-                                label="trainee email"
-                                name='traineeEmail'
-                                value={trainee.traineeEmail}
-                                onChange={e=>fillTraineeInfo(e)}
-                            />
-                        </FormControl>
+                        {/*<FormControl*/}
+                        {/*    sx={commonStyles.fullWidth}*/}
+                        {/*    variant="outlined"*/}
+                        {/*>*/}
+                        {/*    <InputLabel htmlFor="outlined-adornment-password">Trainee Email</InputLabel>*/}
+                        {/*    <OutlinedInput*/}
+                        {/*        id="outlined-adornment-password"*/}
+                        {/*        type='text'*/}
+                        {/*        label="trainee email"*/}
+                        {/*        name='traineeEmail'*/}
+                        {/*        value={trainee.traineeEmail}*/}
+                        {/*        onChange={e=>fillTraineeInfo(e)}*/}
+                        {/*    />*/}
+                        {/*</FormControl>*/}
+
+                        <Controller
+                            control={traineeControl}
+                            name='traineeEmail'
+                            render={({ field }) => (
+                                <FormControl
+                                    sx={commonStyles.fullWidth}
+                                    variant="outlined"
+                                    error={!!traineeErrors.traineeEmail}
+                                >
+                                    <InputLabel htmlFor="outlined-adornment-password">Trainee Email</InputLabel>
+                                    <OutlinedInput
+                                        {...field}
+                                        id="outlined-adornment-password"
+                                        type='text'
+                                        label="trainee email"
+                                    />
+                                    {
+                                        traineeErrors.traineeEmail && <FormHelperText id="my-helper-text">{traineeErrors.traineeEmail.message}</FormHelperText>
+                                    }
+                                </FormControl>
+                            )}
+                        />
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                        <FormControl
-                            sx={commonStyles.fullWidth}
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-adornment-password">Trainee First Name</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type='text'
-                                label="traineeList"
-                                name='traineeFirstName'
-                                value={trainee.traineeFirstName}
-                                onChange={e=>fillTraineeInfo(e)}
-                            />
-                        </FormControl>
+                        {/*<FormControl*/}
+                        {/*    sx={commonStyles.fullWidth}*/}
+                        {/*    variant="outlined"*/}
+                        {/*>*/}
+                        {/*    <InputLabel htmlFor="outlined-adornment-password">Trainee First Name</InputLabel>*/}
+                        {/*    <OutlinedInput*/}
+                        {/*        id="outlined-adornment-password"*/}
+                        {/*        type='text'*/}
+                        {/*        label="traineeList"*/}
+                        {/*        name='traineeFirstName'*/}
+                        {/*        value={trainee.traineeFirstName}*/}
+                        {/*        onChange={e=>fillTraineeInfo(e)}*/}
+                        {/*    />*/}
+                        {/*</FormControl>*/}
+
+                        <Controller
+                            control={traineeControl}
+                            name='traineeFirstName'
+                            render={({ field }) => (
+                                <FormControl
+                                    sx={commonStyles.fullWidth}
+                                    variant="outlined"
+                                    error={!!traineeErrors.traineeFirstName}
+                                >
+                                    <InputLabel htmlFor="outlined-adornment-password">Trainee First Name</InputLabel>
+                                    <OutlinedInput
+                                        {...field}
+                                        id="outlined-adornment-password"
+                                        type='text'
+                                        label="trainee first name"
+                                    />
+                                    {
+                                        traineeErrors.traineeFirstName && <FormHelperText id="my-helper-text">{traineeErrors.traineeFirstName.message}</FormHelperText>
+                                    }
+                                </FormControl>
+                            )}
+                        />
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                        <FormControl
-                            sx={commonStyles.fullWidth}
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-adornment-password">Trainee Last Name</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type='text'
-                                label="traineeList"
-                                name='traineeLastName'
-                                value={trainee.traineeLastName}
-                                onChange={e=>fillTraineeInfo(e)}
-                            />
-                        </FormControl>
+                        {/*<FormControl*/}
+                        {/*    sx={commonStyles.fullWidth}*/}
+                        {/*    variant="outlined"*/}
+                        {/*>*/}
+                        {/*    <InputLabel htmlFor="outlined-adornment-password">Trainee Last Name</InputLabel>*/}
+                        {/*    <OutlinedInput*/}
+                        {/*        id="outlined-adornment-password"*/}
+                        {/*        type='text'*/}
+                        {/*        label="traineeList"*/}
+                        {/*        name='traineeLastName'*/}
+                        {/*        value={trainee.traineeLastName}*/}
+                        {/*        onChange={e=>fillTraineeInfo(e)}*/}
+                        {/*    />*/}
+                        {/*</FormControl>*/}
+                        <Controller
+                            control={traineeControl}
+                            name='traineeLastName'
+                            render={({ field }) => (
+                                <FormControl
+                                    sx={commonStyles.fullWidth}
+                                    variant="outlined"
+                                    error={!!traineeErrors.traineeLastName}
+                                >
+                                    <InputLabel htmlFor="outlined-adornment-password">Trainee Last Name</InputLabel>
+                                    <OutlinedInput
+                                        {...field}
+                                        id="outlined-adornment-password"
+                                        type='text'
+                                        label="trainee last name"
+                                    />
+                                    {
+                                        traineeErrors.traineeLastName && <FormHelperText id="my-helper-text">{traineeErrors.traineeLastName.message}</FormHelperText>
+                                    }
+                                </FormControl>
+                            )}
+                        />
                     </Grid>
 
                     <Grid item xs={12}>
@@ -385,7 +493,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                             displayErrorMessage
                             &&
                             <Alert severity="error">
-                                All trainee fields are required
+                                You have already added this email
                             </Alert>
                         }
 
@@ -396,7 +504,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             <Grid item>
                 <IconButton
                     variant="outlined" size="small"
-                    onClick={() => addTrainee()}
+                    onClick={traineeHandleSubmit(addTrainee)}
                     sx={{ fontSize: "14px", border: "4px", borderRadius: 1, mb: 0.5 }}
                 >
                     <AddCircleOutlineOutlined color='primary' mr={0.5}/>

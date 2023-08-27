@@ -41,6 +41,10 @@ export const sortingSystem = {
             {
                 label: 'Servicer Master Name',
                 value: 3
+            },
+            {
+                label: 'Servicer Master ID',
+                value: 11
             }
         ]
     }

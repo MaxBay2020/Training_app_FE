@@ -110,7 +110,6 @@ const TrainingPage = () => {
 
     return (
         <BasicLayout>
-            <Container>
                 <Grid container alignItems='center' justifyContent='space-between'>
                     <Grid item>
                         <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
@@ -176,7 +175,6 @@ const TrainingPage = () => {
                 }
 
                 { data && renderTrainingCredits(data.userRole)}
-            </Container>
         </BasicLayout>
 
     )

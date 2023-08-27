@@ -34,3 +34,12 @@ export const getTrainingSchema = userRole => {
         // traineeLastName: isServicerCoordinator ? yup.string().trim().required() : yup.string().trim().notRequired(),
     })
 }
+
+const emailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+export const traineeSchema = yup.object().shape({
+    // traineeEmail: yup.string().trim().email('Trainee email must be a valid email').required('Trainee email is a required field'),
+    traineeEmail: yup.string().trim().matches(emailRegExp, 'Trainee email must be a valid email'),
+    traineeFirstName: yup.string().trim().required('Trainee firstname is a required field') ,
+    traineeLastName: yup.string().trim().required('Trainee lastname is a required field') ,
+})
