@@ -49,7 +49,6 @@ const TrainingPage = () => {
         servicerMasterName,
     } = useSelector(state => state.user)
 
-    console.log(orderBy, order)
 
     const { data: trainingCredits } = useFetchTrainingCredits(['queryTrainingCredits'])
 
@@ -65,7 +64,13 @@ const TrainingPage = () => {
 
     const renderTrainingTable = userRole => {
         if(userRole.toUpperCase() === UserRole.SERVICER){
-            return <TrainingTableForServicer trainingList={data.trainingList} />
+            return <TrainingTableForServicer
+                trainingList={data.trainingList}
+                order={order}
+                setOrder={setOrder}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+            />
         }else if(userRole.toUpperCase() === UserRole.SERVICER_COORDINATOR){
             return <TrainingTableForSupServicer
                 trainingList={data.trainingList}
@@ -75,9 +80,21 @@ const TrainingPage = () => {
                 setOrderBy={setOrderBy}
             />
         }else if(userRole.toUpperCase() === UserRole.ADMIN){
-            return <TrainingTableForAdmin trainingList={data.trainingList} />
+            return <TrainingTableForAdmin
+                trainingList={data.trainingList}
+                order={order}
+                setOrder={setOrder}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+            />
         }else if(userRole.toUpperCase() === UserRole.APPROVER){
-            return <TrainingTableForApprover trainingList={data.trainingList} />
+            return <TrainingTableForApprover
+                trainingList={data.trainingList}
+                order={order}
+                setOrder={setOrder}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+            />
         }
     }
 

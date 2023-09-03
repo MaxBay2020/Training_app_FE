@@ -50,15 +50,41 @@ export const sortingSystem = {
     }
 }
 
-
-export const tableHeadLabels = [
-    'Training Name',
-    'Training Type',
-    'Trainee Email',
-    'Trainee Name',
-    'Start Date',
-    'End Date',
-    'Hours',
-    'Training Status'
-]
-
+export const getTrainingTableHeaders = userRole => {
+    switch (userRole) {
+        case UserRole.SERVICER_COORDINATOR:
+            return [
+                'Training Name',
+                'Training Type',
+                'Trainee Email',
+                'Trainee Name',
+                'Start Date',
+                'End Date',
+                'Hours',
+                'Training Status'
+            ]
+        case UserRole.SERVICER:
+            return [
+                'Training Name',
+                'Training Type',
+                'Start Date',
+                'End Date',
+                'Hours',
+                'Training Status'
+            ]
+        case UserRole.ADMIN:
+        case UserRole.APPROVER:
+            return [
+                'Servicer ID',
+                'Servicer Name',
+                'Trainee Email',
+                'Trainee Name',
+                'Training Name',
+                'Training Type',
+                'Start Date',
+                'End Date',
+                'Hours',
+                'Training Status'
+            ]
+    }
+}

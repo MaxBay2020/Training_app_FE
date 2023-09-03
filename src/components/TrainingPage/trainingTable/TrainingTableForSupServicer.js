@@ -20,7 +20,7 @@ import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModa
 import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
 import {useDispatch, useSelector} from "react-redux";
 import {setCurrentTraining, switchOpenModal} from "../../../features/trainingSlice";
-import {ApproveOrReject, tableHeadLabels} from "../../../utils/consts";
+import {ApproveOrReject, getTrainingTableHeaders} from "../../../utils/consts";
 import { visuallyHidden } from '@mui/utils'
 
 
@@ -30,12 +30,13 @@ const EnhancedTableHead = (props) => {
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property)
     }
+    const {userRole} = useSelector(state => state.user)
 
 
     return (
         <TableHead>
             <TableRow>
-                {tableHeadLabels.map((headCell) => (
+                {getTrainingTableHeaders(userRole).map((headCell) => (
                     <TableCell
                         key={headCell}
                         // align={headCell.numeric ? 'right' : 'left'}
