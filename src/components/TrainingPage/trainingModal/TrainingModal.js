@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import {useEffect, useState} from "react";
 import 'react-day-picker/dist/style.css';
-import TrainingDatePicker from "./TrainingDatePicker";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
@@ -23,16 +22,10 @@ import {UserRole, wordsLimit} from "../../../utils/consts";
 import {ThemeProvider} from "@emotion/react";
 import {commonStyles, commontStyles} from "../../../styles/commontStyles";
 import Button from "@mui/material/Button";
-import {useMutation} from "@tanstack/react-query";
-import axios from "axios";
-import api from "../../../api/api";
 import useCreateTraining from "../../../hooks/trainingHooks/useCreateTraining";
 import useFetchTrainingTypes from "../../../hooks/trainingHooks/useFetchTrainingTypes";
 import {useSelector} from "react-redux";
 import useUpdateTraining from "../../../hooks/trainingHooks/useUpdateTraining";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import {toast} from "react-toastify";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import {AddCircleOutlineOutlined} from "@mui/icons-material";
 import { Controller, useForm } from "react-hook-form"
@@ -43,9 +36,8 @@ import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import useCommonQuery from "../../../hooks/trainingHooks/useCommonQuery";
+import moment from "moment";
 
 const styles = {
     modalStyle: {
@@ -83,8 +75,8 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
     const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
-    const [startDate, setStartDate] = useState(isUpdating ? dayjs(training.startDate) : dayjs(new Date()))
-    const [endDate, setEndDate] = useState(isUpdating ? dayjs(training.endDate) : dayjs(new Date()))
+    const [startDate, setStartDate] = useState(isUpdating ? dayjs(training.startDate) : '')
+    const [endDate, setEndDate] = useState(isUpdating ? dayjs(training.endDate) : '')
     const [hoursCount, setHoursCount] = useState(isUpdating ? training.hoursCount : 1)
     const [trainingURL, setTrainingURL] = useState(isUpdating ? training.trainingURL : '')
     const traineeInitialised = {
@@ -96,9 +88,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const [traineeList, setTraineeList] = useState([])
     const [displayErrorMessage, setDisplayErrorMessage] = useState(false);
 
-    const [addMyself, setAddMyself] = useState(isUpdating)
-    const [error, setError] = useState(null)
-
     const { userName, userEmail, userRole } = useSelector(state => state.user)
     const {isLoading, data: trainingTypes}
         = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes')
@@ -109,6 +98,8 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const { handleSubmit, control, reset, setValue, formState: { errors } }  = useForm({
         resolver: yupResolver(getTrainingSchema(userRole)),
     })
+
+    const {data: trainingTimePeriod} = useCommonQuery(['queryFiscalYear'], '/training/currentFiscalYear')
 
     const {
         handleSubmit: traineeHandleSubmit,
@@ -173,11 +164,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             setDisplayErrorMessage(true)
             return
         }
-        // if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length){
-        //     // toast.error('Please fill trainee info')
-        //     setDisplayErrorMessage(true)
-        //     return
-        // }
         setDisplayErrorMessage(false)
         setTraineeList([...traineeList, trainee])
         setTrainee(traineeInitialised)
@@ -192,21 +178,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         setTraineeList(traineeList.filter(trainee => trainee.traineeEmail !== traineeEmail))
     }
 
-    // const addMyselfHandler = e => {
-    //     const isChecked = e.target.checked
-    //     setAddMyself(isChecked)
-    //     if(isChecked){
-    //         const myInfo = {
-    //             traineeEmail: userEmail,
-    //             traineeFirstName: userName,
-    //             traineeLastName: userName,
-    //         }
-    //         setTraineeList([...traineeList, myInfo])
-    //     }else{
-    //         setTraineeList(traineeList.filter(trainee => trainee.traineeEmail !== userEmail))
-    //     }
-    // }
-
     const closeForm = () => {
         reset({
             trainingName: '',
@@ -220,11 +191,8 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             traineeFirstName: '',
             traineeLastName: ''
         })
-        // setTrainingType('')
-        setStartDate(dayjs(new Date()))
-        setEndDate(dayjs(new Date()))
-        // // setHoursCount(1)
-        // // setTrainingURL('')
+        setStartDate('')
+        setEndDate('')
 
         setTraineeList([])
         // setTrainee(traineeInitialised)
@@ -234,19 +202,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         setOpen(false)
     }
 
-    // const validateForm = async () => {
-    //     await trigger()
-    //     if(traineeList.length === 0){
-    //         const isValid = await trigger(['traineeEmail', 'traineeFirstName', 'traineeLastName'])
-    //         if(!isValid)
-    //             return
-    //     }else{
-    //         console.log('asdf')
-    //         unregister(['traineeEmail', 'traineeFirstName', 'traineeLastName'])
-    //     }
-    //
-    //     await handleSubmit(createTraining)()
-    // }
 
     const createTraining = async (data) => {
         const {
@@ -320,13 +275,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             <Grid item>
                 {
                     traineeList.map((trainee, index) => (
-                        // <Chip
-                        //     key={index}
-                        //     label={trainee.traineeEmail}
-                        //     sx={{mr: 1, mb: 1}}
-                        //     // onClick={()=>{}}
-                        //     onDelete={()=>deleteTraineeFromTraineeList(trainee.traineeEmail)}
-                        // />
                         <Grid container
                               direction='row'
                               alignItems='center'
@@ -370,21 +318,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                       spacing={1}
                 >
                     <Grid item xs={12} md={6}>
-                        {/*<FormControl*/}
-                        {/*    sx={commonStyles.fullWidth}*/}
-                        {/*    variant="outlined"*/}
-                        {/*>*/}
-                        {/*    <InputLabel htmlFor="outlined-adornment-password">Trainee Email</InputLabel>*/}
-                        {/*    <OutlinedInput*/}
-                        {/*        id="outlined-adornment-password"*/}
-                        {/*        type='text'*/}
-                        {/*        label="trainee email"*/}
-                        {/*        name='traineeEmail'*/}
-                        {/*        value={trainee.traineeEmail}*/}
-                        {/*        onChange={e=>fillTraineeInfo(e)}*/}
-                        {/*    />*/}
-                        {/*</FormControl>*/}
-
                         <Controller
                             control={traineeControl}
                             name='traineeEmail'
@@ -410,21 +343,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                        {/*<FormControl*/}
-                        {/*    sx={commonStyles.fullWidth}*/}
-                        {/*    variant="outlined"*/}
-                        {/*>*/}
-                        {/*    <InputLabel htmlFor="outlined-adornment-password">Trainee First Name</InputLabel>*/}
-                        {/*    <OutlinedInput*/}
-                        {/*        id="outlined-adornment-password"*/}
-                        {/*        type='text'*/}
-                        {/*        label="traineeList"*/}
-                        {/*        name='traineeFirstName'*/}
-                        {/*        value={trainee.traineeFirstName}*/}
-                        {/*        onChange={e=>fillTraineeInfo(e)}*/}
-                        {/*    />*/}
-                        {/*</FormControl>*/}
-
                         <Controller
                             control={traineeControl}
                             name='traineeFirstName'
@@ -450,20 +368,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                        {/*<FormControl*/}
-                        {/*    sx={commonStyles.fullWidth}*/}
-                        {/*    variant="outlined"*/}
-                        {/*>*/}
-                        {/*    <InputLabel htmlFor="outlined-adornment-password">Trainee Last Name</InputLabel>*/}
-                        {/*    <OutlinedInput*/}
-                        {/*        id="outlined-adornment-password"*/}
-                        {/*        type='text'*/}
-                        {/*        label="traineeList"*/}
-                        {/*        name='traineeLastName'*/}
-                        {/*        value={trainee.traineeLastName}*/}
-                        {/*        onChange={e=>fillTraineeInfo(e)}*/}
-                        {/*    />*/}
-                        {/*</FormControl>*/}
                         <Controller
                             control={traineeControl}
                             name='traineeLastName'
@@ -510,23 +414,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                     <AddCircleOutlineOutlined color='primary' mr={0.5}/>
                     Add More Trainee(s)
                 </IconButton>
-
             </Grid>
-
-            {/*<Grid item>*/}
-            {/*    <Grid container*/}
-            {/*          alignItems='center'*/}
-            {/*          justifyContent='space-between'>*/}
-            {/*        <Grid item>*/}
-            {/*            <FormControlLabel*/}
-            {/*                sx={commonStyles.fullWidth}*/}
-            {/*                control={<Checkbox checked={addMyself} />}*/}
-            {/*                onChange={e => addMyselfHandler(e)}*/}
-            {/*                label="Add Myself"*/}
-            {/*            />*/}
-            {/*        </Grid>*/}
-            {/*    </Grid>*/}
-            {/*</Grid>*/}
         </>
     }
 
@@ -547,24 +435,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                         alignItems="stretch"
                         spacing={1}
                     >
-
-                        {/*<Controller*/}
-                        {/*    control={control}*/}
-                        {/*    name={'test'}*/}
-                        {/*    render={({ field }) => (*/}
-                        {/*        <TextField*/}
-                        {/*            {...field}*/}
-                        {/*            variant='outlined'*/}
-                        {/*            error={!!errors['test']}*/}
-                        {/*            helperText={*/}
-                        {/*                errors['test'] ? 'error!' : ''*/}
-                        {/*            }*/}
-                        {/*        />*/}
-                        {/*    )}*/}
-                        {/*/>*/}
-
-                        {/*<div onClick={handleSubmit(submitForm)}>click</div>*/}
-
                         <Grid item>
                             <Controller
                                 control={control}
@@ -642,29 +512,23 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                         >
                                             <DatePicker
                                                 value={startDate}
-                                                onChange={value => setStartDate(value)}
+                                                onChange={value => {
+                                                    setStartDate(value)
+                                                    setEndDate(value)
+                                                }}
+                                                slotProps={{
+                                                    textField: {
+                                                        error: false,
+                                                    },
+                                                }}
                                                 disableFuture
-                                                // defaultValue={}
                                                 label='Start Date'
+                                                minDate={dayjs(trainingTimePeriod?.currentFiscalStartTime)}
                                             />
                                         </DemoContainer>
                                     </LocalizationProvider>
-                                    {/*<TrainingDatePicker*/}
-                                    {/*    date={startDate}*/}
-                                    {/*    setDate={setStartDate}*/}
-                                    {/*    name='Start Date'*/}
-                                    {/*    control={control}*/}
-                                    {/*    errors={errors}*/}
-                                    {/*/>*/}
                                 </Grid>
                                 <Grid item xs={12} md={5.5}>
-                                    {/*<TrainingDatePicker*/}
-                                    {/*    date={endDate}*/}
-                                    {/*    setDate={setEndDate}*/}
-                                    {/*    name='End Date'*/}
-                                    {/*    control={control}*/}
-                                    {/*    errors={errors}*/}
-                                    {/*/>*/}
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <DemoContainer
                                             components={[
@@ -677,10 +541,16 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                             <DatePicker
                                                 value={endDate}
                                                 onChange={value => setEndDate(value)}
+                                                slotProps={{
+                                                    textField: {
+                                                        error: false,
+                                                    },
+                                                }}
                                                 disableFuture
                                                 minDate={startDate}
                                                 // defaultValue={}
                                                 label='End Date'
+                                                maxDate={dayjs(trainingTimePeriod?.currentFiscalEndTime)}
                                             />
                                         </DemoContainer>
                                     </LocalizationProvider>
