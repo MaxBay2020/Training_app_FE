@@ -131,6 +131,7 @@ const TrainingTableForApprover = ({trainingList, order, setOrder, orderBy, setOr
                                         endDate,
                                         hoursCount,
                                         trainingStatus,
+                                        createdAt,
                                     } = training
                                     const isItemSelected = isSelected(trainingId);
                                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -163,8 +164,9 @@ const TrainingTableForApprover = ({trainingList, order, setOrder, orderBy, setOr
                                             <TableCell align="right">{`${userFirstName} ${userLastName}`}</TableCell>
                                             <TableCell align="right">{trainingName}</TableCell>
                                             <TableCell align="right">{trainingType}</TableCell>
-                                            <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
-                                            <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
+                                            <TableCell align="right">{moment(startDate).format('MM-DD-YYYY')}</TableCell>
+                                            <TableCell align="right">{moment(endDate).format('MM-DD-YYYY')}</TableCell>
+                                            <TableCell align="right">{moment(createdAt).format('MM-DD-YYYY')}</TableCell>
                                             <TableCell align="right">{hoursCount}</TableCell>
                                             { renderTableCellForTrainingStatus(trainingStatus) }
 

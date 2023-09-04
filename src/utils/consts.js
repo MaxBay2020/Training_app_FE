@@ -60,6 +60,7 @@ export const getTrainingTableHeaders = userRole => {
                 'Trainee Name',
                 'Start Date',
                 'End Date',
+                'Submitted at',
                 'Hours',
                 'Training Status'
             ]
@@ -69,6 +70,7 @@ export const getTrainingTableHeaders = userRole => {
                 'Training Type',
                 'Start Date',
                 'End Date',
+                'Submitted at',
                 'Hours',
                 'Training Status'
             ]
@@ -83,6 +85,7 @@ export const getTrainingTableHeaders = userRole => {
                 'Training Type',
                 'Start Date',
                 'End Date',
+                'Submitted at',
                 'Hours',
                 'Training Status'
             ]

@@ -69,7 +69,8 @@ const Row = ({training}) => {
         startDate,
         endDate,
         hoursCount,
-        trainingStatus
+        trainingStatus,
+        createdAt,
     } = training
 
     return (
@@ -89,8 +90,9 @@ const Row = ({training}) => {
                 <TableCell align="right">{`${userFirstName} ${userLastName}`}</TableCell>
                 <TableCell align="right">{trainingName}</TableCell>
                 <TableCell align="right">{trainingType}</TableCell>
-                <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
-                <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
+                <TableCell align="right">{moment(startDate).format('MM-DD-YYYY')}</TableCell>
+                <TableCell align="right">{moment(endDate).format('MM-DD-YYYY')}</TableCell>
+                <TableCell align="right">{moment(createdAt).format('MM-DD-YYYY')}</TableCell>
                 <TableCell align="right">{hoursCount}</TableCell>
                 { renderTableCellForTrainingStatus(trainingStatus) }
             </TableRow>

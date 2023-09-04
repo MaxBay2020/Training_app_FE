@@ -65,7 +65,7 @@ const EnhancedTableHead = (props) => {
 
 const Row = ({training}) => {
 
-    const {trainingName, trainingType, startDate, endDate, hoursCount, trainingStatus} = training
+    const {trainingName, trainingType, startDate, endDate, createdAt, hoursCount, trainingStatus} = training
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
 
     const dispatch = useDispatch()
@@ -121,8 +121,9 @@ const Row = ({training}) => {
                     {trainingName}
                 </TableCell>
                 <TableCell align="right">{trainingType}</TableCell>
-                <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
-                <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
+                <TableCell align="right">{moment(startDate).format('MM-DD-YYYY')}</TableCell>
+                <TableCell align="right">{moment(endDate).format('MM-DD-YYYY')}</TableCell>
+                <TableCell align="right">{moment(createdAt).format('MM-DD-YYYY')}</TableCell>
                 <TableCell align="right">{hoursCount}</TableCell>
                 { renderTableCellForTrainingStatus(trainingStatus) }
                 { renderActions(trainingStatus) }

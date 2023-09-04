@@ -34,7 +34,7 @@ import UploadZone from "../components/uploadZone/UploadZone";
 const TrainingPage = () => {
 
     const [order, setOrder] = useState('DESC')
-    const [orderBy, setOrderBy] = useState('Training created at')
+    const [orderBy, setOrderBy] = useState('Submitted at')
 
     const [searchKeyword, setSearchKeyword] = useState('')
     const debouncedSearchKeyword = useDebounce(searchKeyword, 500)
