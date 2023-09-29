@@ -12,7 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {useState} from "react";
 import moment from "moment";
-import {Grid, Tooltip} from "@mui/material";
+import {Grid, TableSortLabel, Tooltip} from "@mui/material";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -22,11 +22,50 @@ import TrainingWithdrawModal from "../trainingWithdrawModal/TrainingWithdrawModa
 import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
 import {useDispatch, useSelector} from "react-redux";
 import {setCurrentTraining, switchOpenModal} from "../../../features/trainingSlice";
-import {ApproveOrReject} from "../../../utils/consts";
+import {ApproveOrReject, getTrainingTableHeaders} from "../../../utils/consts";
+import {visuallyHidden} from "@mui/utils";
+
+const EnhancedTableHead = (props) => {
+    const { order, orderBy, onRequestSort } =
+        props;
+    const createSortHandler = (property) => (event) => {
+        onRequestSort(event, property)
+    }
+    const {userRole} = useSelector(state => state.user)
+
+    return (
+        <TableHead>
+            <TableRow>
+                {getTrainingTableHeaders(userRole).map((headCell) => (
+                    <TableCell
+                        key={headCell}
+                        // align={headCell.numeric ? 'right' : 'left'}
+                        // padding={headCell.disablePadding ? 'none' : 'normal'}
+                        sortDirection={orderBy === headCell.id ? order : false}
+                    >
+                        <TableSortLabel
+                            active={orderBy === headCell}
+                            direction={orderBy === headCell ? order : 'asc'}
+                            onClick={createSortHandler(headCell)}
+                        >
+                            {headCell}
+                            {orderBy === headCell ? (
+                                <Box component="span" sx={visuallyHidden}>
+                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                </Box>
+                            ) : null}
+                        </TableSortLabel>
+                    </TableCell>
+                ))}
+                <TableCell align="center">Actions</TableCell>
+            </TableRow>
+        </TableHead>
+    );
+}
 
 const Row = ({training}) => {
 
-    const {trainingName, trainingType, startDate, endDate, hoursCount, trainingStatus} = training
+    const {trainingName, trainingType, startDate, endDate, createdAt, hoursCount, trainingStatus} = training
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
 
     const dispatch = useDispatch()
@@ -82,8 +121,9 @@ const Row = ({training}) => {
                     {trainingName}
                 </TableCell>
                 <TableCell align="right">{trainingType}</TableCell>
-                <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
-                <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
+                <TableCell align="right">{moment(startDate).format('MM-DD-YYYY')}</TableCell>
+                <TableCell align="right">{moment(endDate).format('MM-DD-YYYY')}</TableCell>
+                <TableCell align="right">{moment(createdAt).format('MM-DD-YYYY')}</TableCell>
                 <TableCell align="right">{hoursCount}</TableCell>
                 { renderTableCellForTrainingStatus(trainingStatus) }
                 { renderActions(trainingStatus) }
@@ -105,12 +145,17 @@ const Row = ({training}) => {
     );
 }
 
-const TrainingTableForServicer = ({trainingList}) => {
+const TrainingTableForServicer = ({trainingList, order, setOrder, orderBy, setOrderBy}) => {
 
 
     const dispatch = useDispatch()
     const { openModal, currentTraining } = useSelector(state => state.training)
 
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    }
 
     return (
         <>
@@ -128,17 +173,11 @@ const TrainingTableForServicer = ({trainingList}) => {
 
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Training Name</TableCell>
-                            <TableCell align="right">Training Type</TableCell>
-                            <TableCell align="right">Start Date</TableCell>
-                            <TableCell align="right">End Date</TableCell>
-                            <TableCell align="right">Hours</TableCell>
-                            <TableCell align="right">Training Status</TableCell>
-                            <TableCell align="center">Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
+                    <EnhancedTableHead
+                        order={order}
+                        orderBy={orderBy}
+                        onRequestSort={handleRequestSort}
+                    />
                     <TableBody>
                         {trainingList.map((training, index) => (
                             <Row key={index} training={training}/>
@@ -149,23 +188,5 @@ const TrainingTableForServicer = ({trainingList}) => {
         </>
     );
 }
-
-// Row.propTypes = {
-//     row: PropTypes.shape({
-//         calories: PropTypes.number.isRequired,
-//         carbs: PropTypes.number.isRequired,
-//         fat: PropTypes.number.isRequired,
-//         activities: PropTypes.arrayOf(
-//             PropTypes.shape({
-//                 amount: PropTypes.number.isRequired,
-//                 customerId: PropTypes.string.isRequired,
-//                 date: PropTypes.string.isRequired,
-//             }),
-//         ).isRequired,
-//         name: PropTypes.string.isRequired,
-//         price: PropTypes.number.isRequired,
-//         protein: PropTypes.number.isRequired,
-//     }).isRequired,
-// }
 
 export default TrainingTableForServicer

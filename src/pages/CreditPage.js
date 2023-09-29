@@ -71,7 +71,6 @@ const CreditPage = () => {
 
     return (
         <BasicLayout>
-            <Container>
                 <Grid container alignItems='center' justifyContent='space-between'>
                     <Grid item>
                         <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
@@ -174,7 +173,6 @@ const CreditPage = () => {
                         onChange={(_e, v) => setPage(v)}
                     />
                 }
-            </Container>
         </BasicLayout>
 
     )

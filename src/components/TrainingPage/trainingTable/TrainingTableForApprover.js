@@ -11,13 +11,15 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import moment from "moment";
-import {alpha, Checkbox, Chip, Grid, Tooltip} from "@mui/material";
+import {alpha, Checkbox, Chip, Grid, TableSortLabel, Tooltip} from "@mui/material";
 import {useState} from "react";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import useUpdateTrainingStatus from "../../../hooks/trainingHooks/useUpdateTrainingStatus";
-import {ApproveOrReject} from "../../../utils/consts";
+import {ApproveOrReject, getTrainingTableHeaders} from "../../../utils/consts";
+import {visuallyHidden} from "@mui/utils";
+import {useSelector} from "react-redux";
 
 
 export const renderTableCellForTrainingStatus = trainingStatus => {
@@ -43,8 +45,7 @@ export const renderTableCellForTrainingStatus = trainingStatus => {
     )
 }
 
-// TODO: check box
-const TrainingTableForApprover = ({trainingList}) => {
+const TrainingTableForApprover = ({trainingList, order, setOrder, orderBy, setOrderBy}) => {
 
     const [trainingsSelected, setTrainingsSelected] = useState([])
 
@@ -87,6 +88,12 @@ const TrainingTableForApprover = ({trainingList}) => {
 
     const isSelected = (name) => trainingsSelected.indexOf(name) !== -1
 
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    }
+
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
@@ -104,6 +111,9 @@ const TrainingTableForApprover = ({trainingList}) => {
                             numSelected={trainingsSelected.length}
                             onSelectAllClick={e => handleSelectAllClick(e)}
                             rowCount={trainingList.length}
+                            order={order}
+                            orderBy={orderBy}
+                            onRequestSort={handleRequestSort}
                         />
                         <TableBody>
                             {
@@ -121,6 +131,7 @@ const TrainingTableForApprover = ({trainingList}) => {
                                         endDate,
                                         hoursCount,
                                         trainingStatus,
+                                        createdAt,
                                     } = training
                                     const isItemSelected = isSelected(trainingId);
                                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -153,8 +164,9 @@ const TrainingTableForApprover = ({trainingList}) => {
                                             <TableCell align="right">{`${userFirstName} ${userLastName}`}</TableCell>
                                             <TableCell align="right">{trainingName}</TableCell>
                                             <TableCell align="right">{trainingType}</TableCell>
-                                            <TableCell align="right">{moment(startDate).format('YYYY-MM-DD')}</TableCell>
-                                            <TableCell align="right">{moment(endDate).format('YYYY-MM-DD')}</TableCell>
+                                            <TableCell align="right">{moment(startDate).format('MM-DD-YYYY')}</TableCell>
+                                            <TableCell align="right">{moment(endDate).format('MM-DD-YYYY')}</TableCell>
+                                            <TableCell align="right">{moment(createdAt).format('MM-DD-YYYY')}</TableCell>
                                             <TableCell align="right">{hoursCount}</TableCell>
                                             { renderTableCellForTrainingStatus(trainingStatus) }
 
@@ -170,21 +182,12 @@ const TrainingTableForApprover = ({trainingList}) => {
 }
 
 
+function EnhancedTableHead({ onSelectAllClick, numSelected, rowCount, order, orderBy, onRequestSort }) {
 
-const headCells = [
-    { label: 'Servicer ID', },
-    { label: 'Servicer Name', },
-    { label: 'User Email', },
-    { label: 'User Name', },
-    { label: 'Training Name', },
-    { label: 'Training Type', },
-    { label: 'Start Date', },
-    { label: 'End Date', },
-    { label: 'Hours', },
-    { label: 'Training Status', },
-]
-
-function EnhancedTableHead({ onSelectAllClick, numSelected, rowCount }) {
+    const createSortHandler = (property) => (event) => {
+        onRequestSort(event, property)
+    }
+    const {userRole} = useSelector(state => state.user)
 
     return (
         <TableHead>
@@ -200,9 +203,25 @@ function EnhancedTableHead({ onSelectAllClick, numSelected, rowCount }) {
                         }}
                     />
                 </TableCell>
-                {headCells.map((headCell, index) => (
-                    <TableCell key={index} sx={{pr: '0px'}}>
-                        <Typography variant='subtitle' noWrap>{headCell.label}</Typography>
+                {getTrainingTableHeaders(userRole).map((headCell) => (
+                    <TableCell
+                        key={headCell}
+                        // align={headCell.numeric ? 'right' : 'left'}
+                        // padding={headCell.disablePadding ? 'none' : 'normal'}
+                        sortDirection={orderBy === headCell.id ? order : false}
+                    >
+                        <TableSortLabel
+                            active={orderBy === headCell}
+                            direction={orderBy === headCell ? order : 'asc'}
+                            onClick={createSortHandler(headCell)}
+                        >
+                            {headCell}
+                            {orderBy === headCell ? (
+                                <Box component="span" sx={visuallyHidden}>
+                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                </Box>
+                            ) : null}
+                        </TableSortLabel>
                     </TableCell>
                 ))}
             </TableRow>

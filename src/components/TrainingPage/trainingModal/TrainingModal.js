@@ -11,41 +11,32 @@ import {
     Modal,
     OutlinedInput,
     Select,
-    TextField, Tooltip
+    Tooltip
 } from "@mui/material";
 import {useEffect, useState} from "react";
 import 'react-day-picker/dist/style.css';
-import TrainingDatePicker from "./TrainingDatePicker";
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import {UserRole, wordsLimit} from "../../../utils/consts";
 import {ThemeProvider} from "@emotion/react";
-import {commonStyles, commontStyles} from "../../../styles/commontStyles";
+import {commonStyles} from "../../../styles/commontStyles";
 import Button from "@mui/material/Button";
-import {useMutation} from "@tanstack/react-query";
-import axios from "axios";
-import api from "../../../api/api";
 import useCreateTraining from "../../../hooks/trainingHooks/useCreateTraining";
 import useFetchTrainingTypes from "../../../hooks/trainingHooks/useFetchTrainingTypes";
 import {useSelector} from "react-redux";
 import useUpdateTraining from "../../../hooks/trainingHooks/useUpdateTraining";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import {toast} from "react-toastify";
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import {AddCircleOutlineOutlined} from "@mui/icons-material";
 import { Controller, useForm } from "react-hook-form"
 import {yupResolver} from "@hookform/resolvers/yup";
-import {getTrainingSchema, trainingSchemaForServicer} from "../../../utils/schema";
+import {getTrainingSchema, traineeSchema} from "../../../utils/schema";
 import dayjs from 'dayjs';
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import useCommonQuery from "../../../hooks/trainingHooks/useCommonQuery";
 
 const styles = {
     modalStyle: {
@@ -77,16 +68,13 @@ const theme = createTheme({
 
 const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
-    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingName.length : wordsLimit)
-    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingURL.length : wordsLimit)
+    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(wordsLimit)
+    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(wordsLimit)
 
 
-    const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
-    const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
-    const [startDate, setStartDate] = useState(isUpdating ? dayjs(training.startDate) : dayjs(new Date()))
-    const [endDate, setEndDate] = useState(isUpdating ? dayjs(training.endDate) : dayjs(new Date()))
-    const [hoursCount, setHoursCount] = useState(isUpdating ? training.hoursCount : 1)
-    const [trainingURL, setTrainingURL] = useState(isUpdating ? training.trainingURL : '')
+    const [startDate, setStartDate] = useState(isUpdating ? dayjs(training.startDate) : '')
+    const [endDate, setEndDate] = useState(isUpdating ? dayjs(training.endDate) : '')
+
     const traineeInitialised = {
         traineeEmail: '',
         traineeFirstName: '',
@@ -96,10 +84,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const [traineeList, setTraineeList] = useState([])
     const [displayErrorMessage, setDisplayErrorMessage] = useState(false);
 
-    const [addMyself, setAddMyself] = useState(isUpdating)
-    const [error, setError] = useState(null)
-
-    const { userName, userEmail, userRole } = useSelector(state => state.user)
+    const { userRole } = useSelector(state => state.user)
     const {isLoading, data: trainingTypes}
         = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes')
 
@@ -108,6 +93,19 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     const { handleSubmit, control, reset, setValue, formState: { errors } }  = useForm({
         resolver: yupResolver(getTrainingSchema(userRole)),
+    })
+
+    const {data: trainingTimePeriod} = useCommonQuery(['queryFiscalYear'], '/training/currentFiscalYear')
+
+    const {
+        handleSubmit: traineeHandleSubmit,
+        control: traineeControl,
+        reset: traineeReset,
+        formState: { errors: traineeErrors },
+        trigger,
+        getValues: getTraineeValues
+    } = useForm({
+        resolver: yupResolver(traineeSchema),
     })
 
     useEffect(() => {
@@ -120,116 +118,74 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     }, [isUpdating])
 
 
-    const trainingNameHandler = e => {
-        const input = e.target.value
-        if(input.length > wordsLimit){
-            return
-        }
 
-        setTrainingNameWordsRemaining(wordsLimit - input.length)
-        setTrainingName(input)
-    }
-
-    const trainingUrlHandler = e => {
-        const input = e.target.value
-        if(input.length > wordsLimit){
-            return
-        }
-
-        setTrainingUrlWordsRemaining(wordsLimit - input.length)
-        setTrainingURL(input)
-    }
-
-    const trainingHoursHandler = e => {
-        const { value } = e.target
-        if(value <= 0){
-            return
-        }
-        setHoursCount(value)
-    }
-
-    const fillTraineeInfo = e => {
-        const { name, value } = e.target
-        setTrainee({
-            ...trainee,
-            [name]: value.trim()
-        })
-    }
-
-    const addTrainee = () =>{
-        if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length){
-            // toast.error('Please fill trainee info')
+    const addTrainee = (trainee) =>{
+        const hasReplicate = traineeList.find(item => item.traineeEmail === trainee.traineeEmail)
+        if(hasReplicate){
             setDisplayErrorMessage(true)
             return
         }
-
         setDisplayErrorMessage(false)
         setTraineeList([...traineeList, trainee])
         setTrainee(traineeInitialised)
+        traineeReset({
+            traineeEmail: '',
+            traineeFirstName: '',
+            traineeLastName: ''
+        })
     }
 
     const deleteTraineeFromTraineeList = traineeEmail => {
         setTraineeList(traineeList.filter(trainee => trainee.traineeEmail !== traineeEmail))
     }
 
-    // const addMyselfHandler = e => {
-    //     const isChecked = e.target.checked
-    //     setAddMyself(isChecked)
-    //     if(isChecked){
-    //         const myInfo = {
-    //             traineeEmail: userEmail,
-    //             traineeFirstName: userName,
-    //             traineeLastName: userName,
-    //         }
-    //         setTraineeList([...traineeList, myInfo])
-    //     }else{
-    //         setTraineeList(traineeList.filter(trainee => trainee.traineeEmail !== userEmail))
-    //     }
-    // }
-
     const closeForm = () => {
-        reset()
-        // setTrainingName('')
-        // setTrainingType('')
-        setStartDate(dayjs(new Date()))
-        setEndDate(dayjs(new Date()))
-        // setHoursCount(1)
-        // setTrainingURL('')
+        reset({
+            trainingName: '',
+            trainingType: '',
+            trainingHours: 1,
+            trainingUrl: '',
+        })
+
+        traineeReset({
+            traineeEmail: '',
+            traineeFirstName: '',
+            traineeLastName: ''
+        })
+        setStartDate('')
+        setEndDate('')
+
         setTraineeList([])
-        setTrainee(traineeInitialised)
+        // setTrainee(traineeInitialised)
+        setTrainingNameWordsRemaining(wordsLimit)
+        setTrainingUrlWordsRemaining(wordsLimit)
         setDisplayErrorMessage(false)
-        // setTrainingNameWordsRemaining(wordsLimit)
-        // setTrainingUrlWordsRemaining(wordsLimit)
-        // setAddMyself(false)
         setOpen(false)
     }
 
-    // const validateForm = async () => {
-    //     await trigger()
-    //     if(traineeList.length === 0){
-    //         const isValid = await trigger(['traineeEmail', 'traineeFirstName', 'traineeLastName'])
-    //         if(!isValid)
-    //             return
-    //     }else{
-    //         console.log('asdf')
-    //         unregister(['traineeEmail', 'traineeFirstName', 'traineeLastName'])
-    //     }
-    //
-    //     await handleSubmit(createTraining)()
-    // }
 
-    const createTraining = (data) => {
+    const createTraining = async (data) => {
         const {
             trainingType,
             trainingName,
             trainingUrl,
             trainingHours : hoursCount
         } = data
-
         if(userRole === UserRole.SERVICER_COORDINATOR){
-            if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length && traineeList.length === 0){
-                setDisplayErrorMessage(true)
-                return
+            // if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length && traineeList.length === 0){
+            //     setDisplayErrorMessage(true)
+            //     return
+            // }
+            if(traineeList.length === 0){
+                const hasValidTrainee = await trigger()
+                if(!hasValidTrainee)
+                    return
+                const trainee = {
+                    traineeEmail: getTraineeValues('traineeEmail'),
+                    traineeFirstName: getTraineeValues('traineeFirstName'),
+                    traineeLastName: getTraineeValues('traineeLastName'),
+                }
+                traineeList.push(trainee)
             }
         }
 
@@ -240,7 +196,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             endDate: endDate.format('YYYY-MM-DD'),
             hoursCount,
             trainingURL: trainingUrl || '',
-            traineeList: traineeList.length === 0 ? [trainee] : traineeList
+            traineeList
         }
 
         addTraining(newTraining)
@@ -280,13 +236,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             <Grid item>
                 {
                     traineeList.map((trainee, index) => (
-                        // <Chip
-                        //     key={index}
-                        //     label={trainee.traineeEmail}
-                        //     sx={{mr: 1, mb: 1}}
-                        //     // onClick={()=>{}}
-                        //     onDelete={()=>deleteTraineeFromTraineeList(trainee.traineeEmail)}
-                        // />
                         <Grid container
                               direction='row'
                               alignItems='center'
@@ -296,15 +245,15 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                               pb={2}
                               pl={2}
                         >
-                            <Grid item xs={12} md={5}>
+                            <Grid item xs={5}>
                                 <Typography variant='caption'>{trainee.traineeEmail}</Typography>
                             </Grid>
 
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={3}>
                                 <Typography variant='caption'>{trainee.traineeFirstName}</Typography>
                             </Grid>
 
-                            <Grid item xs={12} md={3}>
+                            <Grid item xs={3}>
                                 <Typography variant='caption'>{trainee.traineeLastName}</Typography>
                             </Grid>
 
@@ -330,54 +279,78 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                       spacing={1}
                 >
                     <Grid item xs={12} md={6}>
-                        <FormControl
-                            sx={commonStyles.fullWidth}
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-adornment-password">Trainee Email</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type='text'
-                                label="trainee email"
-                                name='traineeEmail'
-                                value={trainee.traineeEmail}
-                                onChange={e=>fillTraineeInfo(e)}
-                            />
-                        </FormControl>
+                        <Controller
+                            control={traineeControl}
+                            name='traineeEmail'
+                            render={({ field }) => (
+                                <FormControl
+                                    sx={commonStyles.fullWidth}
+                                    variant="outlined"
+                                    error={!!traineeErrors.traineeEmail}
+                                >
+                                    <InputLabel htmlFor="outlined-adornment-password">Trainee Email</InputLabel>
+                                    <OutlinedInput
+                                        {...field}
+                                        id="outlined-adornment-password"
+                                        type='text'
+                                        label="trainee email"
+                                    />
+                                    {
+                                        traineeErrors.traineeEmail && <FormHelperText id="my-helper-text">{traineeErrors.traineeEmail.message}</FormHelperText>
+                                    }
+                                </FormControl>
+                            )}
+                        />
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                        <FormControl
-                            sx={commonStyles.fullWidth}
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-adornment-password">Trainee First Name</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type='text'
-                                label="traineeList"
-                                name='traineeFirstName'
-                                value={trainee.traineeFirstName}
-                                onChange={e=>fillTraineeInfo(e)}
-                            />
-                        </FormControl>
+                        <Controller
+                            control={traineeControl}
+                            name='traineeFirstName'
+                            render={({ field }) => (
+                                <FormControl
+                                    sx={commonStyles.fullWidth}
+                                    variant="outlined"
+                                    error={!!traineeErrors.traineeFirstName}
+                                >
+                                    <InputLabel htmlFor="outlined-adornment-password">Trainee First Name</InputLabel>
+                                    <OutlinedInput
+                                        {...field}
+                                        id="outlined-adornment-password"
+                                        type='text'
+                                        label="trainee first name"
+                                    />
+                                    {
+                                        traineeErrors.traineeFirstName && <FormHelperText id="my-helper-text">{traineeErrors.traineeFirstName.message}</FormHelperText>
+                                    }
+                                </FormControl>
+                            )}
+                        />
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                        <FormControl
-                            sx={commonStyles.fullWidth}
-                            variant="outlined"
-                        >
-                            <InputLabel htmlFor="outlined-adornment-password">Trainee Last Name</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-password"
-                                type='text'
-                                label="traineeList"
-                                name='traineeLastName'
-                                value={trainee.traineeLastName}
-                                onChange={e=>fillTraineeInfo(e)}
-                            />
-                        </FormControl>
+                        <Controller
+                            control={traineeControl}
+                            name='traineeLastName'
+                            render={({ field }) => (
+                                <FormControl
+                                    sx={commonStyles.fullWidth}
+                                    variant="outlined"
+                                    error={!!traineeErrors.traineeLastName}
+                                >
+                                    <InputLabel htmlFor="outlined-adornment-password">Trainee Last Name</InputLabel>
+                                    <OutlinedInput
+                                        {...field}
+                                        id="outlined-adornment-password"
+                                        type='text'
+                                        label="trainee last name"
+                                    />
+                                    {
+                                        traineeErrors.traineeLastName && <FormHelperText id="my-helper-text">{traineeErrors.traineeLastName.message}</FormHelperText>
+                                    }
+                                </FormControl>
+                            )}
+                        />
                     </Grid>
 
                     <Grid item xs={12}>
@@ -385,7 +358,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                             displayErrorMessage
                             &&
                             <Alert severity="error">
-                                All trainee fields are required
+                                You have already added this email
                             </Alert>
                         }
 
@@ -396,29 +369,13 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             <Grid item>
                 <IconButton
                     variant="outlined" size="small"
-                    onClick={() => addTrainee()}
+                    onClick={traineeHandleSubmit(addTrainee)}
                     sx={{ fontSize: "14px", border: "4px", borderRadius: 1, mb: 0.5 }}
                 >
                     <AddCircleOutlineOutlined color='primary' mr={0.5}/>
                     Add More Trainee(s)
                 </IconButton>
-
             </Grid>
-
-            {/*<Grid item>*/}
-            {/*    <Grid container*/}
-            {/*          alignItems='center'*/}
-            {/*          justifyContent='space-between'>*/}
-            {/*        <Grid item>*/}
-            {/*            <FormControlLabel*/}
-            {/*                sx={commonStyles.fullWidth}*/}
-            {/*                control={<Checkbox checked={addMyself} />}*/}
-            {/*                onChange={e => addMyselfHandler(e)}*/}
-            {/*                label="Add Myself"*/}
-            {/*            />*/}
-            {/*        </Grid>*/}
-            {/*    </Grid>*/}
-            {/*</Grid>*/}
         </>
     }
 
@@ -439,24 +396,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                         alignItems="stretch"
                         spacing={1}
                     >
-
-                        {/*<Controller*/}
-                        {/*    control={control}*/}
-                        {/*    name={'test'}*/}
-                        {/*    render={({ field }) => (*/}
-                        {/*        <TextField*/}
-                        {/*            {...field}*/}
-                        {/*            variant='outlined'*/}
-                        {/*            error={!!errors['test']}*/}
-                        {/*            helperText={*/}
-                        {/*                errors['test'] ? 'error!' : ''*/}
-                        {/*            }*/}
-                        {/*        />*/}
-                        {/*    )}*/}
-                        {/*/>*/}
-
-                        {/*<div onClick={handleSubmit(submitForm)}>click</div>*/}
-
                         <Grid item>
                             <Controller
                                 control={control}
@@ -504,7 +443,14 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                             type='text'
                                             endAdornment={
                                                 <InputAdornment position="end">
-                                                    <Typography variant='span'>{trainingNameWordsRemaining} remaining</Typography>
+                                                    <Typography variant='span'>
+                                                        {
+                                                            field.value ?
+                                                                trainingNameWordsRemaining - field.value?.length
+                                                                :
+                                                                trainingNameWordsRemaining
+                                                        }&nbsp;remaining
+                                                    </Typography>
                                                 </InputAdornment>
                                             }
                                             label="trainingName"
@@ -534,29 +480,23 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                         >
                                             <DatePicker
                                                 value={startDate}
-                                                onChange={value => setStartDate(value)}
+                                                onChange={value => {
+                                                    setStartDate(value)
+                                                    setEndDate(value)
+                                                }}
+                                                slotProps={{
+                                                    textField: {
+                                                        error: false,
+                                                    },
+                                                }}
                                                 disableFuture
-                                                // defaultValue={}
                                                 label='Start Date'
+                                                minDate={dayjs(trainingTimePeriod?.currentFiscalStartTime)}
                                             />
                                         </DemoContainer>
                                     </LocalizationProvider>
-                                    {/*<TrainingDatePicker*/}
-                                    {/*    date={startDate}*/}
-                                    {/*    setDate={setStartDate}*/}
-                                    {/*    name='Start Date'*/}
-                                    {/*    control={control}*/}
-                                    {/*    errors={errors}*/}
-                                    {/*/>*/}
                                 </Grid>
                                 <Grid item xs={12} md={5.5}>
-                                    {/*<TrainingDatePicker*/}
-                                    {/*    date={endDate}*/}
-                                    {/*    setDate={setEndDate}*/}
-                                    {/*    name='End Date'*/}
-                                    {/*    control={control}*/}
-                                    {/*    errors={errors}*/}
-                                    {/*/>*/}
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <DemoContainer
                                             components={[
@@ -569,10 +509,16 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                             <DatePicker
                                                 value={endDate}
                                                 onChange={value => setEndDate(value)}
+                                                slotProps={{
+                                                    textField: {
+                                                        error: false,
+                                                    },
+                                                }}
                                                 disableFuture
                                                 minDate={startDate}
                                                 // defaultValue={}
                                                 label='End Date'
+                                                maxDate={dayjs(trainingTimePeriod?.currentFiscalEndTime)}
                                             />
                                         </DemoContainer>
                                     </LocalizationProvider>
@@ -630,7 +576,14 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                             type='text'
                                             endAdornment={
                                                 <InputAdornment position="end">
-                                                    <Typography variant='span'>{trainingUrlWordsRemaining} remaining</Typography>
+                                                    <Typography variant='span'>
+                                                        {
+                                                            field.value ?
+                                                                trainingUrlWordsRemaining - field.value?.length
+                                                                :
+                                                                trainingUrlWordsRemaining
+                                                        }&nbsp;remaining
+                                                    </Typography>
                                                 </InputAdornment>
                                             }
                                             label="Training URL"
