@@ -113,8 +113,8 @@ function Row({row}) {
                                                 </TableCell>
                                                 <TableCell>{userEmail}</TableCell>
                                                 <TableCell align="right">{ECLASS}</TableCell>
-                                                <TableCell align="right">{LiveTraining}</TableCell>
                                                 <TableCell align="right">{Webinar}</TableCell>
+                                                <TableCell align="right">{LiveTraining}</TableCell>
                                             </TableRow>
                                         )
 

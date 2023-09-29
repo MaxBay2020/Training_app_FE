@@ -26,12 +26,16 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import useFetchTrainingCredits from "../hooks/trainingHooks/useFetchTrainingCredits";
 import TrainingTableForSupServicer from "../components/TrainingPage/trainingTable/TrainingTableForSupServicer";
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
+import IconButton from "@mui/material/IconButton";
+import Dropzone from 'react-dropzone'
+import UploadZone from "../components/uploadZone/UploadZone";
 
 const TrainingPage = () => {
 
-    // 1 - sort by training created time
-    // 2 - sort by training name
-    const [sortBy, setSortBy] = useState(sortingSystem.trainingPage.defaultSortValue)
+    const [order, setOrder] = useState('DESC')
+    const [orderBy, setOrderBy] = useState('Submitted at')
+
     const [searchKeyword, setSearchKeyword] = useState('')
     const debouncedSearchKeyword = useDebounce(searchKeyword, 500)
 
@@ -48,9 +52,10 @@ const TrainingPage = () => {
 
     const { data: trainingCredits } = useFetchTrainingCredits(['queryTrainingCredits'])
 
+    // TODO: fetch training API
     const {isLoading, data, error, isError, isFetching}
         = useFetchTrainings(
-            ['queryAllTrainings', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
+            ['queryAllTrainings', debouncedSearchKeyword, order, orderBy, page, limit], page, limit, debouncedSearchKeyword, order, orderBy)
 
     useEffect(() => {
         setPage(1)
@@ -59,13 +64,37 @@ const TrainingPage = () => {
 
     const renderTrainingTable = userRole => {
         if(userRole.toUpperCase() === UserRole.SERVICER){
-            return <TrainingTableForServicer trainingList={data.trainingList} />
+            return <TrainingTableForServicer
+                trainingList={data.trainingList}
+                order={order}
+                setOrder={setOrder}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+            />
         }else if(userRole.toUpperCase() === UserRole.SERVICER_COORDINATOR){
-            return <TrainingTableForSupServicer trainingList={data.trainingList} />
+            return <TrainingTableForSupServicer
+                trainingList={data.trainingList}
+                order={order}
+                setOrder={setOrder}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+            />
         }else if(userRole.toUpperCase() === UserRole.ADMIN){
-            return <TrainingTableForAdmin trainingList={data.trainingList} />
+            return <TrainingTableForAdmin
+                trainingList={data.trainingList}
+                order={order}
+                setOrder={setOrder}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+            />
         }else if(userRole.toUpperCase() === UserRole.APPROVER){
-            return <TrainingTableForApprover trainingList={data.trainingList} />
+            return <TrainingTableForApprover
+                trainingList={data.trainingList}
+                order={order}
+                setOrder={setOrder}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+            />
         }
     }
 
@@ -106,11 +135,19 @@ const TrainingPage = () => {
 
     return (
         <BasicLayout>
-            <Container>
-                <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
-                    <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
-                    <Grid item><Typography variant='subtitle'>{`User Role:   ${userRole}`}</Typography></Grid>
-                    { data && renderUserInfo(data.userRole) }
+                <Grid container alignItems='center' justifyContent='space-between'>
+                    <Grid item>
+                        <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
+                            <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
+                            <Grid item><Typography variant='subtitle'>{`User Role:   ${userRole}`}</Typography></Grid>
+                            { data && renderUserInfo(data.userRole) }
+                        </Grid>
+                    </Grid>
+
+                    <Grid item>
+                        <UploadZone />
+                    </Grid>
+
                 </Grid>
 
                 <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
@@ -127,22 +164,6 @@ const TrainingPage = () => {
                             value={searchKeyword}
                             onChange={e => searchHandler(e)}
                         />
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                        <FormControl fullWidth size="small">
-                            <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={sortBy}
-                                label="sortBy"
-                                onChange={e => setSortBy(e.target.value)}
-                            >
-                                {
-                                    sortingSystem.trainingPage.trainingPageSortBy.map(sort => <MenuItem key={sort.value} value={sort.value}>{sort.label}</MenuItem>)
-                                }
-                            </Select>
-                        </FormControl>
                     </Grid>
                 </Grid>
 
@@ -163,7 +184,6 @@ const TrainingPage = () => {
                 }
 
                 { data && renderTrainingCredits(data.userRole)}
-            </Container>
         </BasicLayout>
 
     )

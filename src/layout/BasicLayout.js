@@ -1,10 +1,14 @@
 import Navbar from "../components/navbar/Navbar";
+import {Container} from "@mui/material";
 
 const BasicLayout = ({children}) => {
     return (
         <>
             <Navbar />
-            {children}
+            <Container maxWidth='xl'>
+                {children}
+            </Container>
+
         </>
     )
 }
