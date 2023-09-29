@@ -11,7 +11,7 @@ import {
     Modal,
     OutlinedInput,
     Select,
-    TextField, Tooltip
+    Tooltip
 } from "@mui/material";
 import {useEffect, useState} from "react";
 import 'react-day-picker/dist/style.css';
@@ -20,7 +20,7 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import {UserRole, wordsLimit} from "../../../utils/consts";
 import {ThemeProvider} from "@emotion/react";
-import {commonStyles, commontStyles} from "../../../styles/commontStyles";
+import {commonStyles} from "../../../styles/commontStyles";
 import Button from "@mui/material/Button";
 import useCreateTraining from "../../../hooks/trainingHooks/useCreateTraining";
 import useFetchTrainingTypes from "../../../hooks/trainingHooks/useFetchTrainingTypes";
@@ -30,14 +30,13 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import {AddCircleOutlineOutlined} from "@mui/icons-material";
 import { Controller, useForm } from "react-hook-form"
 import {yupResolver} from "@hookform/resolvers/yup";
-import {getTrainingSchema, traineeSchema, trainingSchemaForServicer} from "../../../utils/schema";
+import {getTrainingSchema, traineeSchema} from "../../../utils/schema";
 import dayjs from 'dayjs';
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import useCommonQuery from "../../../hooks/trainingHooks/useCommonQuery";
-import moment from "moment";
 
 const styles = {
     modalStyle: {
@@ -69,16 +68,13 @@ const theme = createTheme({
 
 const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
-    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingName.length : wordsLimit)
-    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(isUpdating ? wordsLimit - training.trainingURL.length : wordsLimit)
+    const [trainingNameWordsRemaining, setTrainingNameWordsRemaining] = useState(wordsLimit)
+    const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(wordsLimit)
 
 
-    const [trainingName, setTrainingName] = useState(isUpdating ? training.trainingName : '')
-    const [trainingType, setTrainingType] = useState(isUpdating ? training.trainingType : '')
     const [startDate, setStartDate] = useState(isUpdating ? dayjs(training.startDate) : '')
     const [endDate, setEndDate] = useState(isUpdating ? dayjs(training.endDate) : '')
-    const [hoursCount, setHoursCount] = useState(isUpdating ? training.hoursCount : 1)
-    const [trainingURL, setTrainingURL] = useState(isUpdating ? training.trainingURL : '')
+
     const traineeInitialised = {
         traineeEmail: '',
         traineeFirstName: '',
@@ -88,7 +84,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const [traineeList, setTraineeList] = useState([])
     const [displayErrorMessage, setDisplayErrorMessage] = useState(false);
 
-    const { userName, userEmail, userRole } = useSelector(state => state.user)
+    const { userRole } = useSelector(state => state.user)
     const {isLoading, data: trainingTypes}
         = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes')
 
@@ -122,41 +118,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     }, [isUpdating])
 
 
-    const trainingNameHandler = e => {
-        const input = e.target.value
-        if(input.length > wordsLimit){
-            return
-        }
-
-        setTrainingNameWordsRemaining(wordsLimit - input.length)
-        setTrainingName(input)
-    }
-
-    const trainingUrlHandler = e => {
-        const input = e.target.value
-        if(input.length > wordsLimit){
-            return
-        }
-
-        setTrainingUrlWordsRemaining(wordsLimit - input.length)
-        setTrainingURL(input)
-    }
-
-    const trainingHoursHandler = e => {
-        const { value } = e.target
-        if(value <= 0){
-            return
-        }
-        setHoursCount(value)
-    }
-
-    const fillTraineeInfo = e => {
-        const { name, value } = e.target
-        setTrainee({
-            ...trainee,
-            [name]: value.trim()
-        })
-    }
 
     const addTrainee = (trainee) =>{
         const hasReplicate = traineeList.find(item => item.traineeEmail === trainee.traineeEmail)
@@ -482,7 +443,14 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                             type='text'
                                             endAdornment={
                                                 <InputAdornment position="end">
-                                                    <Typography variant='span'>{trainingNameWordsRemaining} remaining</Typography>
+                                                    <Typography variant='span'>
+                                                        {
+                                                            field.value ?
+                                                                trainingNameWordsRemaining - field.value?.length
+                                                                :
+                                                                trainingNameWordsRemaining
+                                                        }&nbsp;remaining
+                                                    </Typography>
                                                 </InputAdornment>
                                             }
                                             label="trainingName"
@@ -608,7 +576,14 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                             type='text'
                                             endAdornment={
                                                 <InputAdornment position="end">
-                                                    <Typography variant='span'>{trainingUrlWordsRemaining} remaining</Typography>
+                                                    <Typography variant='span'>
+                                                        {
+                                                            field.value ?
+                                                                trainingUrlWordsRemaining - field.value?.length
+                                                                :
+                                                                trainingUrlWordsRemaining
+                                                        }&nbsp;remaining
+                                                    </Typography>
                                                 </InputAdornment>
                                             }
                                             label="Training URL"
