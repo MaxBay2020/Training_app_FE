@@ -183,12 +183,9 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         })
 
         setStartDate(null)
-
-        // setStartDate('')
-        // setEndDate('')
+        setEndDate(null)
 
         setTraineeList([])
-        // setTrainee(traineeInitialised)
         setTrainingNameWordsRemaining(wordsLimit)
         setTrainingUrlWordsRemaining(wordsLimit)
         setDisplayErrorMessage(false)
