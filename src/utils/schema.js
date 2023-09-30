@@ -1,6 +1,8 @@
 import * as yup from "yup";
 import {wordsLimit} from "./consts";
 
+const urlRegExp = /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/
+
 export const getTrainingSchema = (dateRange) => {
     return yup.object().shape({
         trainingName: yup.string().trim().min(1).max(wordsLimit).required(),
@@ -8,7 +10,7 @@ export const getTrainingSchema = (dateRange) => {
         startDate: yup.date().max(new Date()).required(),
         endDate: yup.date().min(yup.ref('startDate')).max(new Date()).required(),
         trainingHours: yup.number().min(1).positive().integer().required(),
-        trainingUrl: yup.string().trim().url().min(0).max(wordsLimit)
+        trainingUrl: yup.string().trim().matches(urlRegExp, 'Please enter a valid url').min(0).max(wordsLimit)
             .when('trainingType', ([trainingType], schema) => {
             return trainingType === 'Webinar' ? schema.required() : schema.notRequired()
         }),
