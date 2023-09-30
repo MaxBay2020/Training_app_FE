@@ -37,6 +37,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import useCommonQuery from "../../../hooks/trainingHooks/useCommonQuery";
+import moment from "moment";
 
 const styles = {
     modalStyle: {
@@ -72,8 +73,11 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const [trainingUrlWordsRemaining, setTrainingUrlWordsRemaining] = useState(wordsLimit)
 
 
-    const [startDate, setStartDate] = useState(isUpdating ? dayjs(training.startDate) : '')
-    const [endDate, setEndDate] = useState(isUpdating ? dayjs(training.endDate) : '')
+    // const [startDate, setStartDate] = useState(isUpdating ? dayjs(training.startDate) : '')
+    // const [endDate, setEndDate] = useState(isUpdating ? dayjs(training.endDate) : '')
+
+    const [startDate, setStartDate] = useState(null)
+    const [endDate, setEndDate] = useState(startDate)
 
     const traineeInitialised = {
         traineeEmail: '',
@@ -91,11 +95,20 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const { mutate: addTraining } = useCreateTraining()
     const { mutate: updateTraining } = useUpdateTraining()
 
-    const { handleSubmit, control, reset, setValue, formState: { errors } }  = useForm({
-        resolver: yupResolver(getTrainingSchema(userRole)),
-    })
-
     const {data: trainingTimePeriod} = useCommonQuery(['queryFiscalYear'], '/training/currentFiscalYear')
+
+
+
+    const {
+        handleSubmit,
+        control,
+        reset,
+        setValue,
+        getValues,
+        formState: { errors }
+    }  = useForm({
+        resolver: yupResolver(getTrainingSchema(trainingTimePeriod)),
+    })
 
     const {
         handleSubmit: traineeHandleSubmit,
@@ -116,6 +129,22 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             setValue('trainingUrl', training.trainingURL)
         }
     }, [isUpdating])
+
+
+    useEffect(() => {
+        setValue('endDate', endDate)
+    }, [startDate])
+
+    useEffect(() => {
+        if(!!training){
+            setValue('endDate', dayjs(training.endDate))
+            setStartDate(dayjs(training.startDate))
+            setEndDate(dayjs(training.endDate))
+        }
+
+    }, [training])
+
+
 
 
 
@@ -152,8 +181,11 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             traineeFirstName: '',
             traineeLastName: ''
         })
-        setStartDate('')
-        setEndDate('')
+
+        setStartDate(null)
+
+        // setStartDate('')
+        // setEndDate('')
 
         setTraineeList([])
         // setTrainee(traineeInitialised)
@@ -169,7 +201,9 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             trainingType,
             trainingName,
             trainingUrl,
-            trainingHours : hoursCount
+            trainingHours : hoursCount,
+            startDate,
+            endDate
         } = data
         if(userRole === UserRole.SERVICER_COORDINATOR){
             // if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length && traineeList.length === 0){
@@ -189,11 +223,12 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             }
         }
 
+
         const newTraining = {
             trainingName,
             trainingType,
-            startDate: startDate.format('YYYY-MM-DD'),
-            endDate: endDate.format('YYYY-MM-DD'),
+            startDate: moment(startDate).format('YYYY-MM-DD'),
+            endDate: moment(endDate).format('YYYY-MM-DD'),
             hoursCount,
             trainingURL: trainingUrl || '',
             traineeList
@@ -208,15 +243,17 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             trainingType,
             trainingName,
             trainingUrl: trainingURL,
-            trainingHours : hoursCount
+            trainingHours : hoursCount,
+            startDate,
+            endDate
         } = data
 
         const updatedTraining = {
             trainingId: training.id,
             trainingName,
             trainingType,
-            startDate: startDate.format('YYYY-MM-DD'),
-            endDate: endDate.format('YYYY-MM-DD'),
+            startDate: moment(startDate).format('YYYY-MM-DD'),
+            endDate: moment(endDate).format('YYYY-MM-DD'),
             hoursCount,
             trainingURL,
             traineeList:[]
@@ -469,59 +506,89 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                                 justifyContent='space-between'
                             >
                                 <Grid item xs={12} md={5.5}>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DemoContainer
-                                            components={[
-                                                'DatePicker',
-                                                'MobileDatePicker',
-                                                'DesktopDatePicker',
-                                                'StaticDatePicker',
-                                            ]}
-                                        >
-                                            <DatePicker
-                                                value={startDate}
-                                                onChange={value => {
-                                                    setStartDate(value)
-                                                    setEndDate(value)
-                                                }}
-                                                slotProps={{
-                                                    textField: {
-                                                        error: false,
-                                                    },
-                                                }}
-                                                disableFuture
-                                                label='Start Date'
-                                                minDate={dayjs(trainingTimePeriod?.currentFiscalStartTime)}
-                                            />
-                                        </DemoContainer>
-                                    </LocalizationProvider>
+                                    <Controller
+                                        name="startDate"
+                                        defaultValue={training ? dayjs(training.startDate) : null}
+                                        control={control}
+                                        render={
+                                            ({
+                                                 field: { onChange, value  },
+                                                 fieldState: { error }
+                                            }) =>
+                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DemoContainer
+                                                        components={[
+                                                            'DatePicker',
+                                                            'MobileDatePicker',
+                                                            'DesktopDatePicker',
+                                                            'StaticDatePicker',
+                                                        ]}
+                                                    >
+                                                        <DatePicker
+                                                            value={training ? dayjs(training.startDate) : value}
+                                                            control={control}
+                                                            onChange={date => {
+                                                                onChange(date)
+                                                                setStartDate(dayjs(date))
+                                                                setEndDate(dayjs(date))
+                                                            }}
+                                                            slotProps={{
+                                                                textField: {
+                                                                    error: !!error,
+                                                                    helperText: error?.message,
+                                                                    readOnly: true,
+                                                                },
+                                                            }}
+                                                            disableFuture
+                                                            label='Start Date'
+                                                            minDate={dayjs(trainingTimePeriod?.currentFiscalStartTime)}
+                                                        />
+                                                    </DemoContainer>
+                                                </LocalizationProvider>
+                                        }
+                                    />
                                 </Grid>
+
                                 <Grid item xs={12} md={5.5}>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DemoContainer
-                                            components={[
-                                                'DatePicker',
-                                                'MobileDatePicker',
-                                                'DesktopDatePicker',
-                                                'StaticDatePicker',
-                                            ]}
-                                        >
-                                            <DatePicker
-                                                value={endDate}
-                                                onChange={value => setEndDate(value)}
-                                                slotProps={{
-                                                    textField: {
-                                                        error: false,
-                                                    },
-                                                }}
-                                                disableFuture
-                                                minDate={startDate}
-                                                // defaultValue={}
-                                                label='End Date'
-                                                maxDate={dayjs(trainingTimePeriod?.currentFiscalEndTime)}
-                                            />
-                                        </DemoContainer>
-                                    </LocalizationProvider>
+                                    <Controller
+                                        name="endDate"
+                                        control={control}
+                                        render={
+                                            ({
+                                                 field: { onChange, value },
+                                                 fieldState: { error }
+                                             }) =>
+                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DemoContainer
+                                                        components={[
+                                                            'DatePicker',
+                                                            'MobileDatePicker',
+                                                            'DesktopDatePicker',
+                                                            'StaticDatePicker',
+                                                        ]}
+                                                    >
+                                                        <DatePicker
+                                                            value={endDate}
+                                                            control={control}
+                                                            onChange={date => {
+                                                                onChange(date)
+                                                                setEndDate(dayjs(date))
+                                                            }}
+                                                            slotProps={{
+                                                                textField: {
+                                                                    error: !!error,
+                                                                    helperText: error?.message,
+                                                                    readOnly: true,
+                                                                },
+                                                            }}
+                                                            disableFuture
+                                                            label='End Date'
+                                                            minDate={startDate}
+                                                        />
+                                                    </DemoContainer>
+                                                </LocalizationProvider>
+                                        }
+                                    />
                                 </Grid>
                             </Grid>
                         </Grid>

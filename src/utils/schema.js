@@ -1,12 +1,12 @@
 import * as yup from "yup";
 import {wordsLimit} from "./consts";
 
-export const getTrainingSchema = userRole => {
+export const getTrainingSchema = (dateRange) => {
     return yup.object().shape({
         trainingName: yup.string().trim().min(1).max(wordsLimit).required(),
         trainingType: yup.mixed().oneOf(['LiveTraining', 'Webinar']).required(),
-        // startdate: yup.date().max(new Date()).required(),
-        // enddate: yup.date().min(yup.ref('startDate')).max(new Date()).required(),
+        startDate: yup.date().max(new Date()).required(),
+        endDate: yup.date().min(yup.ref('startDate')).max(new Date()).required(),
         trainingHours: yup.number().min(1).positive().integer().required(),
         trainingUrl: yup.string().trim().url().min(0).max(wordsLimit)
             .when('trainingType', ([trainingType], schema) => {
