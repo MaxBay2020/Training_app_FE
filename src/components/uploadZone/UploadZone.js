@@ -8,7 +8,7 @@ import Dropzone from "react-dropzone";
 
 const UploadZone = () => {
 
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
 
     const handleClickOpen = () => {
         setOpen(true);

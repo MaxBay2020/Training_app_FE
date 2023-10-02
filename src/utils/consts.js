@@ -16,6 +16,11 @@ export const UserRole = {
     SERVICER_COORDINATOR: 'SERVICER COORDINATOR',
 }
 
+export const targetTableToDownload = {
+    trainingTable: 'trainingTable',
+    creditTable: 'creditTable'
+}
+
 export const sortingSystem = {
     trainingPage: {
         defaultSortValue: 1,
