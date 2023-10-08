@@ -11,9 +11,8 @@ import {
 import BasicLayout from "../layout/BasicLayout";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
-import MenuItem from "@mui/material/MenuItem";
 import useDebounce from "../hooks/trainingHooks/useDebounce";
-import {pageLimit, sortingSystem, targetTableToDownload, UserRole} from "../utils/consts";
+import {pageLimit, targetTableToDownload, UserRole} from "../utils/consts";
 import Box from "@mui/material/Box";
 import CreditTable from "../components/CreditPage/CreditTable";
 import useFetchCredits from "../hooks/creditHooks/useFetchCredits";
@@ -21,14 +20,17 @@ import PageHeader from "../components/pageHeader/PageHeader";
 
 const CreditPage = () => {
 
-    // 1 - sort by training created time
-    // 2 - sort by training name
-    const [sortBy, setSortBy] = useState(sortingSystem.creditPage.defaultSortValue)
     const [searchKeyword, setSearchKeyword] = useState('')
     const debouncedSearchKeyword = useDebounce(searchKeyword, 500)
 
+    const [order, setOrder] = useState('DESC')
+    const [orderBy, setOrderBy] = useState('Fiscal Year')
+
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(pageLimit)
+
+    console.log(order)
+    console.log(orderBy)
 
     const {
         userName,
@@ -37,15 +39,19 @@ const CreditPage = () => {
         servicerMasterName,
     } = useSelector(state => state.user)
 
-    const {data}
+    const { data }
         = useFetchCredits(
-        ['queryAllCredits', debouncedSearchKeyword, sortBy, page, limit], page, limit, debouncedSearchKeyword, sortBy)
+        ['queryAllCredits', debouncedSearchKeyword, order, orderBy, page, limit], page, limit, debouncedSearchKeyword, order, orderBy)
+
+
+    useEffect(() => {
+        setPage(1)
+    }, [debouncedSearchKeyword])
 
 
     const searchHandler = e => {
         setSearchKeyword(e.target.value)
     }
-
 
     return (
         <BasicLayout>
@@ -55,6 +61,9 @@ const CreditPage = () => {
                 servicerId={servicerId}
                 servicerMasterName={servicerMasterName}
                 currentPage={targetTableToDownload.creditTable}
+                searchKeyword={debouncedSearchKeyword}
+                orderBy={orderBy}
+                order={order}
             />
 
             <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
@@ -69,30 +78,17 @@ const CreditPage = () => {
                         onChange={e => searchHandler(e)}
                     />
                 </Grid>
-                <Grid item xs={12} md={2}>
-                    <FormControl fullWidth size="small">
-                        <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={sortBy}
-                            label="sortBy"
-                            onChange={e => setSortBy(e.target.value)}
-                        >
-                            {
-                                sortingSystem.creditPage.creditPageSortBy.map(sort => <MenuItem key={sort.value}
-                                                                                                value={sort.value}>{sort.label}</MenuItem>)
-                            }
-                        </Select>
-                    </FormControl>
-                </Grid>
             </Grid>
 
             <Box sx={{minHeight: '390px'}}>
                 {
                     data &&
                     <CreditTable
-                        creditsStats={data.creditsStats}
+                        creditList={data.creditsStats}
+                        order={order}
+                        setOrder={setOrder}
+                        orderBy={orderBy}
+                        setOrderBy={setOrderBy}
                     />
                 }
             </Box>

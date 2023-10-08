@@ -6,16 +6,17 @@ import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 
 
-const useFetchCredits = (queryIdentifier, page = 1, limit, searchKeyword, sortBy = 1) => {
+const useFetchCredits = (queryIdentifier, page = 1, limit, searchKeyword, order, orderBy) => {
 
     const { accessToken } = useSelector( state => state.user )
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const url = searchKeyword ?
-        `/credit?page=${page}&limit=${limit}&sortBy=${sortBy}&searchKeyword=${searchKeyword}`
+        `/credit?page=${page}&limit=${limit}&orderBy=${orderBy}&order=${order.toUpperCase()}&searchKeyword=${searchKeyword}`
         :
-        `/credit?page=${page}&limit=${limit}&sortBy=${sortBy}`
+        `/credit?page=${page}&limit=${limit}&orderBy=${orderBy}&order=${order.toUpperCase()}`
+
 
     const fetchData = async () => {
         const res = await api.get(url, {

@@ -21,7 +21,6 @@ const PageHeader = (props) => {
         searchKeyword,
         orderBy,
         order,
-        servicerMasterId
     } = props
 
     const [fileType, setFileType] = useState(1)
@@ -48,13 +47,13 @@ const PageHeader = (props) => {
         isFetching,
         refetch: downloadCredit
     } = useDownload(
-        ['download', currentPage, searchKeyword, order, orderBy, servicerMasterId],
+        ['download', currentPage, searchKeyword, order, orderBy, servicerId],
         currentPage,
         fileType,
         searchKeyword,
         order,
         orderBy,
-        servicerMasterId
+        servicerId
     )
 
 

@@ -96,3 +96,18 @@ export const getTrainingTableHeaders = userRole => {
             ]
     }
 }
+
+export const getCreditTableHeaders = [
+    'Fiscal Year',
+    'Servicer ID',
+    'Servicer Name',
+    'Appd.LiveTraining',
+    'LiveTraining Credits',
+    'Appd.EClass',
+    'Appd.EClass (Mandatory)',
+    'EClass Credits',
+    'Appd.Webinar',
+    'Webinar Credits',
+    'Training Credits'
+]
+

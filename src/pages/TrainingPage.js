@@ -46,8 +46,6 @@ const TrainingPage = () => {
 
 
     const {data: trainingCredits} = useFetchTrainingCredits(['queryTrainingCredits'])
-
-    // TODO: fetch training API
     const {isLoading, data, error, isError, isFetching}
         = useFetchTrainings(
         ['queryAllTrainings', debouncedSearchKeyword, order, orderBy, page, limit], page, limit, debouncedSearchKeyword, order, orderBy)
@@ -131,7 +129,6 @@ const TrainingPage = () => {
                 searchKeyword={debouncedSearchKeyword}
                 orderBy={orderBy}
                 order={order}
-                servicerMasterId={servicerId}
             />
 
             <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
