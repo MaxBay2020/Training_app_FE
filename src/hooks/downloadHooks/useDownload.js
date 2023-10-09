@@ -5,9 +5,10 @@ import {userLogout} from "../../features/userSlice";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import { saveAs } from 'file-saver'
+import {targetTableToDownload} from "../../utils/consts";
 
 
-const useDownload = (queryIdentifier, targetTable, fileType, searchKeyword, order, orderBy, servicerMasterId) => {
+const useDownload = (queryIdentifier, targetTable, fileType, searchKeyword, order, orderBy) => {
 
     const { accessToken } = useSelector( state => state.user )
     const dispatch = useDispatch()
@@ -51,7 +52,20 @@ const useDownload = (queryIdentifier, targetTable, fileType, searchKeyword, orde
                 type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
                 fileExtension = 'xlsx'
                 const blob = new Blob([data], { type })
-                saveAs(blob, `Training Report.${fileExtension}`)
+
+                let fileName = ''
+                switch (targetTable){
+                    case targetTableToDownload.trainingTable:
+                        fileName = 'Training Report'
+                        break
+                    case targetTableToDownload.creditTable:
+                        fileName = 'Credit Report'
+                        break
+                    default:
+                        break
+                }
+
+                saveAs(blob, `${fileName}.${fileExtension}`)
 
             }else if(fileType === 2){
                 // type = 'application/pdf'

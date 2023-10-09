@@ -38,22 +38,21 @@ const PageHeader = (props) => {
 
     const handleDownload = fileType => {
         setFileType(fileType)
-        downloadCredit()
+        downloadFile()
         handleClose()
     }
 
 
     const {
         isFetching,
-        refetch: downloadCredit
+        refetch: downloadFile
     } = useDownload(
         ['download', currentPage, searchKeyword, order, orderBy, servicerId],
         currentPage,
         fileType,
         searchKeyword,
         order,
-        orderBy,
-        servicerId
+        orderBy
     )
 
 

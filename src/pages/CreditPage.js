@@ -29,9 +29,6 @@ const CreditPage = () => {
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(pageLimit)
 
-    console.log(order)
-    console.log(orderBy)
-
     const {
         userName,
         userRole,
