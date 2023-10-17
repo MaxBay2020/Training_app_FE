@@ -15,6 +15,7 @@ const PageHeader = (props) => {
     const {
         userName,
         userRole,
+        servicerCoordinator,
         servicerId,
         servicerMasterName,
         currentPage,
@@ -55,6 +56,16 @@ const PageHeader = (props) => {
         orderBy
     )
 
+    const renderServicerCoordinator = userRole => {
+        if (userRole === UserRole.SERVICER) {
+            return (
+                <>
+                    <Grid item><Typography
+                        variant='subtitle'>{servicerCoordinator && `Servicer Coordinator:    ${servicerCoordinator}`}</Typography></Grid>
+                </>
+            )
+        }
+    }
 
     const renderUserInfo = userRole => {
         if (userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR) {
@@ -76,6 +87,7 @@ const PageHeader = (props) => {
                     <Grid container direction='column' alignItems='flex-start' sx={{mb: 5}} spacing={1}>
                         <Grid item><Typography variant='subtitle'>{`User Name:   ${userName}`}</Typography></Grid>
                         <Grid item><Typography variant='subtitle'>{`User Role:   ${userRole}`}</Typography></Grid>
+                        { renderServicerCoordinator(userRole) }
                         { renderUserInfo(userRole) }
                     </Grid>
                 </Grid>

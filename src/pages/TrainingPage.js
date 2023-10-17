@@ -42,6 +42,7 @@ const TrainingPage = () => {
         userRole,
         servicerId,
         servicerMasterName,
+        servicerCoordinator,
     } = useSelector(state => state.user)
 
 
@@ -125,6 +126,7 @@ const TrainingPage = () => {
                 userRole={userRole}
                 servicerId={servicerId}
                 servicerMasterName={servicerMasterName}
+                servicerCoordinator={servicerCoordinator}
                 currentPage={targetTableToDownload.trainingTable}
                 searchKeyword={debouncedSearchKeyword}
                 orderBy={orderBy}
