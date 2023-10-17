@@ -216,11 +216,23 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                     traineeFirstName: getTraineeValues('traineeFirstName'),
                     traineeLastName: getTraineeValues('traineeLastName'),
                 }
+
                 traineeList.push(trainee)
+            }else{
+                const trainee = {
+                    traineeEmail: getTraineeValues('traineeEmail'),
+                    traineeFirstName: getTraineeValues('traineeFirstName'),
+                    traineeLastName: getTraineeValues('traineeLastName'),
+                }
+
+                if(Object.values(trainee).filter(item => item).length !== 0){
+                    const hasValidTrainee = await trigger()
+                    if(!hasValidTrainee)
+                        return
+                    traineeList.push(trainee)
+                }
             }
         }
-
-
         const newTraining = {
             trainingName,
             trainingType,

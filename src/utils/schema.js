@@ -10,10 +10,14 @@ export const getTrainingSchema = (dateRange) => {
         startDate: yup.date().max(new Date()).required(),
         endDate: yup.date().min(yup.ref('startDate')).max(new Date()).required(),
         trainingHours: yup.number().min(1).positive().integer().required(),
-        trainingUrl: yup.string().trim().matches(urlRegExp, 'Please enter a valid url').min(0).max(wordsLimit)
+        trainingUrl: yup.string().trim()
             .when('trainingType', ([trainingType], schema) => {
-            return trainingType === 'Webinar' ? schema.required() : schema.notRequired()
-        }),
+                return trainingType === 'Webinar' ?
+                    schema.required('Training URL is required for Webinar')
+                        .matches(urlRegExp, 'Please enter a valid url')
+                        .min(0).max(wordsLimit)
+                    : schema.notRequired()
+            })
     })
 }
 
