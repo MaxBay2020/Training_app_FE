@@ -13,142 +13,106 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-
-function createData(name, calories, fat, carbs, protein, price) {
-    return {
-        name,
-        calories,
-        fat,
-        carbs,
-        protein,
-        price,
-        history: [
-            {
-                date: '2020-01-05',
-                customerId: '11091700',
-                amount: 3,
-            },
-            {
-                date: '2020-01-02',
-                customerId: 'Anonymous',
-                amount: 1,
-            },
-        ],
-    };
-}
+import {useSelector} from "react-redux";
+import {ApproveOrReject, getCreditTableHeaders, getTrainingTableHeaders} from "../../utils/consts";
+import {TableSortLabel} from "@mui/material";
+import {visuallyHidden} from "@mui/utils";
+import {convertToPercentage} from "../../utils/helper";
 
 
-
-function Row({row}) {
-    const [open, setOpen] = React.useState(false)
-    const {
-        smId,
-        smName,
-        ECLASS,
-        LiveTraining,
-        Webinar,
-        credits,
-        users
-    } = row
+const EnhancedTableHead = (props) => {
+    const { order, orderBy, onRequestSort } =
+        props;
+    const createSortHandler = (property) => (event) => {
+        onRequestSort(event, property)
+    }
+    const {userRole} = useSelector(state => state.user)
 
 
-
-    // userName,
-    //     userEmail,
-    //     ECLASS,
-    //     LiveTraining,
-    //     Webinar
     return (
-        <React.Fragment>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell>
-                    <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setOpen(!open)}
-                    >
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                    {smId}
-                </TableCell>
-                <TableCell align="right">{smName}</TableCell>
-                <TableCell align="right">{ECLASS}</TableCell>
-                <TableCell align="right">{Webinar}</TableCell>
-                <TableCell align="right">{LiveTraining}</TableCell>
-                <TableCell align="right">{credits}</TableCell>
-            </TableRow>
+        <TableHead>
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
-                            {/*<Typography variant="h6" gutterBottom component="div">*/}
-                            {/*    Users*/}
-                            {/*</Typography>*/}
-                            <Table size="small" aria-label="purchases">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>User Name</TableCell>
-                                        <TableCell>User Email</TableCell>
-                                        <TableCell align="right">#Appd.EClass</TableCell>
-                                        <TableCell align="right">#Appd.Webinar</TableCell>
-                                        <TableCell align="right">#Appd.LiveTraining</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {users.map((user) => {
-                                        const {
-                                            userName,
-                                            userEmail,
-                                            ECLASS,
-                                            LiveTraining,
-                                            Webinar
-                                        } = user
-
-                                        return (
-                                            <TableRow key={userEmail}>
-                                                <TableCell component="th" scope="row">
-                                                    {userName}
-                                                </TableCell>
-                                                <TableCell>{userEmail}</TableCell>
-                                                <TableCell align="right">{ECLASS}</TableCell>
-                                                <TableCell align="right">{LiveTraining}</TableCell>
-                                                <TableCell align="right">{Webinar}</TableCell>
-                                            </TableRow>
-                                        )
-
-                                    })}
-                                </TableBody>
-                            </Table>
-                        </Box>
-                    </Collapse>
-                </TableCell>
+                {getCreditTableHeaders.map((headCell) => (
+                    <TableCell
+                        key={headCell}
+                        sortDirection={orderBy === headCell.id ? order : false}
+                    >
+                        <TableSortLabel
+                            active={orderBy === headCell}
+                            direction={orderBy === headCell ? order : 'asc'}
+                            onClick={createSortHandler(headCell)}
+                        >
+                            {headCell}
+                            {orderBy === headCell ? (
+                                <Box component="span" sx={visuallyHidden}>
+                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                </Box>
+                            ) : null}
+                        </TableSortLabel>
+                    </TableCell>
+                ))}
             </TableRow>
-        </React.Fragment>
+        </TableHead>
     );
 }
 
 
+const Row = ({credit}) => {
 
-const CreditTable = ({creditsStats}) => {
+    const {
+        fiscal_year,
+        sm_id,
+        sm_servicerMasterName,
+        live_trng_cnt,
+        live_trng_score,
+        eclass_trng_cnt,
+        eclass_mand_trng_cnt,
+        eclass_trng_score,
+        webinar_trng_cnt,
+        webinar_trng_score,
+        training_credit,
+    } = credit
+
+    return (
+        <>
+            <TableRow>
+                <TableCell component="th" scope="row" align="right">{fiscal_year}</TableCell>
+                <TableCell align="right">{sm_id}</TableCell>
+                <TableCell align="right">{sm_servicerMasterName}</TableCell>
+                <TableCell align="right">{live_trng_cnt}</TableCell>
+                <TableCell align="right">{live_trng_score}</TableCell>
+                <TableCell align="right">{eclass_trng_cnt}</TableCell>
+                <TableCell align="right">{eclass_mand_trng_cnt}</TableCell>
+                <TableCell align="right">{eclass_trng_score}</TableCell>
+                <TableCell align="right">{webinar_trng_cnt}</TableCell>
+                <TableCell align="right">{webinar_trng_score}</TableCell>
+                <TableCell align="right">{convertToPercentage(training_credit)}</TableCell>
+            </TableRow>
+        </>
+    );
+}
+
+
+const CreditTable = ({creditList, order, setOrder, orderBy, setOrderBy}) => {
+
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    }
+
+
     return (
         <TableContainer component={Paper}>
             <Table aria-label="collapsible table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell />
-                        <TableCell>Servicer ID</TableCell>
-                        <TableCell align="right">Servicer Name</TableCell>
-                        <TableCell align="right">#Appd.EClass</TableCell>
-                        <TableCell align="right">#Appd.Webinar</TableCell>
-                        <TableCell align="right">#Appd.LiveTraining</TableCell>
-                        <TableCell align="right">Credits</TableCell>
-                    </TableRow>
-                </TableHead>
+                <EnhancedTableHead
+                    order={order}
+                    orderBy={orderBy}
+                    onRequestSort={handleRequestSort}
+                />
                 <TableBody>
-                    {creditsStats.map((row) => (
-                        <Row key={row.smId} row={row} />
+                    {creditList.map((credit, index) => (
+                        <Row key={index} credit={credit}/>
                     ))}
                 </TableBody>
             </Table>

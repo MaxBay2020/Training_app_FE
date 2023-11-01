@@ -5,15 +5,20 @@ import {userLogout} from "../../features/userSlice";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import { saveAs } from 'file-saver'
+import {targetTableToDownload} from "../../utils/consts";
 
 
-const useDownloadCredit = (queryIdentifier, fileType) => {
+const useDownload = (queryIdentifier, targetTable, fileType, searchKeyword, order, orderBy) => {
 
     const { accessToken } = useSelector( state => state.user )
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const url = '/credit/download'
+
+    const url = searchKeyword ?
+        `/download/${targetTable}?orderBy=${orderBy}&order=${order.toUpperCase()}&searchKeyword=${searchKeyword}`
+        :
+        `/download/${targetTable}?orderBy=${orderBy}&order=${order.toUpperCase()}`
 
     const fetchData = async () => {
         const res = await api.get(url, {
@@ -46,24 +51,38 @@ const useDownloadCredit = (queryIdentifier, fileType) => {
                 // download excel
                 type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
                 fileExtension = 'xlsx'
+                const blob = new Blob([data], { type })
+
+                let fileName = ''
+                switch (targetTable){
+                    case targetTableToDownload.trainingTable:
+                        fileName = 'Training Report'
+                        break
+                    case targetTableToDownload.creditTable:
+                        fileName = 'Credit Report'
+                        break
+                    default:
+                        break
+                }
+
+                saveAs(blob, `${fileName}.${fileExtension}`)
 
             }else if(fileType === 2){
-                type = 'application/pdf'
-                fileExtension = 'pdf'
-
-                // FOR TEMP USE
-                const blob = new Blob([data], { type })
-                if(data.type === 'application/octet-stream'){
-                    return
-                }
-                saveAs(blob, `${Date.now()}.${fileExtension}`)
-                return
+                // type = 'application/pdf'
+                // fileExtension = 'pdf'
+                //
+                // // FOR TEMP USE
+                // const blob = new Blob([data], { type })
+                // if(data.type === 'application/octet-stream'){
+                //     return
+                // }
+                // saveAs(blob, `${Date.now()}.${fileExtension}`)
+                // return
             }
-             const blob = new Blob([data], { type })
-             saveAs(blob, `${Date.now()}.${fileExtension}`)
+
          }
     })
 
 }
 
-export default useDownloadCredit
+export default useDownload

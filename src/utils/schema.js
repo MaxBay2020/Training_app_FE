@@ -1,49 +1,30 @@
 import * as yup from "yup";
-import {UserRole, wordsLimit} from "./consts";
+import {wordsLimit} from "./consts";
 
-export const trainingSchemaForServicer = yup.object().shape({
-    trainingName: yup.string().trim().min(1).max(wordsLimit).required(),
-    trainingType: yup.mixed().oneOf(['LiveTraining', 'Webinar']).required(),
-    // startdate: yup.date().max(new Date()).required(),
-    // enddate: yup.date().min(yup.ref('startDate')).max(new Date()).required(),
-    trainingUrl: yup.string().url().min(0).max(wordsLimit),
+const urlRegExp = /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/
 
-    isServicerCoordinator: yup.boolean().required(),
-    traineeEmail: yup.string().email()
-        .when('isServicerCoordinator', ([isServicerCoordinator], schema) => {
-        return isServicerCoordinator ? schema.required() : schema.notRequired()
-    }),
-})
-
-export const getTrainingSchema = userRole => {
-    const isServicerCoordinator = userRole === UserRole.SERVICER_COORDINATOR
-
+export const getTrainingSchema = (dateRange) => {
     return yup.object().shape({
         trainingName: yup.string().trim().min(1).max(wordsLimit).required(),
         trainingType: yup.mixed().oneOf(['LiveTraining', 'Webinar']).required(),
-        // startdate: yup.date().max(new Date()).required(),
-        // enddate: yup.date().min(yup.ref('startDate')).max(new Date()).required(),
+        startDate: yup.date().max(new Date()).required(),
+        endDate: yup.date().min(yup.ref('startDate')).max(new Date()).required(),
         trainingHours: yup.number().min(1).positive().integer().required(),
-        // trainingUrl: yup.string().trim().url().min(0).max(wordsLimit),
-        trainingUrl: yup.string().trim().url().min(0).max(wordsLimit)
+        trainingUrl: yup.string().trim()
             .when('trainingType', ([trainingType], schema) => {
-            return trainingType === 'Webinar' ? schema.required() : schema.notRequired()
-        }),
-        // traineeEmail: isServicerCoordinator ? yup.string().trim().email().required() : yup.string().trim().email().notRequired(),
-        // traineeFirstName: isServicerCoordinator ? yup.string().trim().required() : yup.string().trim().notRequired(),
-        // traineeLastName: isServicerCoordinator ? yup.string().trim().required() : yup.string().trim().notRequired(),
+                return trainingType === 'Webinar' ?
+                    schema.required('Training URL is required for Webinar')
+                        .matches(urlRegExp, 'Please enter a valid url')
+                        .min(0).max(wordsLimit)
+                    : schema.notRequired()
+            })
     })
 }
 
-export const userSchema = yup.object().shape({
-    email: yup.string().trim().email().required(),
-    firstName: yup.string().min(1).required(),
-    lastName: yup.string().min(1).required(),
-    userRole: yup.mixed().oneOf(Object.values(UserRole)).required(),
-    servicerID: yup.string().required(),
-});
+const emailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-export const servicerSchema = yup.object().shape({
-    servicerID: yup.string().max(5).required(),
-    servicerName: yup.string().min(1).required(),
-});
+export const traineeSchema = yup.object().shape({
+    traineeEmail: yup.string().trim().matches(emailRegExp, 'Trainee email must be a valid email'),
+    traineeFirstName: yup.string().trim().required('Trainee firstname is a required field') ,
+    traineeLastName: yup.string().trim().required('Trainee lastname is a required field') ,
+})

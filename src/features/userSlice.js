@@ -7,6 +7,7 @@ const initialState = {
     userEmail:localStorage.getItem('userEmail') || '',
     servicerId: localStorage.getItem('servicerId') || '',
     servicerMasterName: localStorage.getItem('servicerMasterName') || '',
+    servicerCoordinator: localStorage.getItem('servicerCoordinator') || '',
 }
 
 export const userSlice = createSlice({
@@ -20,7 +21,8 @@ export const userSlice = createSlice({
                 userRole,
                 userEmail,
                 servicerId,
-                servicerMasterName
+                servicerMasterName,
+                servicerCoordinator
             } = action.payload
             state.accessToken = accessToken
             state.userName = userName
@@ -28,12 +30,14 @@ export const userSlice = createSlice({
             state.userEmail = userEmail
             state.servicerId = servicerId
             state.servicerMasterName = servicerMasterName
+            state.servicerCoordinator = servicerCoordinator
             localStorage.setItem('accessToken', accessToken)
             localStorage.setItem('userName', userName)
             localStorage.setItem('userRole', userRole)
             localStorage.setItem('userEmail', userEmail)
             localStorage.setItem('servicerId', servicerId)
             localStorage.setItem('servicerMasterName', servicerMasterName)
+            localStorage.setItem('servicerCoordinator', servicerCoordinator)
 
         },
         userLogout: (state, _action) => {
@@ -49,6 +53,7 @@ export const userSlice = createSlice({
             localStorage.removeItem('userEmail')
             localStorage.removeItem('servicerId')
             localStorage.removeItem('servicerMasterName')
+            localStorage.removeItem('servicerCoordinator')
         }
 
     }
