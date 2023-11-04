@@ -18,7 +18,7 @@ import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import UserModal from "../adminModal/UserModal.js";
-import UserDeleteModal from "../trainingWithdrawModal/UserDeleteModal"
+import UserDeleteModal from "../adminWithdrawModal/UserDeleteModal"
 import {renderTableCellForTrainingStatus} from "./TrainingTableForApprover";
 import {useDispatch, useSelector} from "react-redux";
 import {setCurrentTraining, switchOpenModal} from "../../../features/trainingSlice";
@@ -105,7 +105,7 @@ const Row = ({training}) => {
     );
 }
 
-const TrainingTableForServicer = ({trainingList}) => {
+const ServicerTable = ({trainingList}) => {
 
 
     const dispatch = useDispatch()
@@ -168,4 +168,4 @@ const TrainingTableForServicer = ({trainingList}) => {
 //     }).isRequired,
 // }
 
-export default TrainingTableForServicer
+export default ServicerTable

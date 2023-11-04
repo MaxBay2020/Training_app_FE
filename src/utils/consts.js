@@ -18,7 +18,9 @@ export const UserRole = {
 
 export const targetTableToDownload = {
     trainingTable: 'trainingTable',
-    creditTable: 'creditTable'
+    creditTable: 'creditTable',
+    userTable: 'userTable',
+    servicerTable: 'servicerTable'
 }
 
 export const sortingSystem = {
@@ -111,3 +113,21 @@ export const getCreditTableHeaders = [
     'Training Credits'
 ]
 
+export const getUserTableHeaders = [
+    'Servicer ID',
+    'Servicer Name',
+    'User First Name',
+    'User Last Name',
+    'User Email',
+    'User Role',
+    'Created Date',
+    'Updated Date',
+]
+
+export const getServicerTableHeader = [
+    'Servicer ID',
+    'Servicer Name',
+    'Created Date',
+    'Updated Date',
+    'TRSII Opt-In',
+]
