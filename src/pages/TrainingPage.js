@@ -25,6 +25,9 @@ import Typography from "@mui/material/Typography";
 import useFetchTrainingCredits from "../hooks/trainingHooks/useFetchTrainingCredits";
 import TrainingTableForSupServicer from "../components/TrainingPage/trainingTable/TrainingTableForSupServicer";
 import PageHeader from "../components/pageHeader/PageHeader";
+import UploadZone from "../components/uploadZone/UploadZone";
+import Button from "@mui/material/Button";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 const TrainingPage = () => {
 
@@ -36,6 +39,8 @@ const TrainingPage = () => {
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(pageLimit)
+    const [open, setOpen] = useState(false)
+
 
     const {
         userName,
@@ -110,7 +115,7 @@ const TrainingPage = () => {
 
     const renderAddTrainingButton = userRole => {
         if (userRole === UserRole.SERVICER || userRole === UserRole.SERVICER_COORDINATOR) {
-            return <Grid item xs={4} md={2}><TrainingCreation/></Grid>
+            return <Grid item><TrainingCreation/></Grid>
         }
         return <></>
     }
@@ -137,7 +142,19 @@ const TrainingPage = () => {
                 {
                     data && renderAddTrainingButton(data.userRole)
                 }
-                <Grid item xs={true} md={true}>
+
+                <Grid item>
+                    <Button
+                        variant="outlined"
+                        disableElevation
+                        endIcon={<UploadFileIcon />}
+                        onClick={() => setOpen(true)}
+                    >
+                        Upload
+                    </Button>
+                </Grid>
+
+                <Grid item xs={true}>
                     <TextField
                         id="outlined-basic"
                         label="Search"
@@ -167,6 +184,11 @@ const TrainingPage = () => {
             }
 
             {data && renderTrainingCredits(data.userRole)}
+
+            <UploadZone
+                open={open}
+                setOpen={setOpen}
+            />
         </BasicLayout>
 
     )

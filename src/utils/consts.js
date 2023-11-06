@@ -7,6 +7,11 @@ export const ApproveOrReject = {
     SUBMITTED: 'SUBMITTED',
     CANCELED: 'CANCELED',
 }
+export const trainingType = {
+    LiveTraining: 'LiveTraining',
+    ECLASS: 'ECLASS',
+    Webinar: 'Webinar'
+}
 
 
 export const UserRole = {

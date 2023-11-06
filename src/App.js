@@ -6,9 +6,11 @@ import {
 } from 'react-router-dom'
 import AuthenticationPage from "./pages/AuthenticationPage";
 import TrainingPage from "./pages/TrainingPage";
-import {useSelector} from "react-redux";
-import React from "react";
+import {useDispatch, useSelector} from "react-redux";
+import React, {useEffect, useMemo} from "react";
 import CreditPage from "./pages/CreditPage";
+import UploadedTrainingsPage from "./pages/UploadedTrainingsPage";
+import {addUploadedTrainings} from "./features/trainingSlice";
 
 
 const App = () => {
@@ -21,6 +23,7 @@ const App = () => {
               <Route path='authentication' element={ accessToken ? <Navigate to='/training' /> : <AuthenticationPage /> } />
               <Route path='training'>
                   <Route index element={ accessToken ? <TrainingPage /> : <Navigate to='/authentication' /> } />
+                  <Route path='uploads' element={ accessToken ? <UploadedTrainingsPage /> : <Navigate to='/authentication' /> } />
               </Route>
               <Route path='credit'>
                   <Route index element={ accessToken ? <CreditPage /> : <Navigate to='/authentication' /> } />
