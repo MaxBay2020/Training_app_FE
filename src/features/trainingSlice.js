@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
     currentTraining: null,
     openModal: false,
-    uploadedTrainings: []
+    uploadedTrainings: [],
+    duplicates: []
 }
 
 const trainingSlice = createSlice({
@@ -23,6 +24,9 @@ const trainingSlice = createSlice({
         addUploadedTrainings: (state, action) => {
             const { uploadedTrainings } = action.payload
             state.uploadedTrainings = uploadedTrainings
+        },
+        addDuplicates: (state, action) => {
+            state.duplicates = action.payload
         }
     }
 })
@@ -32,6 +36,7 @@ export const {
     setCurrentTraining,
     switchOpenModal,
     addUploadedTrainings,
+    addDuplicates,
 
 } = trainingSlice.actions
 

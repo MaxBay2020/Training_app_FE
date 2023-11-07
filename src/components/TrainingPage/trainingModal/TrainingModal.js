@@ -36,7 +36,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import useCommonQuery from "../../../hooks/trainingHooks/useCommonQuery";
+import useCommonGetQuery from "../../../hooks/trainingHooks/useCommonGetQuery";
 import moment from "moment";
 
 const styles = {
@@ -79,6 +79,8 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const [startDate, setStartDate] = useState(null)
     const [endDate, setEndDate] = useState(startDate)
 
+    const { duplicates } = useSelector(state => state.training)
+
     const traineeInitialised = {
         traineeEmail: '',
         traineeFirstName: '',
@@ -86,7 +88,8 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     }
     const [trainee, setTrainee] = useState(traineeInitialised)
     const [traineeList, setTraineeList] = useState([])
-    const [displayErrorMessage, setDisplayErrorMessage] = useState(false);
+    const [displayErrorMessage, setDisplayErrorMessage] = useState(false)
+    const [hasDuplicates, setHasDuplicates] = useState(false)
 
     const { userRole } = useSelector(state => state.user)
     const {isLoading, data: trainingTypes}
@@ -95,7 +98,9 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const { mutate: addTraining } = useCreateTraining()
     const { mutate: updateTraining } = useUpdateTraining()
 
-    const {data: trainingTimePeriod} = useCommonQuery(['queryFiscalYear'], '/training/currentFiscalYear')
+
+    const {data: trainingTimePeriod} = useCommonGetQuery(['queryFiscalYear'], '/training/currentFiscalYear')
+
 
 
 
@@ -144,7 +149,15 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
 
     }, [training])
 
+    useEffect(() => {
+        setHasDuplicates(duplicates.length !== 0)
+    }, [duplicates])
 
+    useEffect(() => {
+        if(!hasDuplicates){
+            closeForm()
+        }
+    }, [hasDuplicates])
 
 
 
@@ -192,7 +205,6 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
         setOpen(false)
     }
 
-
     const createTraining = async (data) => {
         const {
             trainingType,
@@ -202,34 +214,43 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             startDate,
             endDate
         } = data
+
+        let currentTrainee = {}
+
         if(userRole === UserRole.SERVICER_COORDINATOR){
             // if(Object.keys(trainee).length !== Object.values(trainee).filter(item => item).length && traineeList.length === 0){
             //     setDisplayErrorMessage(true)
             //     return
             // }
+
             if(traineeList.length === 0){
                 const hasValidTrainee = await trigger()
                 if(!hasValidTrainee)
                     return
-                const trainee = {
+                currentTrainee = {
                     traineeEmail: getTraineeValues('traineeEmail'),
                     traineeFirstName: getTraineeValues('traineeFirstName'),
                     traineeLastName: getTraineeValues('traineeLastName'),
                 }
 
-                traineeList.push(trainee)
+                // traineeList.push(trainee)
             }else{
-                const trainee = {
+                currentTrainee = {
                     traineeEmail: getTraineeValues('traineeEmail'),
                     traineeFirstName: getTraineeValues('traineeFirstName'),
                     traineeLastName: getTraineeValues('traineeLastName'),
                 }
 
-                if(Object.values(trainee).filter(item => item).length !== 0){
+                if(Object.values(currentTrainee).filter(item => item).length !== 0){
                     const hasValidTrainee = await trigger()
                     if(!hasValidTrainee)
                         return
-                    traineeList.push(trainee)
+                    const hasAdded = traineeList.find(addedTrainee => addedTrainee.traineeEmail === currentTrainee.traineeEmail)
+                    if(hasAdded){
+                        setDisplayErrorMessage(true)
+                        return
+                    }
+                    // traineeList.push(trainee)
                 }
             }
         }
@@ -240,11 +261,11 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
             endDate: moment(endDate).format('YYYY-MM-DD'),
             hoursCount,
             trainingURL: trainingUrl || '',
-            traineeList
+            traineeList: [...traineeList, currentTrainee]
         }
 
         addTraining(newTraining)
-        closeForm()
+        // closeForm()
     }
 
     const updateTrainingHandler = (data) => {
@@ -405,6 +426,14 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
                             &&
                             <Alert severity="error">
                                 You have already added this email
+                            </Alert>
+                        }
+
+                        {
+                            hasDuplicates
+                            &&
+                            <Alert severity="error">
+                                {`You have already added ${duplicates.join(', ')} for this training.`}
                             </Alert>
                         }
 

@@ -4,13 +4,13 @@ import api from "../../api/api";
 import {useQuery} from "@tanstack/react-query";
 import {userLogout} from "../../features/userSlice";
 
-const useCommonQuery = (queryIdentifier, url) => {
+const useCommonPostQuery = (queryIdentifier, url, reqBody, options = {}) => {
     const { accessToken } = useSelector( state => state.user )
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const fetchData = async () => {
-        const res = await api.get(url, {
+        const res = await api.post(url, reqBody, {
             headers: {
                 authorization: `Bearer ${accessToken}`
             }
@@ -21,6 +21,7 @@ const useCommonQuery = (queryIdentifier, url) => {
     return useQuery(queryIdentifier, fetchData, {
         refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 60 * 24,
+        ...options,
         onError: (e) => {
             const statusCode = e.response.status
             if(statusCode === 402){
@@ -31,4 +32,4 @@ const useCommonQuery = (queryIdentifier, url) => {
     })
 }
 
-export default useCommonQuery
+export default useCommonPostQuery

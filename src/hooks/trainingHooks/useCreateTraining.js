@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from "react-redux"
 import { toast } from 'react-toastify'
 import {userLogout} from "../../features/userSlice";
 import { useNavigate } from 'react-router-dom'
+import {addDuplicates} from "../../features/trainingSlice";
 
 
 const useCreateTraining = () => {
@@ -26,12 +27,16 @@ const useCreateTraining = () => {
         onSuccess: () => {
             toast.success('Created Successfully')
             queryClient.invalidateQueries(['queryAllTrainings'])
+            dispatch(addDuplicates([]))
         },
         onError: (e) => {
             const statusCode = e.response.status
             if(statusCode === 402){
                 dispatch(userLogout())
                 navigate('/authentication')
+            }else if(statusCode === 406){
+                const { duplicates } = e.response.data
+                dispatch(addDuplicates(duplicates))
             }
             const { message } = e.response.data
             toast.error(message)
