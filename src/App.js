@@ -11,6 +11,7 @@ import React, {useEffect, useMemo} from "react";
 import CreditPage from "./pages/CreditPage";
 import UploadedTrainingsPage from "./pages/UploadedTrainingsPage";
 import {addUploadedTrainings} from "./features/trainingSlice";
+import ManageUserPage from "./pages/ManageUserPage";
 
 
 const App = () => {
@@ -27,6 +28,10 @@ const App = () => {
               </Route>
               <Route path='credit'>
                   <Route index element={ accessToken ? <CreditPage /> : <Navigate to='/authentication' /> } />
+              </Route>
+              <Route path='admin'>
+                  <Route path='user' element={ accessToken ? <ManageUserPage /> : <Navigate to='/authentication' /> } />
+                  <Route path='servicer' element={ accessToken ? <ManageUserPage /> : <Navigate to='/authentication' /> } />
               </Route>
           </Routes>
       </Router>

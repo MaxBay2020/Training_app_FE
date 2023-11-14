@@ -47,14 +47,31 @@ const pagesForAdmin = [
     },
     {
         label: 'Admin',
-        link: '/admin'
+        subMenus: [
+            {
+                label: 'User',
+                link: '/admin/user'
+            },
+            {
+                label: 'Servicer',
+                link: '/admin/servicer'
+            },
+        ]
     },
 ]
 
 
 const Navbar = () => {
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const [anchorElNav, setAnchorElNav] = React.useState(null)
+    const [anchorElUser, setAnchorElUser] = React.useState(null)
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    const open = Boolean(anchorEl)
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget)
+    }
+    const handleClose = () => {
+        setAnchorEl(null);
+    }
 
     const { userName, userRole } = useSelector(state => state.user)
 
@@ -134,29 +151,105 @@ const Navbar = () => {
                             }}
                         >
                             {
-                                renderAppBarMenu(userRole).map((page) => (
-                                    <Link to={page.link} key={page.label}>
-                                        <MenuItem>
-                                            <Typography textAlign="center">{page.label}</Typography>
-                                        </MenuItem>
-                                    </Link>
-                                ))
+                                renderAppBarMenu(userRole).map((page) => {
+                                    if(page.subMenus){
+                                        return(
+                                            <Box key={page.label}>
+                                                <Button
+                                                    id="basic-button"
+                                                    aria-controls={open ? 'basic-menu' : undefined}
+                                                    aria-haspopup="true"
+                                                    aria-expanded={open ? 'true' : undefined}
+                                                    onClick={handleClick}
+                                                >
+                                                    ADMIN
+                                                </Button>
+                                                <Menu
+                                                    id="basic-menu"
+                                                    anchorEl={anchorEl}
+                                                    open={open}
+                                                    onClose={handleClose}
+                                                    MenuListProps={{
+                                                        'aria-labelledby': 'basic-button',
+                                                    }}
+                                                >
+                                                    {
+                                                        page.subMenus.map(subMenu => (
+                                                            <Link to={subMenu.link} key={subMenu.label}>
+                                                                <MenuItem>{subMenu.label}</MenuItem>
+                                                            </Link>
+                                                        ))
+                                                    }
+                                                </Menu>
+                                            </Box>
+
+                                                // <MenuItem>
+                                                //     <Typography textAlign="center">{page.label}</Typography>
+                                                // </MenuItem>
+                                        )
+                                    }else{
+                                        return (
+                                            <Link to={page.link} key={page.label}>
+                                                <MenuItem>
+                                                    <Typography textAlign="center">{page.label}</Typography>
+                                                </MenuItem>
+                                            </Link>
+                                        )
+                                    }
+                                })
                             }
                         </Menu>
                     </Box>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {
-                            renderAppBarMenu(userRole).map((page) => (
-                                <Link to={page.link} key={page.label}>
-                                    <Button
-                                        onClick={handleCloseNavMenu}
-                                        sx={{ my: 2, color: 'white', display: 'block' }}
-                                    >
-                                        {page.label}
-                                    </Button>
-                                </Link>
-                            ))
+                            renderAppBarMenu(userRole).map((page) => {
+                                if(page.subMenus){
+                                    return(
+                                        <Box key={page.label}>
+                                            <Button
+                                                id="basic-button"
+                                                aria-controls={open ? 'basic-menu' : undefined}
+                                                aria-haspopup="true"
+                                                aria-expanded={open ? 'true' : undefined}
+                                                onClick={handleClick}
+                                                sx={{ color: '#fff' }}
+                                            >
+                                                ADMIN
+                                            </Button>
+                                            <Menu
+                                                id="basic-menu"
+                                                anchorEl={anchorEl}
+                                                open={open}
+                                                onClose={handleClose}
+                                                MenuListProps={{
+                                                    'aria-labelledby': 'basic-button',
+                                                }}
+                                            >
+                                                {
+                                                    page.subMenus.map(subMenu => (
+                                                        <Link to={subMenu.link} key={subMenu.label}>
+                                                            <MenuItem>{subMenu.label}</MenuItem>
+                                                        </Link>
+                                                    ))
+                                                }
+                                            </Menu>
+                                        </Box>
+
+                                        // <MenuItem>
+                                        //     <Typography textAlign="center">{page.label}</Typography>
+                                        // </MenuItem>
+                                    )
+                                }else{
+                                    return (
+                                        <Link to={page.link} key={page.label}>
+                                            <MenuItem>
+                                                <Typography textAlign="center">{page.label}</Typography>
+                                            </MenuItem>
+                                        </Link>
+                                    )
+                                }
+                            })
                         }
                     </Box>
 
