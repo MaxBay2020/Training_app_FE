@@ -45,14 +45,14 @@ export const renderTableCellForTrainingStatus = trainingStatus => {
     )
 }
 
-const ManageUserTable = ({trainingList, order, setOrder, orderBy, setOrderBy}) => {
+const ManageUserTable = ({userList, order, setOrder, orderBy, setOrderBy}) => {
 
     const [trainingsSelected, setTrainingsSelected] = useState([])
 
     // TODO: bug need to be fixed
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = trainingList.map((training) => training.id)
+            const newSelected = userList.map((training) => training.id)
 
             setTrainingsSelected(newSelected.filter( item => !!item))
             return;
@@ -62,7 +62,7 @@ const ManageUserTable = ({trainingList, order, setOrder, orderBy, setOrderBy}) =
 
 
 
-    const handleClick = (event, name, trainingStatus) => {
+    const handleClick = (event, name) => {
 
         // if(trainingStatus.toLowerCase() !== 'pending')
         //     return
@@ -110,66 +110,57 @@ const ManageUserTable = ({trainingList, order, setOrder, orderBy, setOrderBy}) =
                         <EnhancedTableHead
                             numSelected={trainingsSelected.length}
                             onSelectAllClick={e => handleSelectAllClick(e)}
-                            rowCount={trainingList.length}
+                            rowCount={userList.length}
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={handleRequestSort}
                         />
                         <TableBody>
                             {
-                                trainingList.map((training, index) => {
+                                userList.map((user, index) => {
                                     const {
-                                        id: trainingId,
-                                        servicerId,
-                                        servicerName,
-                                        userEmail,
-                                        userFirstName,
-                                        userLastName,
-                                        trainingName,
-                                        trainingType,
-                                        startDate,
-                                        endDate,
-                                        hoursCount,
-                                        trainingStatus,
-                                        createdAt,
-                                    } = training
-                                    const isItemSelected = isSelected(trainingId);
+                                        user_id: userId,
+                                        user_firstName: firstName,
+                                        user_lastName: lastName,
+                                        user_email: email,
+                                        userRole_userRoleName: userRoleName,
+                                        sm_id: servicerId,
+                                        sm_servicerMastername: servicerName,
+                                        user_createdAt: userCreatedAt,
+                                        user_updatedAt: userUpdatedAt
+                                    } = user
+                                    const isItemSelected = isSelected(userId);
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={(event) => handleClick(event, trainingId, trainingStatus)}
+                                            onClick={(event) => handleClick(event, userId)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
-                                            key={trainingId}
+                                            key={userId}
                                             selected={isItemSelected}
                                         >
                                             <TableCell padding="checkbox">
                                                 <Checkbox
                                                     color="primary"
                                                     checked={isItemSelected}
-                                                    // disabled={trainingStatus.toLowerCase() !== 'pending'}
                                                     inputProps={{
                                                         'aria-labelledby': labelId,
                                                     }}
                                                 />
                                             </TableCell>
-                                            <TableCell component="th" scope="row" align="right">
-                                                {servicerId}
+                                            <TableCell component="th" scope="row">
+                                                {firstName}
                                             </TableCell>
-                                            <TableCell align="right">{servicerName}</TableCell>
-                                            <TableCell align="right">{userEmail}</TableCell>
-                                            <TableCell align="right">{`${userFirstName} ${userLastName}`}</TableCell>
-                                            <TableCell align="right">{trainingName}</TableCell>
-                                            <TableCell align="right">{trainingType}</TableCell>
-                                            <TableCell align="right">{moment(startDate).format('MM-DD-YYYY')}</TableCell>
-                                            <TableCell align="right">{moment(endDate).format('MM-DD-YYYY')}</TableCell>
-                                            <TableCell align="right">{moment(createdAt).format('MM-DD-YYYY')}</TableCell>
-                                            <TableCell align="right">{hoursCount}</TableCell>
-                                            { renderTableCellForTrainingStatus(trainingStatus) }
-
+                                            <TableCell>{lastName}</TableCell>
+                                            <TableCell>{email}</TableCell>
+                                            <TableCell>{userRoleName}</TableCell>
+                                            <TableCell>{servicerId}</TableCell>
+                                            <TableCell>{servicerName}</TableCell>
+                                            <TableCell>{moment(userCreatedAt).format('MM-DD-YYYY')}</TableCell>
+                                            <TableCell>{moment(userUpdatedAt).format('MM-DD-YYYY')}</TableCell>
                                         </TableRow>
                                     );
                                 })}

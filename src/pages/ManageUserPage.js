@@ -18,6 +18,7 @@ import useFetchCredits from "../hooks/creditHooks/useFetchCredits";
 import PageHeader from "../components/pageHeader/PageHeader";
 import ManageUserTable from "../components/manageUserPage/ManageUserTable";
 import useFetchUsers from "../hooks/adminHooks/useFetchUsers";
+import UserCreation from "../components/manageUserPage/userCreate/UserCreation";
 
 const ManageUserPage = () => {
 
@@ -41,12 +42,16 @@ const ManageUserPage = () => {
         = useFetchUsers(
         ['queryAllUsers', debouncedSearchKeyword, order, orderBy, page, limit], page, limit, debouncedSearchKeyword, order, orderBy)
 
-    console.log(data)
-
     useEffect(() => {
         setPage(1)
     }, [debouncedSearchKeyword])
 
+    const renderAddUserButton = userRole => {
+        if (userRole === UserRole.ADMIN) {
+            return <Grid item><UserCreation/></Grid>
+        }
+        return <></>
+    }
 
     const searchHandler = e => {
         setSearchKeyword(e.target.value)
@@ -66,6 +71,10 @@ const ManageUserPage = () => {
             />
 
             <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
+                {
+                    data && renderAddUserButton(data.userRole)
+                }
+
                 <Grid item xs={true} md={true}>
                     <TextField
                         id="outlined-basic"
@@ -83,7 +92,7 @@ const ManageUserPage = () => {
                 {
                     data &&
                     <ManageUserTable
-                        trainingList={data.trainingList || []}
+                        userList={data.userList || []}
                         order={order}
                         setOrder={setOrder}
                         orderBy={orderBy}
