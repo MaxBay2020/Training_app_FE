@@ -28,3 +28,11 @@ export const traineeSchema = yup.object().shape({
     traineeFirstName: yup.string().trim().required('Trainee firstname is a required field') ,
     traineeLastName: yup.string().trim().required('Trainee lastname is a required field') ,
 })
+
+export const userSchema = yup.object().shape({
+    firstName: yup.string().trim().min(1).required(),
+    lastName: yup.string().trim().min(1).required(),
+    email: yup.string().trim().matches(emailRegExp, 'Email is not valid').required(),
+    userRole: yup.mixed().oneOf(['ADMIN', 'SERVICER', 'APPROVER', 'SERVICER_COORDINATOR']).required(),
+    servicerName: yup.string().required(),
+})

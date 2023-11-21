@@ -36,7 +36,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import useCommonGetQuery from "../../../hooks/trainingHooks/useCommonGetQuery";
+import useCommonGetQuery from "../../../hooks/useCommonGetQuery";
 import moment from "moment";
 
 const styles = {
@@ -95,7 +95,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     const {isLoading, data: trainingTypes}
         = useFetchTrainingTypes(['queryAllTrainingTypes'], '/training/trainingTypes')
 
-    const { mutate: addTraining } = useCreateTraining()
+    const { mutate: addTraining, isSuccess } = useCreateTraining()
     const { mutate: updateTraining } = useUpdateTraining()
 
 
@@ -154,7 +154,7 @@ const TrainingModal = ({open, setOpen, isCreating, isUpdating, training}) => {
     }, [duplicates])
 
     useEffect(() => {
-        if(!hasDuplicates){
+        if(!hasDuplicates && isSuccess){
             closeForm()
         }
     }, [hasDuplicates])

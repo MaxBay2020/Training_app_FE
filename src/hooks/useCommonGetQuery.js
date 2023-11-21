@@ -1,16 +1,16 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import api from "../../api/api";
+import api from "../api/api";
 import {useQuery} from "@tanstack/react-query";
-import {userLogout} from "../../features/userSlice";
+import {userLogout} from "../features/userSlice";
 
-const useCommonPostQuery = (queryIdentifier, url, reqBody, options = {}) => {
+const useCommonGetQuery = (queryIdentifier, url, options = {}) => {
     const { accessToken } = useSelector( state => state.user )
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const fetchData = async () => {
-        const res = await api.post(url, reqBody, {
+        const res = await api.get(url, {
             headers: {
                 authorization: `Bearer ${accessToken}`
             }
@@ -32,4 +32,4 @@ const useCommonPostQuery = (queryIdentifier, url, reqBody, options = {}) => {
     })
 }
 
-export default useCommonPostQuery
+export default useCommonGetQuery
