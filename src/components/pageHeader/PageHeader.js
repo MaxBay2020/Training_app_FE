@@ -22,6 +22,7 @@ const PageHeader = (props) => {
         searchKeyword,
         orderBy,
         order,
+        hasDownloadFeature = false,
     } = props
 
     const [fileType, setFileType] = useState(1)
@@ -91,48 +92,52 @@ const PageHeader = (props) => {
                         { renderUserInfo(userRole) }
                     </Grid>
                 </Grid>
-                <Grid item>
-                    <Tooltip title="download" placement="top">
-                        <Box>
-                            <IconButton
-                                id="basic-button"
-                                aria-controls={open ? 'basic-menu' : undefined}
-                                aria-haspopup="true"
-                                aria-expanded={open ? 'true' : undefined}
-                                onClick={handleClick}
-                                disabled={isFetching}
-                            >
-                                <CloudDownloadOutlinedIcon />
-                                {
-                                    isFetching && (
-                                        <CircularProgress
-                                            size={40}
-                                            sx={{
-                                                color: blue[500],
-                                                position: 'absolute',
-                                                top: 0,
-                                                left: 0,
-                                                zIndex: 1,
-                                            }}
-                                        />
-                                    )}
-                            </IconButton>
 
-                            {/*<Menu*/}
-                            {/*    id="basic-menu"*/}
-                            {/*    anchorEl={anchorEl}*/}
-                            {/*    open={open}*/}
-                            {/*    onClose={handleClose}*/}
-                            {/*    MenuListProps={{*/}
-                            {/*        'aria-labelledby': 'basic-button',*/}
-                            {/*    }}*/}
-                            {/*>*/}
-                            {/*    <MenuItem onClick={() => handleDownload(1)}>Download Excel</MenuItem>*/}
-                            {/*    <MenuItem onClick={() => handleDownload(2)}>Download PDF</MenuItem>*/}
-                            {/*</Menu>*/}
-                        </Box>
-                    </Tooltip>
-                </Grid>
+                {
+                    hasDownloadFeature &&
+                    <Grid item>
+                        <Tooltip title="download" placement="top">
+                            <Box>
+                                <IconButton
+                                    id="basic-button"
+                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}
+                                    disabled={isFetching}
+                                >
+                                    <CloudDownloadOutlinedIcon />
+                                    {
+                                        isFetching && (
+                                            <CircularProgress
+                                                size={40}
+                                                sx={{
+                                                    color: blue[500],
+                                                    position: 'absolute',
+                                                    top: 0,
+                                                    left: 0,
+                                                    zIndex: 1,
+                                                }}
+                                            />
+                                        )}
+                                </IconButton>
+
+                                {/*<Menu*/}
+                                {/*    id="basic-menu"*/}
+                                {/*    anchorEl={anchorEl}*/}
+                                {/*    open={open}*/}
+                                {/*    onClose={handleClose}*/}
+                                {/*    MenuListProps={{*/}
+                                {/*        'aria-labelledby': 'basic-button',*/}
+                                {/*    }}*/}
+                                {/*>*/}
+                                {/*    <MenuItem onClick={() => handleDownload(1)}>Download Excel</MenuItem>*/}
+                                {/*    <MenuItem onClick={() => handleDownload(2)}>Download PDF</MenuItem>*/}
+                                {/*</Menu>*/}
+                            </Box>
+                        </Tooltip>
+                    </Grid>
+                }
             </Grid>
         </>
     )

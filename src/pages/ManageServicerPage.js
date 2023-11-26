@@ -1,12 +1,7 @@
 import {
-    CircularProgress,
-    Container,
-    FormControl,
     Grid,
-    InputLabel,
     Pagination,
-    Select,
-    TextField, Tooltip
+    TextField,
 } from "@mui/material";
 import BasicLayout from "../layout/BasicLayout";
 import {useEffect, useState} from "react";
@@ -14,13 +9,12 @@ import {useSelector} from "react-redux";
 import useDebounce from "../hooks/trainingHooks/useDebounce";
 import {pageLimit, targetTableToDownload, UserRole} from "../utils/consts";
 import Box from "@mui/material/Box";
-import useFetchCredits from "../hooks/creditHooks/useFetchCredits";
 import PageHeader from "../components/pageHeader/PageHeader";
-import ManageUserTable from "../components/manageUserPage/ManageUserTable";
-import useFetchUsers from "../hooks/adminHooks/useFetchUsers";
-import UserCreation from "../components/manageUserPage/userCreation/UserCreation";
+import useFetchServicers from "../hooks/adminHooks/useFetchServicers";
+import ServicerCreation from "../components/manageServicerPage/servicerCreation/ServicerCreation";
+import ManageServicerTable from "../components/manageServicerPage/ManageServicerTable";
 
-const ManageUserPage = () => {
+const ManageServicerPage = () => {
 
     const [openUserModal, setOpenUserModal] = useState(false)
 
@@ -28,7 +22,7 @@ const ManageUserPage = () => {
     const debouncedSearchKeyword = useDebounce(searchKeyword, 500)
 
     const [order, setOrder] = useState('DESC')
-    const [orderBy, setOrderBy] = useState('Created At')
+    const [orderBy, setOrderBy] = useState('Servicer ID')
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(pageLimit)
@@ -41,17 +35,17 @@ const ManageUserPage = () => {
     } = useSelector(state => state.user)
 
     const { data }
-        = useFetchUsers(
-        ['queryAllUsers', debouncedSearchKeyword, order, orderBy, page, limit], page, limit, debouncedSearchKeyword, order, orderBy)
+        = useFetchServicers(
+        ['queryAllServicers', debouncedSearchKeyword, order, orderBy, page, limit], page, limit, debouncedSearchKeyword, order, orderBy)
 
     useEffect(() => {
         setPage(1)
     }, [debouncedSearchKeyword])
 
-    const renderAddUserButton = userRole => {
+    const renderAddServicerButton = userRole => {
         if (userRole === UserRole.ADMIN) {
             return <Grid item>
-                <UserCreation
+                <ServicerCreation
                     openUserModal={openUserModal}
                     setOpenUserModal={setOpenUserModal}
                 />
@@ -71,7 +65,7 @@ const ManageUserPage = () => {
                 userRole={userRole}
                 servicerId={servicerId}
                 servicerMasterName={servicerMasterName}
-                currentPage={targetTableToDownload.manageUser}
+                currentPage={targetTableToDownload.manageServicer}
                 searchKeyword={debouncedSearchKeyword}
                 orderBy={orderBy}
                 order={order}
@@ -80,7 +74,7 @@ const ManageUserPage = () => {
 
             <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>
                 {
-                    data && renderAddUserButton(data.userRole)
+                    data && renderAddServicerButton(data.userRole)
                 }
 
                 <Grid item xs={true} md={true}>
@@ -99,8 +93,8 @@ const ManageUserPage = () => {
             <Box sx={{minHeight: '390px'}}>
                 {
                     data &&
-                    <ManageUserTable
-                        userList={data.userList || []}
+                    <ManageServicerTable
+                        servicerList={data.servicerList || []}
                         order={order}
                         setOrder={setOrder}
                         orderBy={orderBy}
@@ -127,4 +121,4 @@ const ManageUserPage = () => {
     )
 }
 
-export default ManageUserPage
+export default ManageServicerPage

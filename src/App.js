@@ -12,6 +12,7 @@ import CreditPage from "./pages/CreditPage";
 import UploadedTrainingsPage from "./pages/UploadedTrainingsPage";
 import {addUploadedTrainings} from "./features/trainingSlice";
 import ManageUserPage from "./pages/ManageUserPage";
+import ManageServicerPage from "./pages/ManageServicerPage";
 
 
 const App = () => {
@@ -31,7 +32,7 @@ const App = () => {
               </Route>
               <Route path='admin'>
                   <Route path='user' element={ accessToken ? <ManageUserPage /> : <Navigate to='/authentication' /> } />
-                  <Route path='servicer' element={ accessToken ? <ManageUserPage /> : <Navigate to='/authentication' /> } />
+                  <Route path='servicer' element={ accessToken ? <ManageServicerPage /> : <Navigate to='/authentication' /> } />
               </Route>
           </Routes>
       </Router>

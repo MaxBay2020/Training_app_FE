@@ -136,6 +136,7 @@ const TrainingPage = () => {
                 searchKeyword={debouncedSearchKeyword}
                 orderBy={orderBy}
                 order={order}
+                hasDownloadFeature={true}
             />
 
             <Grid container alignItems='center' justifyContent='space-between' sx={{mb: 3}} spacing={1}>

@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    currentUser: null
+    currentUser: null,
+    duplicates: []
 }
 
 export const usersManagementSlice = createSlice({
@@ -11,6 +12,12 @@ export const usersManagementSlice = createSlice({
         setCurrentUser: (state, action) => {
             const { currentUser } = action.payload
             state.currentUser = currentUser
+        },
+        resetCurrentUser: (state, _action) => {
+            state.currentUser = null
+        },
+        addDuplicates: (state, action) => {
+            state.duplicates = action.payload
         }
     }
 
@@ -18,5 +25,8 @@ export const usersManagementSlice = createSlice({
 
 export default usersManagementSlice.reducer
 export const {
-    setCurrentUser
+    setCurrentUser,
+    resetCurrentUser,
+    addDuplicates,
+
 } = usersManagementSlice.actions

@@ -131,9 +131,14 @@ export const getManageUserTableHeaders = [
 
 
 export const getManageServicerTableHeaders = [
-    'User ID',
+    'Servicer ID',
     'Servicer Master',
-    'Created At',
-    'Updated At',
     'trsiiOptIn',
+    'optOutFlag'
 ]
+
+export const createOrUpdateEnum = {
+    create: 'create',
+    update: 'update',
+    delete: 'delete',
+}

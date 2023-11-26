@@ -17,22 +17,28 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import {visuallyHidden} from "@mui/utils";
 import {useDispatch, useSelector} from "react-redux";
-import {ApproveOrReject, getManageUserTableHeaders, getTrainingTableHeaders} from "../../utils/consts";
+import {
+    ApproveOrReject,
+    getManageServicerTableHeaders,
+    getManageUserTableHeaders,
+    getTrainingTableHeaders
+} from "../../utils/consts";
 import useUpdateTrainingStatus from "../../hooks/trainingHooks/useUpdateTrainingStatus";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import {setCurrentUser} from "../../features/usersManagementSlice";
 import TrainingWithdrawModal from "../TrainingPage/trainingWithdrawModal/TrainingWithdrawModal";
-import UserDeleteModal from "./userDeleteModal/UserDeleteModal";
+import ServicerDeleteModal from "./servicerDeleteModal/ServicerDeleteModal";
 import EditOffOutlinedIcon from "@mui/icons-material/EditOffOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
+import {setCurrentServicer} from "../../features/servicersManagementSlice";
 
 
-const ManageUserTable = ({userList, order, setOrder, orderBy, setOrderBy, openUserModal, setOpenUserModal}) => {
+const ManageServicerTable = ({servicerList, order, setOrder, orderBy, setOrderBy, openUserModal, setOpenUserModal}) => {
 
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
 
-    const [userSelected, setUserSelected] = useState(null)
+    const [servicerSelected, setServicerSelected] = useState(null)
 
     const dispatch = useDispatch()
 
@@ -42,15 +48,15 @@ const ManageUserTable = ({userList, order, setOrder, orderBy, setOrderBy, openUs
         setOrderBy(property);
     }
 
-    const updateCurrentUserHandler = currentUser => {
+    const updateCurrentServicerHandler = currentServicer => {
         setOpenUserModal(true)
-        dispatch(setCurrentUser({
-            currentUser
+        dispatch(setCurrentServicer({
+            currentServicer
         }))
     }
 
-    const deleteCurrentUserHandler = (user) => {
-        setUserSelected(user)
+    const deleteCurrentServicerHandler = servicer => {
+        setServicerSelected(servicer)
         setOpenWithdrawModal(true)
     }
 
@@ -69,37 +75,28 @@ const ManageUserTable = ({userList, order, setOrder, orderBy, setOrderBy, openUs
                         />
                         <TableBody>
                             {
-                                userList.map(user => {
+                                servicerList.map(servicer => {
                                     const {
-                                        user_id: userId,
-                                        user_firstName: firstName,
-                                        user_lastName: lastName,
-                                        user_email: email,
-                                        user_isDelete: isDelete,
-                                        userRole_userRoleName: userRoleName,
                                         sm_id: servicerId,
                                         sm_servicerMasterName: servicerName,
-                                        user_createdAt: userCreatedAt,
-                                        user_updatedAt: userUpdatedAt
-                                    } = user
+                                        sm_optOutFlag: servicerOptOutFlag,
+                                        sm_trsiiOptIn: servicerTrsiiOptIn,
+                                        sm_isDelete: isDelete,
+                                    } = servicer
 
                                     return (
                                         <TableRow
-                                            key={userId}
+                                            key={servicerId}
                                             sx={{
                                                 backgroundColor: `${isDelete ? 'rgba(100,100,100,.1)' : ''}`
                                             }}
                                         >
                                             <TableCell component="th" scope="row">
-                                                {firstName}
+                                                {servicerId}
                                             </TableCell>
-                                            <TableCell>{lastName}</TableCell>
-                                            <TableCell>{email}</TableCell>
-                                            <TableCell>{userRoleName}</TableCell>
-                                            <TableCell>{servicerId}</TableCell>
                                             <TableCell>{servicerName}</TableCell>
-                                            <TableCell>{moment(userCreatedAt).format('MM-DD-YYYY')}</TableCell>
-                                            <TableCell>{moment(userUpdatedAt).format('MM-DD-YYYY')}</TableCell>
+                                            <TableCell>{servicerTrsiiOptIn}</TableCell>
+                                            <TableCell>{servicerOptOutFlag}</TableCell>
                                             <TableCell>
                                                 <Grid container>
                                                     <Grid item>
@@ -109,7 +106,7 @@ const ManageUserTable = ({userList, order, setOrder, orderBy, setOrderBy, openUs
                                                                     <EditOffOutlinedIcon color='default' />
                                                                 </IconButton>
                                                                 :
-                                                                <IconButton onClick={() => updateCurrentUserHandler(user)} disabled={!!isDelete}>
+                                                                <IconButton onClick={() => updateCurrentServicerHandler(servicer)} disabled={!!isDelete}>
                                                                     <Tooltip title="Edit" placement="top">
                                                                         <EditOutlinedIcon color='success' />
                                                                     </Tooltip>
@@ -123,7 +120,7 @@ const ManageUserTable = ({userList, order, setOrder, orderBy, setOrderBy, openUs
                                                                     <DeleteForeverOutlinedIcon color='default' />
                                                                 </IconButton>
                                                                 :
-                                                                <IconButton onClick={() => deleteCurrentUserHandler(user)} disabled={!!isDelete}>
+                                                                <IconButton onClick={() => deleteCurrentServicerHandler(servicer)} disabled={!!isDelete}>
                                                                     <Tooltip title="Delete" placement="top">
                                                                         <DeleteOutlineOutlinedIcon color='error' />
                                                                     </Tooltip>
@@ -139,10 +136,10 @@ const ManageUserTable = ({userList, order, setOrder, orderBy, setOrderBy, openUs
                     </Table>
                 </TableContainer>
 
-                <UserDeleteModal
+                <ServicerDeleteModal
                     open={openWithdrawModal}
                     setOpen={setOpenWithdrawModal}
-                    currentUser={userSelected}
+                    currentUServicer={servicerSelected}
                 />
             </Paper>
         </Box>
@@ -159,7 +156,7 @@ function EnhancedTableHead({ order, orderBy, onRequestSort }) {
     return (
         <TableHead>
             <TableRow>
-                {getManageUserTableHeaders.map((headCell) => (
+                {getManageServicerTableHeaders.map((headCell) => (
                     <TableCell
                         key={headCell}
                         sortDirection={orderBy === headCell.id ? order : false}
@@ -185,4 +182,4 @@ function EnhancedTableHead({ order, orderBy, onRequestSort }) {
 }
 
 
-export default ManageUserTable
+export default ManageServicerTable

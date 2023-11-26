@@ -1,17 +1,18 @@
 import Button from "@mui/material/Button";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Controller, useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {userSchema} from "../../../utils/schema";
+import {servicerSchema, userSchema} from "../../../utils/schema";
 import {
+    Checkbox,
     createTheme,
-    FormControl,
-    FormHelperText,
+    FormControl, FormControlLabel,
+    FormHelperText, FormLabel,
     Grid,
     InputAdornment,
     InputLabel,
     Modal,
-    OutlinedInput,
+    OutlinedInput, Radio, RadioGroup,
     Select
 } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -19,8 +20,13 @@ import MenuItem from "@mui/material/MenuItem";
 import {ThemeProvider} from "@emotion/react";
 import {commonStyles} from "../../../styles/commontStyles";
 import Typography from "@mui/material/Typography";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import useCommonGetQuery from "../../../hooks/useCommonGetQuery";
+import useCommonMutate from "../../../hooks/useCommonMutate";
+import {createOrUpdateEnum} from "../../../utils/consts";
+import {resetCurrentUser} from "../../../features/usersManagementSlice";
+import {resetCurrentServicer} from "../../../features/servicersManagementSlice";
+
 
 
 const styles = {
@@ -48,39 +54,78 @@ const theme = createTheme({
     }
 })
 
-const UserCreation = () => {
-    const [open, setOpen] = useState(false)
+const ServicerCreation = ({ openUserModal, setOpenUserModal }) => {
 
-    const { currentUser } = useSelector(state => state.usersManagement)
+    const { currentServicer } = useSelector(state => state.servicersManagement)
+
+    const dispatch = useDispatch()
 
     const {
         control,
         formState: { errors },
+        setValue,
         reset,
+        handleSubmit,
     } = useForm({
-        resolver: yupResolver(userSchema)
+        resolver: yupResolver(servicerSchema),
+        defaultValues: {
+            servicerTrsiiOptIn: 'false',
+            servicerOptOutFlag: 'false'
+        }
     })
 
-    const {
-        data: userRoleData,
-        isSuccess: isSuccessUserRole
-    } = useCommonGetQuery(['query', 'userRole'], 'userRole', {})
+    useEffect(() => {
+        if(currentServicer){
+            const {
+                sm_id,
+                sm_servicerMasterName,
+                sm_trsiiOptIn,
+                sm_optOutFlag
+            } = currentServicer
+
+            setValue('servicerId', sm_id)
+            setValue('servicerName', sm_servicerMasterName)
+            setValue('servicerTrsiiOptIn', sm_trsiiOptIn === 1)
+            setValue('servicerOptOutFlag', sm_optOutFlag === 1)
+        }
+    }, [currentServicer])
+
+
 
     const {
-        data: servicerData,
-        isSuccess: isSuccessServicer
-    } = useCommonGetQuery(['query', 'servicer'], 'servicer', {})
+        mutate: createServicer
+    } = useCommonMutate(['queryAllServicers'], createOrUpdateEnum.create, 'admin/servicer')
 
-    const renderCreateOrUpdateButton = () => {
-        return currentUser ?
-            (<Button variant="contained">Update</Button>)
-            :
-            (<Button variant="contained">Create</Button>)
+    const {
+        mutate: updateServicer
+    } = useCommonMutate(['queryAllServicers'], createOrUpdateEnum.update, 'admin/servicer')
+
+
+    const createServicerHandler = newServicer => {
+        createServicer(newServicer)
+        closeForm()
+    }
+
+    const updateServicerHandler = servicerToUpdate => {
+        updateServicer({
+            id: currentServicer.sm_id,
+            ...servicerToUpdate,
+        })
+        // closeForm()
     }
 
     const closeForm = () => {
         reset()
-        setOpen()
+        setOpenUserModal(false)
+        dispatch(resetCurrentServicer())
+    }
+
+
+    const renderCreateOrUpdateButton = () => {
+        return currentServicer ?
+            (<Button variant="contained" onClick={handleSubmit(updateServicerHandler)}>Update</Button>)
+            :
+            (<Button variant="contained" onClick={handleSubmit(createServicerHandler)}>Create</Button>)
     }
 
     return (
@@ -88,14 +133,14 @@ const UserCreation = () => {
             <Button
                 variant="contained"
                 disableElevation
-                onClick={() => setOpen(true)}
+                onClick={() => setOpenUserModal(true)}
                 sx={{width: '100%'}}
             >
-                Add User
+                Add Servicer
             </Button>
 
             <Modal
-                open={open}
+                open={openUserModal}
                 onClose={() => closeForm()}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
@@ -109,114 +154,27 @@ const UserCreation = () => {
                         <Grid item>
                             <Controller
                                 control={control}
-                                name='firstName'
+                                name='servicerId'
                                 render={({ field }) => (
                                     <FormControl
                                         sx={commonStyles.fullWidth}
                                         variant="outlined"
-                                        error={!!errors.firstName}
+                                        error={!!errors.servicerId}
                                     >
-                                        <InputLabel htmlFor="outlined-adornment-password">First Name</InputLabel>
+                                        <InputLabel htmlFor="outlined-adornment-password">Servicer ID</InputLabel>
                                         <OutlinedInput
                                             {...field}
                                             id="outlined-adornment-password"
                                             type='text'
-                                            label="firstName"
+                                            label="servicerId"
                                         />
                                         {
-                                            errors.firstName && <FormHelperText id="my-helper-text">{errors.firstName.message}</FormHelperText>
+                                            errors.servicerId && <FormHelperText id="my-helper-text">{errors.servicerId.message}</FormHelperText>
                                         }
                                     </FormControl>
                                 )}
                             />
                         </Grid>
-
-                        <Grid item>
-                            <Controller
-                                control={control}
-                                name='lastName'
-                                render={({ field }) => (
-                                    <FormControl
-                                        sx={commonStyles.fullWidth}
-                                        variant="outlined"
-                                        error={!!errors.lastName}
-                                    >
-                                        <InputLabel htmlFor="outlined-adornment-password">Last Name</InputLabel>
-                                        <OutlinedInput
-                                            {...field}
-                                            id="outlined-adornment-password"
-                                            type='text'
-                                            label="lastName"
-                                        />
-                                        {
-                                            errors.lastName && <FormHelperText id="my-helper-text">{errors.lastName.message}</FormHelperText>
-                                        }
-                                    </FormControl>
-                                )}
-                            />
-                        </Grid>
-
-                        <Grid item>
-                            <Controller
-                                control={control}
-                                name='email'
-                                render={({ field }) => (
-                                    <FormControl
-                                        sx={commonStyles.fullWidth}
-                                        variant="outlined"
-                                        error={!!errors.email}
-                                    >
-                                        <InputLabel htmlFor="outlined-adornment-password">Email</InputLabel>
-                                        <OutlinedInput
-                                            {...field}
-                                            id="outlined-adornment-password"
-                                            type='text'
-                                            label="email"
-                                        />
-                                        {
-                                            errors.email && <FormHelperText id="my-helper-text">{errors.email.message}</FormHelperText>
-                                        }
-                                    </FormControl>
-                                )}
-                            />
-                        </Grid>
-
-                        <Grid item>
-                            <Controller
-                                control={control}
-                                name='userRole'
-                                render={({ field }) => (
-                                    <FormControl
-                                        sx={commonStyles.fullWidth}
-                                        error={!!errors.userRole}
-                                    >
-                                        <InputLabel id="demo-simple-select-label">User role</InputLabel>
-                                        <Select
-                                            {...field}
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            label="userRole"
-                                        >
-                                            {
-                                                isSuccessUserRole
-                                                &&
-                                                userRoleData.userRoleList.map((userRole, index) => (
-                                                    <MenuItem key={index} value={userRole.id}>
-                                                        {userRole.userRoleName}
-                                                    </MenuItem>
-                                                ))
-                                            }
-                                        </Select>
-
-                                        {
-                                            errors.userRole && <FormHelperText id="my-helper-text">{errors.userRole.message}</FormHelperText>
-                                        }
-                                    </FormControl>
-                                )}
-                            />
-                        </Grid>
-
-
 
                         <Grid item>
                             <Controller
@@ -225,28 +183,72 @@ const UserCreation = () => {
                                 render={({ field }) => (
                                     <FormControl
                                         sx={commonStyles.fullWidth}
-                                        error={!!errors.userRole}
+                                        variant="outlined"
+                                        error={!!errors.servicerName}
                                     >
-                                        <InputLabel id="demo-simple-select-label">Servicer</InputLabel>
-                                        <Select
+                                        <InputLabel htmlFor="outlined-adornment-password">Servicer Name</InputLabel>
+                                        <OutlinedInput
                                             {...field}
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
+                                            id="outlined-adornment-password"
+                                            type='text'
                                             label="servicerName"
-                                        >
-                                            {
-                                                isSuccessServicer
-                                                &&
-                                                servicerData.servicerList.map((servicer, index) => (
-                                                    <MenuItem key={index} value={servicer.id}>
-                                                        {servicer.servicerMasterName}
-                                                    </MenuItem>
-                                                ))
-                                            }
-                                        </Select>
-
+                                        />
                                         {
                                             errors.servicerName && <FormHelperText id="my-helper-text">{errors.servicerName.message}</FormHelperText>
+                                        }
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+
+                        <Grid item>
+                            <Controller
+                                control={control}
+                                name='servicerTrsiiOptIn'
+                                render={({ field }) => (
+                                    <FormControl
+                                        sx={commonStyles.fullWidth}
+                                        error={!!errors.servicerTrsiiOptIn}
+                                    >
+                                        <FormLabel id="demo-radio-buttons-group-label">trsiiOptIn</FormLabel>
+                                        <RadioGroup
+                                            {...field}
+                                            row
+                                            aria-labelledby="demo-radio-buttons-group-label"
+                                            name="radio-buttons-group"
+                                        >
+                                            <FormControlLabel value="true" control={<Radio />} label="Yes" />
+                                            <FormControlLabel value="false" control={<Radio />} label="No" />
+                                        </RadioGroup>
+                                        {
+                                            errors.servicerTrsiiOptIn && <FormHelperText id="my-helper-text">{errors.servicerTrsiiOptIn.message}</FormHelperText>
+                                        }
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+
+                        <Grid item>
+                            <Controller
+                                control={control}
+                                name='servicerOptOutFlag'
+                                render={({ field }) => (
+                                    <FormControl
+                                        sx={commonStyles.fullWidth}
+                                        error={!!errors.servicerOptOutFlag}
+                                    >
+                                        <FormLabel id="demo-radio-buttons-group-label">optOutFlag</FormLabel>
+                                        <RadioGroup
+                                            {...field}
+                                            row
+                                            aria-labelledby="demo-radio-buttons-group-label"
+                                            name="radio-buttons-group"
+                                        >
+                                            <FormControlLabel value='true' control={<Radio />} label="Yes" />
+                                            <FormControlLabel value='false' control={<Radio />} label="No" />
+                                        </RadioGroup>
+                                        {
+                                            errors.servicerOptOutFlag && <FormHelperText id="my-helper-text">{errors.servicerOptOutFlag.message}</FormHelperText>
                                         }
                                     </FormControl>
                                 )}
@@ -279,4 +281,4 @@ const UserCreation = () => {
     )
 }
 
-export default UserCreation
+export default ServicerCreation

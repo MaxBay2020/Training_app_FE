@@ -22,6 +22,7 @@ export const getTrainingSchema = (dateRange) => {
 }
 
 const emailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+const onlyNumberRegExp = /^\d$/
 
 export const traineeSchema = yup.object().shape({
     traineeEmail: yup.string().trim().matches(emailRegExp, 'Trainee email must be a valid email'),
@@ -30,9 +31,17 @@ export const traineeSchema = yup.object().shape({
 })
 
 export const userSchema = yup.object().shape({
-    firstName: yup.string().trim().min(1).required(),
-    lastName: yup.string().trim().min(1).required(),
-    email: yup.string().trim().matches(emailRegExp, 'Email is not valid').required(),
-    userRole: yup.mixed().oneOf(['ADMIN', 'SERVICER', 'APPROVER', 'SERVICER_COORDINATOR']).required(),
-    servicerName: yup.string().required(),
+    firstName: yup.string().trim().min(1).required('First name is required'),
+    lastName: yup.string().trim().min(1).required('Last name is required'),
+    newUserEmail: yup.string().trim().matches(emailRegExp, 'Email is not valid').required('Email is required'),
+    userRoleId: yup.string().required('User role is required'),
+    servicerId: yup.string().required('Servicer is required'),
 })
+
+export const servicerSchema = yup.object().shape({
+    servicerId: yup.string().trim().length(5).required('Servicer ID is required'),
+    servicerName: yup.string().trim().min(1).required('Servicer name is required'),
+    servicerTrsiiOptIn: yup.string().oneOf(['true', 'false']),
+    servicerOptOutFlag: yup.string().oneOf(['true', 'false']),
+})
+
