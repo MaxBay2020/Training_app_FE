@@ -111,7 +111,7 @@ const ServicerCreation = ({ openUserModal, setOpenUserModal }) => {
             id: currentServicer.sm_id,
             ...servicerToUpdate,
         })
-        // closeForm()
+        closeForm()
     }
 
     const closeForm = () => {

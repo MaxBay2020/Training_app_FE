@@ -28,8 +28,7 @@ const ServicerDeleteModal = ({open, setOpen, currentServicer}) => {
         mutate: updateServicer
     } = useCommonMutate(['queryAllServicers'], createOrUpdateEnum.delete, 'admin/servicer')
 
-
-    const withdrawTrainingByTrainingId = () => {
+    const deleteServicerByServicerId = () => {
         updateServicer({
             id: currentServicer?.sm_id
         })
@@ -71,7 +70,7 @@ const ServicerDeleteModal = ({open, setOpen, currentServicer}) => {
                                 disableElevation
                                 color='error'
                                 sx={styles.fullWidth}
-                                onClick={() => withdrawTrainingByTrainingId()}
+                                onClick={() => deleteServicerByServicerId()}
                             >
                                 I understand the consequences, cancel this training
                             </Button>

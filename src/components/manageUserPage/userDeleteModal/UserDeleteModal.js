@@ -29,7 +29,7 @@ const UserDeleteModal = ({open, setOpen, currentUser}) => {
     } = useCommonMutate(['queryAllUsers'], createOrUpdateEnum.delete, 'admin/user')
 
 
-    const withdrawTrainingByTrainingId = () => {
+    const deleteUserByUserId = () => {
         updateUser({
             id: currentUser?.user_id
         })
@@ -71,7 +71,7 @@ const UserDeleteModal = ({open, setOpen, currentUser}) => {
                                 disableElevation
                                 color='error'
                                 sx={styles.fullWidth}
-                                onClick={() => withdrawTrainingByTrainingId()}
+                                onClick={() => deleteUserByUserId()}
                             >
                                 I understand the consequences, cancel this training
                             </Button>

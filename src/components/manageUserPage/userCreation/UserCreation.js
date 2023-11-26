@@ -115,7 +115,7 @@ const UserCreation = ({ openUserModal, setOpenUserModal }) => {
             ...userToUpdate,
             updateUserEmail: userToUpdate.newUserEmail
         })
-        // closeForm()
+        closeForm()
     }
 
     const closeForm = () => {

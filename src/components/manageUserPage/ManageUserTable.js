@@ -104,12 +104,12 @@ const ManageUserTable = ({userList, order, setOrder, orderBy, setOrderBy, openUs
                                                 <Grid container>
                                                     <Grid item>
                                                         {
-                                                            isDelete ?
-                                                                <IconButton>
-                                                                    <EditOffOutlinedIcon color='default' />
+                                                            !!isDelete ?
+                                                                <IconButton disabled={!!isDelete}>
+                                                                    <EditOffOutlinedIcon color='default'/>
                                                                 </IconButton>
                                                                 :
-                                                                <IconButton onClick={() => updateCurrentUserHandler(user)} disabled={!!isDelete}>
+                                                                <IconButton onClick={() => updateCurrentUserHandler(user)} >
                                                                     <Tooltip title="Edit" placement="top">
                                                                         <EditOutlinedIcon color='success' />
                                                                     </Tooltip>
@@ -118,12 +118,12 @@ const ManageUserTable = ({userList, order, setOrder, orderBy, setOrderBy, openUs
                                                     </Grid>
                                                     <Grid item>
                                                         {
-                                                            isDelete ?
-                                                                <IconButton>
+                                                            !!isDelete ?
+                                                                <IconButton disabled={!!isDelete}>
                                                                     <DeleteForeverOutlinedIcon color='default' />
                                                                 </IconButton>
                                                                 :
-                                                                <IconButton onClick={() => deleteCurrentUserHandler(user)} disabled={!!isDelete}>
+                                                                <IconButton onClick={() => deleteCurrentUserHandler(user)}>
                                                                     <Tooltip title="Delete" placement="top">
                                                                         <DeleteOutlineOutlinedIcon color='error' />
                                                                     </Tooltip>

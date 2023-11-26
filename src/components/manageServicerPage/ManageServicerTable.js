@@ -32,10 +32,10 @@ import ServicerDeleteModal from "./servicerDeleteModal/ServicerDeleteModal";
 import EditOffOutlinedIcon from "@mui/icons-material/EditOffOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import {setCurrentServicer} from "../../features/servicersManagementSlice";
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 
 
 const ManageServicerTable = ({servicerList, order, setOrder, orderBy, setOrderBy, openUserModal, setOpenUserModal}) => {
-
     const [openWithdrawModal, setOpenWithdrawModal] = useState(false)
 
     const [servicerSelected, setServicerSelected] = useState(null)
@@ -95,18 +95,26 @@ const ManageServicerTable = ({servicerList, order, setOrder, orderBy, setOrderBy
                                                 {servicerId}
                                             </TableCell>
                                             <TableCell>{servicerName}</TableCell>
-                                            <TableCell>{servicerTrsiiOptIn}</TableCell>
-                                            <TableCell>{servicerOptOutFlag}</TableCell>
+                                            <TableCell>
+                                                {
+                                                    !! servicerTrsiiOptIn && <CheckOutlinedIcon color='success' />
+                                                }
+                                            </TableCell>
+                                            <TableCell>
+                                                {
+                                                    !! servicerOptOutFlag && <CheckOutlinedIcon color='success' />
+                                                }
+                                            </TableCell>
                                             <TableCell>
                                                 <Grid container>
                                                     <Grid item>
                                                         {
-                                                            isDelete ?
-                                                                <IconButton>
+                                                            !!isDelete ?
+                                                                <IconButton disabled={!!isDelete}>
                                                                     <EditOffOutlinedIcon color='default' />
                                                                 </IconButton>
                                                                 :
-                                                                <IconButton onClick={() => updateCurrentServicerHandler(servicer)} disabled={!!isDelete}>
+                                                                <IconButton onClick={() => updateCurrentServicerHandler(servicer)}>
                                                                     <Tooltip title="Edit" placement="top">
                                                                         <EditOutlinedIcon color='success' />
                                                                     </Tooltip>
@@ -115,12 +123,12 @@ const ManageServicerTable = ({servicerList, order, setOrder, orderBy, setOrderBy
                                                     </Grid>
                                                     <Grid item>
                                                         {
-                                                            isDelete ?
-                                                                <IconButton>
+                                                            !!isDelete ?
+                                                                <IconButton disabled={!!isDelete}>
                                                                     <DeleteForeverOutlinedIcon color='default' />
                                                                 </IconButton>
                                                                 :
-                                                                <IconButton onClick={() => deleteCurrentServicerHandler(servicer)} disabled={!!isDelete}>
+                                                                <IconButton onClick={() => deleteCurrentServicerHandler(servicer)}>
                                                                     <Tooltip title="Delete" placement="top">
                                                                         <DeleteOutlineOutlinedIcon color='error' />
                                                                     </Tooltip>
@@ -139,7 +147,7 @@ const ManageServicerTable = ({servicerList, order, setOrder, orderBy, setOrderBy
                 <ServicerDeleteModal
                     open={openWithdrawModal}
                     setOpen={setOpenWithdrawModal}
-                    currentUServicer={servicerSelected}
+                    currentServicer={servicerSelected}
                 />
             </Paper>
         </Box>
