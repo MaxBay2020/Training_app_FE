@@ -86,6 +86,7 @@ const CreditPage = () => {
                                     aria-controls={open ? 'basic-menu' : undefined}
                                     aria-haspopup="true"
                                     aria-expanded={open ? 'true' : undefined}
+                                    aria-label="download"
                                     onClick={handleClick}
                                     disabled={isFetching}
                                 >
